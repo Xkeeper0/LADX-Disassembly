@@ -12,7 +12,7 @@ jobs:
             sudo apt update && sudo apt install -y build-essential byacc flex pkg-config libpng-dev
 
             # Retrieve rgbds
-            git clone --depth 1 --branch v0.4.0 https://github.com/rednex/rgbds.git /tmp/rgbds
+            git clone --depth 1 --branch master https://github.com/rednex/rgbds.git /tmp/rgbds
 
             # Build rgbds
             cd /tmp/rgbds
