@@ -9,7 +9,7 @@ jobs:
           name: build rgbds
           command: |
             # Install build dependencies
-            sudo apt update && sudo install -y build-essential byacc flex pkg-config libpng-dev
+            sudo apt update && sudo apt install -y build-essential byacc flex pkg-config libpng-dev
 
             # Retrieve rgbds
             git clone --depth 1 --branch v0.4.0 https://github.com/rednex/rgbds.git /tmp/rgbds
