@@ -809,6 +809,7 @@ data_2769::
     db $42, $62                                   ; $2769
 
 data_276B::
+    ; Dakuten, handakuten tiles
     db $98, $99                                   ; $276B
 
 DialogFinishScrolling::

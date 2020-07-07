@@ -18,8 +18,8 @@ ChestItemSpriteTable::
     db $84, $10        ; CHEST_SWORD
     db $94, $15        ; CHEST_FLIPPERS
     db $9A, $10        ; CHEST_MAGNIFYING_LENS
-    db $AE, $10
-    db $9C, $10
+    db $AE, $10        ; Guardian Acorn???
+    db $9C, $10        ; Right half of trading item???
     db $A0, $14        ; CHEST_MEDICINE
     db $C0, $14        ; CHEST_TAIL_KEY
     db $C2, $14        ; CHEST_ANGLER_KEY
@@ -117,8 +117,8 @@ jr_007_7C36:
     jr   nz, jr_007_7C49                          ; $7C3F: $20 $08
 
     ldh  a, [hMapRoom]                            ; $7C41: $F0 $F6
-    cp   $CE                     ; @TODO ?? L2 power bracelet chest in Face Shrine?
-    jr   nz, jr_007_7C58         ; maybe related to incrementing an item level
+    cp   $CE                     ; L2 power bracelet chest in Face Shrine
+    jr   nz, jr_007_7C58         ; (for alternate sprite data)
 
     jr   jr_007_7C53                              ; $7C47: $18 $0A
 
@@ -127,8 +127,8 @@ jr_007_7C49:
     jr   nz, jr_007_7C58                          ; $7C4B: $20 $0B
 
     ldh  a, [hMapRoom]                            ; $7C4D: $F0 $F6
-    cp   $1A                     ; @TODO ?? L2 shield in Eagle's Tower?
-    jr   nz, jr_007_7C58                          ; $7C51: $20 $05
+    cp   $1A                     ; L2 shield in Eagle's Tower
+    jr   nz, jr_007_7C58         ; (for alternate sprite data)
 
 jr_007_7C53:
     ld   de, ChestItemSpriteTableAlt                        ; $7C53: $11 $53 $7B

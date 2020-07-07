@@ -141,3 +141,21 @@ _(To-do)_
   even across rooms that it ordinarily would not; e.g. when entering a side-scrolling area,
   enabling free movement will show the indicator at the "real" room you are in.
 
+
+## Fun
+
+### Speeding up dialogue
+
+`src/code/home/dialog.asm`: Change `jp` to `call`
+    .delayOver
+        call func_01C_49F1                            ; $24C7: $CD $F1 $49
+        ; jp   IncrementDialogStateAndReturn            ; $24CA: $C3 $85 $24
+        call   IncrementDialogStateAndReturn            ; $24CA: $C3 $85 $24
+
+`src/code/home/dialog.asm`: Change `$08` to `$00`
+    label_275D::
+        dec  e                                        ; $275D: $1D
+        jr   nz, label_2739                           ; $275E: $20 $D9
+        ld   a, $08  ; Pause the scrolling for 8 frames ; $2760: $3E $08
+        ld   [wDialogScrollDelay], a                  ; $2762: $EA $72 $C1
+        jp   IncrementDialogStateAndReturn            ; $2765: $C3 $85 $24

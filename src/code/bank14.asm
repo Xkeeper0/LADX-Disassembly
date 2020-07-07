@@ -2005,12 +2005,15 @@ jr_014_5807:
     ret                                           ; $5837: $C9
 
 func_014_5838::
+    ; First, load the address of the color dungeon map layout (of course)
+    ; If this is the color dungeon, we can skip ahead
     ld   hl, MapLayout11                          ; $5838: $21 $E0 $44
     ldh  a, [hMapId]                              ; $583B: $F0 $F7
-    cp   $FF                                      ; $583D: $FE $FF
+    cp   MAP_COLOR_DUNGEON                        ; $583D: $FE $FF
     jr   z, jr_014_5866                           ; $583F: $28 $25
 
-    cp   $0B                                      ; $5841: $FE $0B
+    ; If the map id < the alternate Eagle's Tower, skip ahead too
+    cp   (MAP_EAGLES_TOWER_ALT - 1)               ; $5841: $FE $0B
     jr   nc, jr_014_5883                          ; $5843: $30 $3E
 
     ld   hl, MapLayout0                           ; $5845: $21 $20 $42
@@ -2023,7 +2026,7 @@ func_014_5838::
     rl   b                                        ; $5853: $CB $10
     add  hl, bc                                   ; $5855: $09
     ldh  a, [hMapId]                              ; $5856: $F0 $F7
-    cp   $06                                      ; $5858: $FE $06
+    cp   MAP_EAGLES_TOWER                         ; $5858: $FE $06
     jr   nz, jr_014_5866                          ; $585A: $20 $0A
 
     ld   a, [wHasInstrument7]                     ; $585C: $FA $6B $DB
@@ -2039,7 +2042,7 @@ jr_014_5866:
     ld   d, $00                                   ; $5869: $16 $00
     ld   hl, wIndoorARoomStatus                   ; $586B: $21 $00 $D9
     ldh  a, [hMapId]                              ; $586E: $F0 $F7
-    cp   $FF                                      ; $5870: $FE $FF
+    cp   MAP_COLOR_DUNGEON                        ; $5870: $FE $FF
     jr   nz, jr_014_5879                          ; $5872: $20 $05
 
     ld   hl, wColorDungeonRoomStatus              ; $5874: $21 $E0 $DD
@@ -2187,6 +2190,7 @@ jr_014_5920:
     cp   $20                                      ; $5922: $FE $20
     jr   nz, jr_014_5931                          ; $5924: $20 $0B
 
+    ; @TODO ?????????????????
     ld   a, [wSwordLevel]                         ; $5926: $FA $4E $DB
     cp   $02                                      ; $5929: $FE $02
     ld   a, $20                                   ; $592B: $3E $20

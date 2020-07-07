@@ -156,7 +156,25 @@ ROOM_BORDER                 equ $FF
 ;
 ; Flags can be combined. For example, visiting the first dungeon's screen (80)
 ; and opening it with the key (10) would put that byte at 90.
+;
+; This is also used for dungeon rooms, in particular:
+; 7 Visited - should be marked on the map
+; 6 Key block unlocked
+; 5 Boss/Miniboss defeated, or a second flag for events (e.g. magic bat)
+; 4 Treasure taken - a chest was opened here (also some other duties)
+; 3 Room is open downwards    \  These are set by door objects in each room.
+; 2 Room is open upwards      |  They can either be open by default, opened
+; 1 Room is open to the left  |  by a key, or bombed open. Other types of
+; 0 Room is open to the right /  shutter doors always register as closed.
+;
+; Several other "Underworld"/indoor areas can set and use these flags, either
+; intentionally or not. e.g. The common house entry object sets the "open right" flag
+; for no good reason, and the house by the by uses some values to track its state
 ROOM_STATUS_UNVISITED    equ $00
+ROOM_STATUS_OPEN_LEFT    equ %0010
+ROOM_STATUS_OPEN_RIGHT   equ %0001
+ROOM_STATUS_OPEN_UP      equ %0100
+ROOM_STATUS_OPEN_DOWN    equ %1000
 ROOM_STATUS_DOOR_OPENED  equ $04 ; door or bombable entrance opened
 ROOM_STATUS_CHANGED      equ $10 ; e.g. sword taken on the beach
 ROOM_STATUS_OWL_TALKED   equ $20

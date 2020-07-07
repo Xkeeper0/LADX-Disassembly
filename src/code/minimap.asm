@@ -1,4 +1,7 @@
-Data_002_66F9::
+MinimapFlagsToTiles::
+    ; What tile index to use on the subscreen dungeon map, based on saved room flags
+    ; Kind of odd that they didn't just arrange them in vram in the same order...
+    ;     o    ╞    ╡    ═    ╨    ╚    ╝    ╩    ╥    ╔    ╗    ╦    ║    ╠    ╣    ╬
     db   $00, $02, $03, $07, $05, $0A, $0B, $0F, $04, $08, $09, $0E, $06, $0C, $0D, $01
 
 LoadMinimap::
@@ -57,45 +60,55 @@ ENDC
     add  hl, de                                   ; $674A: $19
     ld   a, [hl]                                  ; $674B: $7E
 
+    ; Determine what kind of room we should draw.
+    ; If blank, skip it - nothing to do here at all
     cp   MINIMAP_BLANK                            ; $674C: $FE $7D
     jr   z, .continue                             ; $674E: $28 $65
 
+    ; If it's a chest, jump ahead to check if it should be shown
     cp   MINIMAP_CHEST                            ; $6750: $FE $ED
-    jr   z, .jr_002_6758                          ; $6752: $28 $04
+    jr   z, .minimapCheckDrawChestNightmare       ; $6752: $28 $04
 
+    ; If it's not the nightmare icon, skip ahead
     cp   MINIMAP_NIGHTMARE                        ; $6754: $FE $EE
-    jr   nz, .jr_002_6760                         ; $6756: $20 $08
+    jr   nz, .minimapCheckDrawRoom                ; $6756: $20 $08
 
-.jr_002_6758
+.minimapCheckDrawChestNightmare
+    ; We only want to show these if the player has the compass.
+    ; If they have it, then we keep our special icon;
+    ; otherwise, we change it to just be a generic room.
     ld   a, [wHasDungeonCompass]                  ; $6758: $FA $CD $DB
     and  a                                        ; $675B: $A7
-    jr   nz, .jr_002_676B                         ; $675C: $20 $0D
+    jr   nz, .minimapCheckDrawIcon                ; $675C: $20 $0D
 
     ld   [hl], MINIMAP_ROOM                       ; $675E: $36 $EF
 
-.jr_002_6760
+.minimapCheckDrawRoom
+    ; Do we have the dungeon map?
+    ; If no, convert all rooms to blanks.
+    ; (Note that the compass check skips over this, so they don't get changed)
     ld   a, [wHasDungeonMap]                      ; $6760: $FA $CC $DB
     and  a                                        ; $6763: $A7
-    jr   nz, .jr_002_676B                         ; $6764: $20 $05
+    jr   nz, .minimapCheckDrawIcon                ; $6764: $20 $05
 
-    ld   [hl], $7D                                ; $6766: $36 $7D
+    ld   [hl], MINIMAP_BLANK                      ; $6766: $36 $7D
     jp   .continue                                ; $6768: $C3 $B5 $67
 
-.jr_002_676B
+.minimapCheckDrawIcon
     push de                                       ; $676B: $D5
-    call label_2BC1                               ; $676C: $CD $C1 $2B
+    call label_2BC1      ; -> func_014_5838       ; $676C: $CD $C1 $2B
     ld   c, e                                     ; $676F: $4B
     ld   b, d                                     ; $6770: $42
     pop  de                                       ; $6771: $D1
     ld   a, [hl]                                  ; $6772: $7E
-    bit  7, a                                     ; $6773: $CB $7F
+    bit  7, a                                     ; If room hasn't been visited, just continue
     jr   z, .continue                             ; $6775: $28 $3E
 
     ld   a, [hl]                                  ; $6777: $7E
-    and  $0F                                      ; $6778: $E6 $0F
+    and  $0F                                      ; Extract only the room's door flags (ROOM_STATUS_OPEN_LEFT etc)
     ld   c, a                                     ; $677A: $4F
     ld   b, $00                                   ; $677B: $06 $00
-    ld   hl, Data_002_66F9                        ; Tiles to use for revealed minimap spaces
+    ld   hl, MinimapFlagsToTiles                  ; Tiles to use for revealed minimap spaces
     add  hl, bc                                   ; $6780: $09
     ld   a, [hl]                                  ; $6781: $7E
     inc  a                                        ; $6782: $3C
@@ -104,10 +117,10 @@ ENDC
     ld   hl, wDungeonMinimap                      ; $6786: $21 $80 $D4
     add  hl, de                                   ; $6789: $19
     ld   a, [hl]                                  ; $678A: $7E
-    cp   $EE                                      ; $678B: $FE $EE
+    cp   MINIMAP_NIGHTMARE                        ; $678B: $FE $EE
     jr   z, .jr_002_6793                          ; $678D: $28 $04
 
-    cp   $ED                                      ; $678F: $FE $ED
+    cp   MINIMAP_CHEST                            ; $678F: $FE $ED
     jr   nz, .jr_002_67A8                         ; $6791: $20 $15
 
 .jr_002_6793
@@ -116,7 +129,7 @@ ENDC
     call label_2BC1                               ; $6795: $CD $C1 $2B
     pop  af                                       ; $6798: $F1
     ld   e, $20                                   ; $6799: $1E $20
-    cp   $ED                                      ; $679B: $FE $ED
+    cp   MINIMAP_CHEST                            ; $679B: $FE $ED
     jr   nz, .jr_002_67A1                         ; $679D: $20 $02
 
     ld   e, $10                                   ; $679F: $1E $10
@@ -136,7 +149,7 @@ ENDC
     and  a                                        ; $67B0: $A7
     jr   nz, .continue                            ; $67B1: $20 $02
 
-    ld   [hl], $7D                                ; $67B3: $36 $7D
+    ld   [hl], MINIMAP_BLANK                      ; $67B3: $36 $7D
 
 .continue
     ; Loop while not all $40 rooms are processed
