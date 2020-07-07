@@ -22,7 +22,7 @@ OverworldMacrosHandlers::                        ; $758B
 ._04 dw PalaceDoorMacroHandler
 ._05 dw StonePigHeadMacroHandler
 ._06 dw PalmTreeMacroHandler
-._07 dw func_024_76EA
+._07 dw WalledPitMacroHandler
 ._08 dw SmallHouseMacroHandler
 
 TreeMacroHandler::
@@ -233,7 +233,7 @@ Data_024_76DC::
     db $2B, $2C, $2D, $37, $E8, $38, $0A, $33
     db $2F, $34, $0A, $0A, $0A, $0A
 
-func_024_76EA::
+WalledPitMacroHandler::
     push bc                                       ; $76EA: $C5
     call func_024_7625                            ; $76EB: $CD $25 $76
     ld   bc, Data_024_76CD                        ; $76EE: $01 $CD $76
