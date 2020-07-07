@@ -8,6 +8,10 @@
 ; This is kind of a silly way to write them out in assembly
 ; but hopefully a better visual metaphor than raw values.
 
+MINIMAP_BLANK = $7D
+MINIMAP_ROOM = $EF
+MINIMAP_CHEST = $ED
+MINIMAP_NIGHTMARE = $EE
 
 ; Fun rgbds gotcha: NEWCHARMAP also switches to it.
 ; This is not indicated in the manual.

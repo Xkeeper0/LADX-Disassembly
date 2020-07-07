@@ -3047,6 +3047,9 @@ UpdateMinimapEntranceArrowAndReturn::
     ; Display the Minimap Arrow tile ($A3) at the target address
     ld   [hl], $A3                                ; $6E0F: $36 $A3
 
+    ; POI: There doesn't seem to be any reason for this, but it indeed does;
+    ; if you're on a side-scrolling screen, it will just not display the
+    ; entry arrow at all. Which is kind of weird -- why???
     ; If IsSideScrolling…
     ldh  a, [hIsSideScrolling]                    ; $6E11: $F0 $F9
     and  a                                        ; $6E13: $A7

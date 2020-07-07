@@ -57,13 +57,13 @@ ENDC
     add  hl, de                                   ; $674A: $19
     ld   a, [hl]                                  ; $674B: $7E
 
-    cp   $7D                                      ; $674C: $FE $7D
+    cp   MINIMAP_BLANK                            ; $674C: $FE $7D
     jr   z, .continue                             ; $674E: $28 $65
 
-    cp   $ED                                      ; $6750: $FE $ED
+    cp   MINIMAP_CHEST                            ; $6750: $FE $ED
     jr   z, .jr_002_6758                          ; $6752: $28 $04
 
-    cp   $EE                                      ; $6754: $FE $EE
+    cp   MINIMAP_NIGHTMARE                        ; $6754: $FE $EE
     jr   nz, .jr_002_6760                         ; $6756: $20 $08
 
 .jr_002_6758
@@ -71,7 +71,7 @@ ENDC
     and  a                                        ; $675B: $A7
     jr   nz, .jr_002_676B                         ; $675C: $20 $0D
 
-    ld   [hl], $EF                                ; $675E: $36 $EF
+    ld   [hl], MINIMAP_ROOM                       ; $675E: $36 $EF
 
 .jr_002_6760
     ld   a, [wHasDungeonMap]                      ; $6760: $FA $CC $DB
