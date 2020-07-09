@@ -1243,6 +1243,8 @@ jr_001_5CBD::
 label_001_5D13::
     ret                                           ; $5D13: $C9
 
+; These next three are the areas for hearts on the file select screen
+; drawn if a save file is present
 Data_001_5D14::
     db  $98, $CB, $06, $7E, $7E, $7E, $7E, $7E, $7E, $7E ; $5D14
     db  $98, $EB, $06, $7E, $7E, $7E, $7E, $7E, $7E, $7E ; $5D1E

@@ -142,6 +142,48 @@ _(To-do)_
   enabling free movement will show the indicator at the "real" room you are in.
 
 
+## Background tile commands
+
+From `src/data/backgrounds/background_tile_commands.asm`:
+
+* `01`: island from ending disappearing-island scene
+* `02`: subscreen `a[]b[]`, rupee icon, horizontal and vertical line
+* `03`: file select main screen w/ no files - no erase / copy option
+* `04`: file select main screen w/ files - erase / copy options present
+* `05`: name entry screen
+* `06`: file erase
+* `07`: (dynamic, RAM)
+* `08`: map screen border
+* `09`: eagle tower's unused parallax scroll
+* `0a`: game over menu
+* `0b`: blacked out window on the subscreen, drawn with debug flag 2
+* `0c`: file copy
+* `0d`: a+b+s+s save & quit menu
+* `0e`: intro scene w/ clouds, waves (?) looks slightly broken in gbc
+* `0f`: intro scene w/ link holding onto the rope
+* `10`: intro scene - beach
+* `11`: title screen
+* `12`: photo of catherine
+* `13`: marin beach scene
+* `14`: mamu spotlight overlay (probably)
+* `15`: face shrine mural
+* `16`: unchecked / credits
+* `17`: unchecked / credits
+* `18`: unchecked / credits
+* `19`: unchecked / credits
+* `1a`: unchecked / credits
+* `1b`: unchecked / credits
+* `1c`: unchecked / credits
+* `1d`: unchecked / credits (?)
+* `1e`: unchecked / credits
+* `1f`: unchecked / credits
+* `20`: unchecked / credits
+* `21`: unchecked / credits
+* `22`: unchecked / credits
+* `23`: schultz's painting
+* `24`: eagle's tower pillar-drop cutscene
+* `25`: intro scene w/ clouds, waves
+
 ## Fun
 
 ### Speeding up dialogue
