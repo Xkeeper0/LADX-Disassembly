@@ -174,12 +174,13 @@ From `src/data/backgrounds/background_tile_commands.asm`:
 * `1a`: unchecked / credits
 * `1b`: unchecked / credits
 * `1c`: unchecked / credits
-* `1d`: unchecked / credits (?)
+* `1d`: unchecked / credits (?) 
 * `1e`: unchecked / credits
 * `1f`: unchecked / credits
 * `20`: unchecked / credits
 * `21`: unchecked / credits
 * `22`: unchecked / credits
+  * All of these are based on seeing them called in the `credits.asm` code, _except_ for `1d`
 * `23`: schultz's painting
 * `24`: eagle's tower pillar-drop cutscene
 * `25`: intro scene w/ clouds, waves
