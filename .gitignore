@@ -32,6 +32,7 @@ DumpBanks
 # temporary editor backups
 *~
 
-# save files
+# Emulator-generated files
 *.sav
 *.ss*
+*.cheats
