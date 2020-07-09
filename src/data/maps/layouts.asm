@@ -74,7 +74,7 @@ MapLayout6::
     db   $1B, $1C, $1D, $1E,   0,   0,   0,   0
     db   $01, $02, $03, $04,   0, $1F, $20,   0
     db   $05, $06, $07, $08, $21, $22, $23, $24 ; POI: $23 is an unused room
-    db   $09, $0A, $0B, $0C, $25, $26, $27, $28
+    db   $09, $0A, $0B, $0C, $25, $26, $27, $28 ; $22 can never be reached legitimately
     db   $0D, $0E, $0F, $10,   0, $29, $2A,   0
 
 MapLayout7::
