@@ -387,7 +387,7 @@ data_020_47C3::
 
 MapRoomTable_b0::
 	db   $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
-	db   $00, $00, $00, $00, $04, $00, $00, $00, $04, $00, $00 
+	db   $00, $00, $00, $00, $04, $00, $00, $00, $04, $00, $00
 MapRoomTable_b1::
 	db   $00, $00, $00, $00, $00, $00, $00, $00, $00, $05, $00
 	db   $00, $00, $00, $05, $00, $00, $00, $00, $00, $00, $05
@@ -2281,8 +2281,22 @@ InventoryMapFadeOutHandler::
 data_020_596A::
 ; Sprite Data ?
 ; Start of data copied for inventory display
-    db   $9C, $AA, $81, $06, $06, $9C, $AC, $81, $06, $06, $9C, $AE, $81, $06, $06, $9C
-    db   $B0, $81, $06, $06, $9C, $B2, $81, $06, $06, $9C, $71, $81, $03, $03, $00
+    ; db   $9C, $AA, $81, $06, $06, $9C, $AC, $81, $06, $06, $9C, $AE, $81, $06, $06, $9C
+    ; db   $B0, $81, $06, $06, $9C, $B2, $81, $06, $06, $9C, $71, $81, $03, $03, $00
+
+    vram_data $9CAA, BG_COPY_MODE_COLUMN, \
+              $06, $06
+    vram_data $9CAC, BG_COPY_MODE_COLUMN, \
+              $06, $06
+    vram_data $9CAE, BG_COPY_MODE_COLUMN, \
+              $06, $06
+    vram_data $9CB0, BG_COPY_MODE_COLUMN, \
+              $06, $06
+    vram_data $9CB2, BG_COPY_MODE_COLUMN, \
+              $06, $06
+    vram_data $9C71, BG_COPY_MODE_COLUMN, \
+              $03, $03
+    vram_data_end
 
 Data_020_5989::
     db   $9C, $AC, $81, $04, $04, $9C, $AE, $81, $03, $03, $00

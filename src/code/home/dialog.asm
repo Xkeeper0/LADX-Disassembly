@@ -719,7 +719,7 @@ ENDC
     ld   a, [wBGOriginLow]                        ; $26FC: $FA $2F $C1
     add  a, [hl]                                  ; $26FF: $86
     ld   [wRequestDestinationLow], a              ; $2700: $EA $02 $D6
-    ld   a, BG_COPY_MODE_ROW_SINGLE_VALUE | $0F   ; $2703: $3E $4F
+    ld   a, BG_COPY_MODE_ROW_REPEAT | $0F         ; $2703: $3E $4F
     ld   [wRequestLength], a                      ; $2705: $EA $03 $D6
     ldh  a, [hDialogBackgroundTile]               ; $2708: $F0 $E8
     ld   [wRequestLength + 1], a                  ; $270A: $EA $04 $D6

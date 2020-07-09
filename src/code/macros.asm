@@ -97,3 +97,32 @@ jp_open_dialog: macro
         jp   OpenDialog
     endc
 endm
+
+
+; VRAM data macro.
+; Usage:
+;   vram_data VRAM_ADDR, MODE, DATA[, DATA ...]
+;   VRAM_ADDR: destination address
+;   MODE: see BG_COPY_MODE_* constants
+;   DATA: one byte (BG_COPY_MODE_REPEAT) or multiple bytes of data to copy
+vram_data: macro
+    db HIGH(\1), LOW(\1)
+    if (\2 & BG_COPY_MODE_REPEAT)       ; Single tile copy
+        STATIC_ASSERT _NARG == 4, "Repeating VRAM data macro requires 4 arguments"
+        STATIC_ASSERT \3 < $40, "Length for copy must be less than $40 bytes"
+        db \2 | \3, \4
+    else                    ; Multiple tile copy
+        STATIC_ASSERT _NARG >= 3, "VRAM data macro requires at least 3 arguments"
+        STATIC_ASSERT (_NARG - 2) < $40, "Data for copy must be less than $40 bytes"
+        db \2 | (_NARG - 3)
+        SHIFT 2
+        REPT (_NARG)
+            db \1
+            SHIFT
+        ENDR
+    endc
+endm
+
+vram_data_end: macro
+    db   0
+endm
