@@ -1593,7 +1593,15 @@ jr_020_52E8:
 
 ; Unused data
 Data_020_52F8::
-    db   $FF, $7F, $FF, $7F, $FF, $7F, $FF, $7F, $FF, $7F, $FF, $7F, $FF, $7F, $FF, $7F
+    RGB  31, 31, 31    ; $7FFF - #ffffff
+    RGB  31, 31, 31    ; $7FFF - #ffffff
+    RGB  31, 31, 31    ; $7FFF - #ffffff
+    RGB  31, 31, 31    ; $7FFF - #ffffff
+
+    RGB  31, 31, 31    ; $7FFF - #ffffff
+    RGB  31, 31, 31    ; $7FFF - #ffffff
+    RGB  31, 31, 31    ; $7FFF - #ffffff
+    RGB  31, 31, 31    ; $7FFF - #ffffff
 
 ; Fill a palette with white?
 ; (dead code)
