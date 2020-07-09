@@ -386,52 +386,11 @@ data_020_47C3::
     db   $00, $40, $80, $C0, $00, $40, $80, $C0
 
 MapRoomTable_b0::
-    nop                                           ; $47CB: $00
-    nop                                           ; $47CC: $00
-    nop                                           ; $47CD: $00
-    nop                                           ; $47CE: $00
-    nop                                           ; $47CF: $00
-    nop                                           ; $47D0: $00
-    nop                                           ; $47D1: $00
-    nop                                           ; $47D2: $00
-    nop                                           ; $47D3: $00
-    nop                                           ; $47D4: $00
-    nop                                           ; $47D5: $00
-    nop                                           ; $47D6: $00
-    nop                                           ; $47D7: $00
-    nop                                           ; $47D8: $00
-    nop                                           ; $47D9: $00
-    inc  b                                        ; $47DA: $04
-    nop                                           ; $47DB: $00
-    nop                                           ; $47DC: $00
-    nop                                           ; $47DD: $00
-    inc  b                                        ; $47DE: $04
-    nop                                           ; $47DF: $00
-    nop                                           ; $47E0: $00
-
+	db   $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
+	db   $00, $00, $00, $00, $04, $00, $00, $00, $04, $00, $00 
 MapRoomTable_b1::
-    nop                                           ; $47E1: $00
-    nop                                           ; $47E2: $00
-    nop                                           ; $47E3: $00
-    nop                                           ; $47E4: $00
-    nop                                           ; $47E5: $00
-    nop                                           ; $47E6: $00
-    nop                                           ; $47E7: $00
-    nop                                           ; $47E8: $00
-    nop                                           ; $47E9: $00
-    dec  b                                        ; $47EA: $05
-    nop                                           ; $47EB: $00
-    nop                                           ; $47EC: $00
-    nop                                           ; $47ED: $00
-    nop                                           ; $47EE: $00
-    dec  b                                        ; $47EF: $05
-    nop                                           ; $47F0: $00
-    nop                                           ; $47F1: $00
-    nop                                           ; $47F2: $00
-    nop                                           ; $47F3: $00
-    nop                                           ; $47F4: $00
-    nop                                           ; $47F5: $00
-    dec  b                                        ; $47F6: $05
+	db   $00, $00, $00, $00, $00, $00, $00, $00, $00, $05, $00
+	db   $00, $00, $00, $05, $00, $00, $00, $00, $00, $00, $05
 
 ; Configure the parameters for copying the animated tiles.
 ; First called with b=1, then with b=0
