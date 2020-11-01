@@ -7,13 +7,13 @@ ArmosStatueEntityHandler::
     call func_006_64C6                            ; $7454: $CD $C6 $64
     call func_006_64F7                            ; $7457: $CD $F7 $64
     xor  a                                        ; $745A: $AF
-    ldh  [hFFE8], a                               ; $745B: $E0 $E8
+    ldh  [hMultiPurposeG], a                               ; $745B: $E0 $E8
     call label_3B70                               ; $745D: $CD $70 $3B
     call CheckLinkCollisionWithEnemy_trampoline   ; $7460: $CD $5A $3B
     jr   nc, jr_006_7472                          ; $7463: $30 $0D
 
     ld   a, $01                                   ; $7465: $3E $01
-    ldh  [hFFE8], a                               ; $7467: $E0 $E8
+    ldh  [hMultiPurposeG], a                               ; $7467: $E0 $E8
     ldh  a, [hActiveEntityState]                  ; $7469: $F0 $F0
     cp   $02                                      ; $746B: $FE $02
     jr   nc, jr_006_7472                          ; $746D: $30 $03
@@ -21,7 +21,7 @@ ArmosStatueEntityHandler::
     call CopyLinkFinalPositionToPosition          ; $746F: $CD $BE $0C
 
 jr_006_7472:
-    call func_006_6541                            ; $7472: $CD $41 $65
+    call UpdateEntityPosWithSpeed_06              ; $7472: $CD $41 $65
     call label_3B23                               ; $7475: $CD $23 $3B
     ldh  a, [hActiveEntityState]                  ; $7478: $F0 $F0
     JP_TABLE                                      ; $747A
@@ -30,7 +30,7 @@ jr_006_7472:
 ._02 dw ArmosStatueState2Handler
 
 ArmosStatueState0Handler::
-    ldh  a, [hFFE8]
+    ldh  a, [hMultiPurposeG]
     and  a
     jr   z, .return                              ; $7484: $28 $0E
 

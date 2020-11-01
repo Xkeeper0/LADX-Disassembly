@@ -77,11 +77,11 @@ CrowState0Handler::
     ld   hl, wEntitiesPosXTable                   ; $5CFE: $21 $00 $C2
     add  hl, bc                                   ; $5D01: $09
     ld   a, [hl]                                  ; $5D02: $7E
-    ldh  [hScratch0], a                           ; $5D03: $E0 $D7
+    ldh  [hMultiPurpose0], a                           ; $5D03: $E0 $D7
     ld   hl, wEntitiesPosYTable                   ; $5D05: $21 $10 $C2
     add  hl, bc                                   ; $5D08: $09
     ld   a, [hl]                                  ; $5D09: $7E
-    ldh  [hScratch1], a                           ; $5D0A: $E0 $D8
+    ldh  [hMultiPurpose1], a                           ; $5D0A: $E0 $D8
     ld   de, $00                                  ; $5D0C: $11 $00 $00
 
 jr_006_5D0F:
@@ -106,7 +106,7 @@ jr_006_5D0F:
     ld   hl, wEntitiesPosXTable                   ; $5D29: $21 $00 $C2
     add  hl, de                                   ; $5D2C: $19
     ld   l, [hl]                                  ; $5D2D: $6E
-    ldh  a, [hScratch0]                           ; $5D2E: $F0 $D7
+    ldh  a, [hMultiPurpose0]                           ; $5D2E: $F0 $D7
     sub  l                                        ; $5D30: $95
     bit  7, a                                     ; $5D31: $CB $7F
     jr   z, jr_006_5D37                           ; $5D33: $28 $02
@@ -121,7 +121,7 @@ jr_006_5D37:
     ld   hl, wEntitiesPosYTable                   ; $5D3B: $21 $10 $C2
     add  hl, de                                   ; $5D3E: $19
     ld   l, [hl]                                  ; $5D3F: $6E
-    ldh  a, [hScratch1]                           ; $5D40: $F0 $D8
+    ldh  a, [hMultiPurpose1]                           ; $5D40: $F0 $D8
     sub  l                                        ; $5D42: $95
     bit  7, a                                     ; $5D43: $CB $7F
     jr   z, jr_006_5D49                           ; $5D45: $28 $02
@@ -141,7 +141,7 @@ jr_006_5D4F:
     and  $0F                                      ; $5D51: $E6 $0F
     jr   nz, jr_006_5D0F                          ; $5D53: $20 $BA
 
-    ld   a, [$C50C]                               ; $5D55: $FA $0C $C5
+    ld   a, [wC50C]                               ; $5D55: $FA $0C $C5
     ld   e, a                                     ; $5D58: $5F
     ld   d, b                                     ; $5D59: $50
     ld   hl, wEntitiesStatusTable                 ; $5D5A: $21 $80 $C2
@@ -215,7 +215,7 @@ jr_006_5DBA:
     ld   hl, wEntitiesSpeedZTable                 ; $5DBD: $21 $20 $C3
     add  hl, bc                                   ; $5DC0: $09
     ld   [hl], $08                                ; $5DC1: $36 $08
-    call func_006_657A                            ; $5DC3: $CD $7A $65
+    call AddEntityZSpeedToPos_06                  ; $5DC3: $CD $7A $65
     jr   jr_006_5E08                              ; $5DC6: $18 $40
 
 CrowState2Handler::
@@ -228,7 +228,7 @@ CrowState2Handler::
 
     ld   a, $20                                   ; $5DD5: $3E $20
     call GetVectorTowardsLink_trampoline          ; $5DD7: $CD $B5 $3B
-    ldh  a, [hScratch0]                           ; $5DDA: $F0 $D7
+    ldh  a, [hMultiPurpose0]                           ; $5DDA: $F0 $D7
     ld   hl, wEntitiesSpeedYTable                 ; $5DDC: $21 $50 $C2
     add  hl, bc                                   ; $5DDF: $09
     sub  [hl]                                     ; $5DE0: $96
@@ -240,7 +240,7 @@ CrowState2Handler::
 
 jr_006_5DE7:
     dec  [hl]                                     ; $5DE7: $35
-    ldh  a, [hScratch1]                           ; $5DE8: $F0 $D8
+    ldh  a, [hMultiPurpose1]                           ; $5DE8: $F0 $D8
     ld   hl, wEntitiesSpeedXTable                 ; $5DEA: $21 $40 $C2
     add  hl, bc                                   ; $5DED: $09
     sub  [hl]                                     ; $5DEE: $96
@@ -261,7 +261,7 @@ jr_006_5DF5:
     ld   [hl], a                                  ; $5E01: $77
 
 func_006_5E02::
-    call func_006_6541                            ; $5E02: $CD $41 $65
+    call UpdateEntityPosWithSpeed_06              ; $5E02: $CD $41 $65
     call func_006_5E14                            ; $5E05: $CD $14 $5E
 
 jr_006_5E08:
@@ -284,7 +284,7 @@ CrowState3Handler::
 
     ld   a, $20                                   ; $5E20: $3E $20
     call GetVectorTowardsLink_trampoline          ; $5E22: $CD $B5 $3B
-    ldh  a, [hScratch0]                           ; $5E25: $F0 $D7
+    ldh  a, [hMultiPurpose0]                           ; $5E25: $F0 $D7
     cpl                                           ; $5E27: $2F
     inc  a                                        ; $5E28: $3C
     ld   hl, wEntitiesSpeedYTable                 ; $5E29: $21 $50 $C2
@@ -298,7 +298,7 @@ CrowState3Handler::
 
 jr_006_5E34:
     dec  [hl]                                     ; $5E34: $35
-    ldh  a, [hScratch1]                           ; $5E35: $F0 $D8
+    ldh  a, [hMultiPurpose1]                           ; $5E35: $F0 $D8
     cpl                                           ; $5E37: $2F
     inc  a                                        ; $5E38: $3C
     ld   hl, wEntitiesSpeedXTable                 ; $5E39: $21 $40 $C2

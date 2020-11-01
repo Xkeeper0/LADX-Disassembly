@@ -32,14 +32,14 @@ SERIAL   EQU 3
 JOYPAD   EQU 4
 
 ; Joypad buttons mask
-J_RIGHT  EQU 1 << 0             ;  1
-J_LEFT   EQU 1 << 1             ;  2
-J_UP     EQU 1 << 2             ;  4
-J_DOWN   EQU 1 << 3             ;  8
-J_A      EQU 1 << 4             ; 10
-J_B      EQU 1 << 5             ; 20
-J_SELECT EQU 1 << 6             ; 40
-J_START  EQU 1 << 7             ; 80
+J_RIGHT  EQU 1 << 0     ;  1
+J_LEFT   EQU 1 << 1     ;  2
+J_UP     EQU 1 << 2     ;  4
+J_DOWN   EQU 1 << 3     ;  8
+J_A      EQU 1 << 4     ; 10
+J_B      EQU 1 << 5     ; 20
+J_SELECT EQU 1 << 6     ; 40
+J_START  EQU 1 << 7     ; 80
 
 ; Joypad button bits
 J_BIT_RIGHT  EQU 0
@@ -55,6 +55,7 @@ J_BIT_START  EQU 7
 OAMF_PRI        EQU %10000000 ; Priority
 OAMF_YFLIP      EQU %01000000 ; Y flip
 OAMF_XFLIP      EQU %00100000 ; X flip
+OAMF_NO_FLIP    EQU %00000000 ; no flip
 OAMF_PAL0       EQU %00000000 ; Palette number; 0,1 (DMG)
 OAMF_PAL1       EQU %00010000 ; Palette number; 0,1 (DMG)
 OAMF_BANK0      EQU %00000000 ; Bank number; 0,1 (GBC)
@@ -140,3 +141,19 @@ rPCM12      EQU $ff76 ; (00h) - Always 00h (Read Only)
 rPCM34      EQU $ff77 ; (00h) - Always 00h (Read Only)
 rIE         EQU $ffff ; Interrupt Enable (R/W)
 
+; display widht in pixel
+DISPLAY_WIDTH       equ 160
+; display height in pixel
+DISPLAY_HEIGHT      equ 144
+; pixel widht of one tile
+TILE_WIDTH          equ 8
+; pixel height of one tile
+TILE_HEIGHT         equ 8
+; number of tiles in one row
+TILES_PER_ROW       equ DISPLAY_WIDTH/(TILE_WIDTH*2)
+; number of tiles in one column
+TILES_PER_COLUMN   equ DISPLAY_HEIGHT/(TILE_HEIGHT*2)
+; number of tiles per map
+TILES_PER_MAP       equ $80
+; Size of a single tile in bytes
+TILE_SIZE           equ $10

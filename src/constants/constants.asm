@@ -1,5 +1,5 @@
 ;
-; Useful defintions
+; Useful definitions
 ;
 include "constants/defines.asm"
 
@@ -20,6 +20,8 @@ include "constants/sfx.asm"
 include "constants/super_gameboy.asm"
 include "constants/tilesets.asm"
 include "constants/vfx.asm"
+include "constants/physics.asm"
+include "constants/room_ids.asm"
 
 ;
 ; Character maps for strings

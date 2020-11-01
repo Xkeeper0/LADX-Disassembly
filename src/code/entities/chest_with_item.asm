@@ -59,8 +59,10 @@ Data_007_7BBB::
 ChestWithItemEntityHandler::
     ld   a, $02                                   ; $7BDD: $3E $02
     ldh  [hLinkInteractiveMotionBlocked], a       ; $7BDF: $E0 $A1
+    ; wSwordAnimationState = SWORD_ANIMATION_STATE_NONE
     xor  a                                        ; $7BE1: $AF
     ld   [wSwordAnimationState], a                ; $7BE2: $EA $37 $C1
+    ; wC16A = 0
     ld   [wC16A], a                               ; $7BE5: $EA $6A $C1
     ldh  a, [hActiveEntitySpriteVariant]          ; $7BE8: $F0 $F1
     cp   CHEST_GEL                                ; $7BEA: $FE $22
@@ -70,11 +72,11 @@ ChestWithItemEntityHandler::
     call SpawnNewEntity_trampoline                ; $7BF0: $CD $86 $3B
     jp   c, func_007_7EA4                         ; $7BF3: $DA $A4 $7E
 
-    ldh  a, [hScratch0]                           ; $7BF6: $F0 $D7
+    ldh  a, [hMultiPurpose0]                           ; $7BF6: $F0 $D7
     ld   hl, wEntitiesPosXTable                         ; $7BF8: $21 $00 $C2
     add  hl, de                                   ; $7BFB: $19
     ld   [hl], a                                  ; $7BFC: $77
-    ldh  a, [hScratch1]                           ; $7BFD: $F0 $D8
+    ldh  a, [hMultiPurpose1]                           ; $7BFD: $F0 $D8
     ld   hl, wEntitiesPosYTable                         ; $7BFF: $21 $10 $C2
     add  hl, de                                   ; $7C02: $19
     ld   [hl], a                                  ; $7C03: $77
@@ -145,7 +147,7 @@ jr_007_7C5E:
     and  a                                        ; $7C61: $A7
     ret  nz                                       ; $7C62: $C0
 
-    call func_007_7E0A                            ; $7C63: $CD $0A $7E
+    call UpdateEntityPosWithSpeed_07              ; $7C63: $CD $0A $7E
     ld   hl, wEntitiesUnknowTableY                ; $7C66: $21 $D0 $C3
     add  hl, bc                                   ; $7C69: $09
     ld   a, [hl]                                  ; $7C6A: $7E

@@ -42,7 +42,7 @@ ButterflyEntityHandler::
     rra                                           ; $6BED: $1F
     and  $01                                      ; $6BEE: $E6 $01
     call SetEntitySpriteVariant                   ; $6BF0: $CD $0C $3B
-    call func_006_6541                            ; $6BF3: $CD $41 $65
+    call UpdateEntityPosWithSpeed_06              ; $6BF3: $CD $41 $65
 
     ; If [hActiveEntityState] & $1F == 0…
     ldh  a, [hActiveEntityState]                  ; $6BF6: $F0 $F0
@@ -98,7 +98,7 @@ ButterflyEntityHandler::
     push af                                       ; $6C38: $F5
     ldh  a, [hLinkPositionY]                      ; $6C39: $F0 $99
     push af                                       ; $6C3B: $F5
-    ld   a, [$C50F]                               ; $6C3C: $FA $0F $C5
+    ld   a, [wC50F]                               ; $6C3C: $FA $0F $C5
     cp   $FF                                      ; $6C3F: $FE $FF
     jr   z, .C50FEnd                              ; $6C41: $28 $10
 
@@ -121,13 +121,13 @@ ButterflyEntityHandler::
     ldh  [hLinkPositionY], a                      ; $6C59: $E0 $99
     pop  af                                       ; $6C5B: $F1
     ldh  [hLinkPositionX], a                      ; $6C5C: $E0 $98
-    ; wEntitiesPrivateState2Table[c] = [hScratch0]
-    ldh  a, [hScratch0]                           ; $6C5E: $F0 $D7
+    ; wEntitiesPrivateState2Table[c] = [hMultiPurpose0]
+    ldh  a, [hMultiPurpose0]                           ; $6C5E: $F0 $D7
     ld   hl, wEntitiesPrivateState2Table          ; $6C60: $21 $C0 $C2
     add  hl, bc                                   ; $6C63: $09
     ld   [hl], a                                  ; $6C64: $77
-    ; wEntitiesPrivateState1Table[c] = [hScratch1]
-    ldh  a, [hScratch1]                           ; $6C65: $F0 $D8
+    ; wEntitiesPrivateState1Table[c] = [hMultiPurpose1]
+    ldh  a, [hMultiPurpose1]                           ; $6C65: $F0 $D8
     ld   hl, wEntitiesPrivateState1Table          ; $6C67: $21 $B0 $C2
     add  hl, bc                                   ; $6C6A: $09
     ld   [hl], a                                  ; $6C6B: $77

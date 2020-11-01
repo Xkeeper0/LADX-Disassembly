@@ -44,7 +44,7 @@ jr_006_7266:
     and  a                                        ; $726F: $A7
     jp   z, label_006_7372                        ; $7270: $CA $72 $73
 
-    call func_006_657A                            ; $7273: $CD $7A $65
+    call AddEntityZSpeedToPos_06                  ; $7273: $CD $7A $65
     ld   hl, wEntitiesSpeedZTable                 ; $7276: $21 $20 $C3
     add  hl, bc                                   ; $7279: $09
     dec  [hl]                                     ; $727A: $35
@@ -52,7 +52,7 @@ jr_006_7266:
     add  hl, bc                                   ; $727E: $09
     ld   a, [hl]                                  ; $727F: $7E
     and  $80                                      ; $7280: $E6 $80
-    ldh  [hFFE8], a                               ; $7282: $E0 $E8
+    ldh  [hMultiPurposeG], a                               ; $7282: $E0 $E8
     jr   z, jr_006_728C                           ; $7284: $28 $06
 
     ld   [hl], b                                  ; $7286: $70
@@ -115,9 +115,9 @@ jr_006_72E0:
 
 MrWriteBirdState1Handler::
     call func_006_7335                            ; $72E3: $CD $35 $73
-    call func_006_6541                            ; $72E6: $CD $41 $65
+    call UpdateEntityPosWithSpeed_06              ; $72E6: $CD $41 $65
     call label_3B23                               ; $72E9: $CD $23 $3B
-    ldh  a, [hFFE8]                               ; $72EC: $F0 $E8
+    ldh  a, [hMultiPurposeG]                               ; $72EC: $F0 $E8
     and  a                                        ; $72EE: $A7
     jr   z, label_006_7308                        ; $72EF: $28 $17
 
@@ -146,7 +146,7 @@ label_006_7308:
     jp   SetEntitySpriteVariant                   ; $730F: $C3 $0C $3B
 
 MrWriteBirdState2Handler::
-    call func_006_6541                            ; $7312: $CD $41 $65
+    call UpdateEntityPosWithSpeed_06              ; $7312: $CD $41 $65
     call label_3B23                               ; $7315: $CD $23 $3B
     ldh  a, [hFrameCounter]                       ; $7318: $F0 $E7
     and  $01                                      ; $731A: $E6 $01
@@ -157,7 +157,7 @@ MrWriteBirdState2Handler::
     inc  [hl]                                     ; $7322: $34
 
 jr_006_7323:
-    ldh  a, [hFFE8]                               ; $7323: $F0 $E8
+    ldh  a, [hMultiPurposeG]                               ; $7323: $F0 $E8
     and  a                                        ; $7325: $A7
     jr   z, jr_006_732C                           ; $7326: $28 $04
 
@@ -173,7 +173,7 @@ jr_006_732C:
 
 func_006_7335::
     ld   a, [wSwordAnimationState]                ; $7335: $FA $37 $C1
-    cp   $02                                      ; $7338: $FE $02
+    cp   SWORD_ANIMATION_STATE_SWING_START        ; $7338: $FE $02
     jr   nz, jr_006_7371                          ; $733A: $20 $35
 
     call func_006_6594                            ; $733C: $CD $94 $65
@@ -190,13 +190,13 @@ func_006_7335::
     ld   [hl], $02                                ; $7351: $36 $02
     ld   a, $10                                   ; $7353: $3E $10
     call GetVectorTowardsLink_trampoline          ; $7355: $CD $B5 $3B
-    ldh  a, [hScratch0]                           ; $7358: $F0 $D7
+    ldh  a, [hMultiPurpose0]                           ; $7358: $F0 $D7
     cpl                                           ; $735A: $2F
     inc  a                                        ; $735B: $3C
     ld   hl, wEntitiesSpeedYTable                 ; $735C: $21 $50 $C2
     add  hl, bc                                   ; $735F: $09
     ld   [hl], a                                  ; $7360: $77
-    ldh  a, [hScratch1]                           ; $7361: $F0 $D8
+    ldh  a, [hMultiPurpose1]                           ; $7361: $F0 $D8
     cpl                                           ; $7363: $2F
     inc  a                                        ; $7364: $3C
     ld   hl, wEntitiesSpeedXTable                 ; $7365: $21 $40 $C2

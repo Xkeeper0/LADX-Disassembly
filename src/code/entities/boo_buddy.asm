@@ -7,7 +7,7 @@ BooBuddyEntityHandler::
     call RenderActiveEntitySpritesPair            ; $79AC: $CD $C0 $3B
     call func_006_64C6                            ; $79AF: $CD $C6 $64
     call func_006_64F7                            ; $79B2: $CD $F7 $64
-    call func_006_6541                            ; $79B5: $CD $41 $65
+    call UpdateEntityPosWithSpeed_06              ; $79B5: $CD $41 $65
     call func_006_5E54                            ; $79B8: $CD $54 $5E
     ldh  a, [hActiveEntityState]                  ; $79BB: $F0 $F0
     JP_TABLE                                      ; $79BD
@@ -15,7 +15,7 @@ BooBuddyEntityHandler::
 ._01 dw BooBuddyState1Handler
 
 BooBuddyState0Handler::
-    ld   a, [$C1A2]                               ; $79C2: $FA $A2 $C1
+    ld   a, [wC1A2]                               ; $79C2: $FA $A2 $C1
     and  a                                        ; $79C5: $A7
     jp   nz, label_006_7A38                       ; $79C6: $C2 $38 $7A
 
@@ -24,9 +24,9 @@ BooBuddyState0Handler::
 
     call GetEntityPrivateCountdown1               ; $79CE: $CD $00 $0C
     jr   nz, jr_006_7A21                          ; $79D1: $20 $4E
-
+    ; if in swing middle animation state jump to jr_006_79FA
     ld   a, [wSwordAnimationState]                ; $79D3: $FA $37 $C1
-    cp   $03                                      ; $79D6: $FE $03
+    cp   SWORD_ANIMATION_STATE_SWING_MIDDLE       ; $79D6: $FE $03
     jr   z, jr_006_79FA                           ; $79D8: $28 $20
 
     call GetRandomByte                            ; $79DA: $CD $0D $28
@@ -34,10 +34,10 @@ BooBuddyState0Handler::
     and  $07                                      ; $79DE: $E6 $07
     add  $06                                      ; $79E0: $C6 $06
     call GetVectorTowardsLink_trampoline          ; $79E2: $CD $B5 $3B
-    ldh  a, [hScratch0]                           ; $79E5: $F0 $D7
+    ldh  a, [hMultiPurpose0]                           ; $79E5: $F0 $D7
     ld   hl, wEntitiesSpeedYTable                 ; $79E7: $21 $50 $C2
     call func_006_7A79                            ; $79EA: $CD $79 $7A
-    ldh  a, [hScratch1]                           ; $79ED: $F0 $D8
+    ldh  a, [hMultiPurpose1]                           ; $79ED: $F0 $D8
     ld   hl, wEntitiesSpeedXTable                 ; $79EF: $21 $40 $C2
 
 jr_006_79F2:
@@ -94,7 +94,7 @@ label_006_7A38:
     ret                                           ; $7A3D: $C9
 
 BooBuddyState1Handler::
-    ld   a, [$C1A2]                               ; $7A3E: $FA $A2 $C1
+    ld   a, [wC1A2]                               ; $7A3E: $FA $A2 $C1
     and  a                                        ; $7A41: $A7
     jr   z, jr_006_7A74                           ; $7A42: $28 $30
 
@@ -104,13 +104,13 @@ BooBuddyState1Handler::
     call label_3B39                               ; $7A4A: $CD $39 $3B
     ld   a, $04                                   ; $7A4D: $3E $04
     call GetVectorTowardsLink_trampoline          ; $7A4F: $CD $B5 $3B
-    ldh  a, [hScratch0]                           ; $7A52: $F0 $D7
+    ldh  a, [hMultiPurpose0]                           ; $7A52: $F0 $D7
     cpl                                           ; $7A54: $2F
     inc  a                                        ; $7A55: $3C
     ld   hl, wEntitiesSpeedYTable                 ; $7A56: $21 $50 $C2
     add  hl, bc                                   ; $7A59: $09
     ld   [hl], a                                  ; $7A5A: $77
-    ldh  a, [hScratch1]                           ; $7A5B: $F0 $D8
+    ldh  a, [hMultiPurpose1]                           ; $7A5B: $F0 $D8
     cpl                                           ; $7A5D: $2F
     inc  a                                        ; $7A5E: $3C
     ld   hl, wEntitiesSpeedXTable                 ; $7A5F: $21 $40 $C2

@@ -44,7 +44,7 @@ jr_005_4557:
     cp   $03                                      ; $4562: $FE $03
     jr   z, jr_005_4580                           ; $4564: $28 $1A
 
-    call func_005_7AEA                            ; $4566: $CD $EA $7A
+    call AddEntityZSpeedToPos_05                  ; $4566: $CD $EA $7A
     ld   hl, wEntitiesSpeedZTable                 ; $4569: $21 $20 $C3
     add  hl, bc                                   ; $456C: $09
     dec  [hl]                                     ; $456D: $35
@@ -52,7 +52,7 @@ jr_005_4557:
     add  hl, bc                                   ; $4571: $09
     ld   a, [hl]                                  ; $4572: $7E
     and  $80                                      ; $4573: $E6 $80
-    ldh  [hFFE8], a                               ; $4575: $E0 $E8
+    ldh  [hMultiPurposeG], a                               ; $4575: $E0 $E8
     jr   z, jr_005_4580                           ; $4577: $28 $07
 
     xor  a                                        ; $4579: $AF
@@ -113,36 +113,36 @@ jr_005_45BF:
     cp   $03                                      ; $45C6: $FE $03
     jr   z, jr_005_4611                           ; $45C8: $28 $47
 
-    ld   a, [$C19B]                               ; $45CA: $FA $9B $C1
+    ld   a, [wC19B]                               ; $45CA: $FA $9B $C1
     and  a                                        ; $45CD: $A7
     jr   nz, jr_005_4611                          ; $45CE: $20 $41
 
     ld   a, [wBButtonSlot]                        ; $45D0: $FA $00 $DB
-    cp   $03                                      ; $45D3: $FE $03
+    cp   INVENTORY_POWER_BRACELET                 ; $45D3: $FE $03
     jr   nz, jr_005_45DF                          ; $45D5: $20 $08
 
     ldh  a, [hJoypadState]                        ; $45D7: $F0 $CC
-    and  $20                                      ; $45D9: $E6 $20
+    and  J_B                                      ; $45D9: $E6 $20
     jr   nz, jr_005_45EC                          ; $45DB: $20 $0F
 
     jr   jr_005_4611                              ; $45DD: $18 $32
 
 jr_005_45DF:
     ld   a, [wAButtonSlot]                        ; $45DF: $FA $01 $DB
-    cp   $03                                      ; $45E2: $FE $03
+    cp   INVENTORY_POWER_BRACELET                 ; $45E2: $FE $03
     jr   nz, jr_005_4611                          ; $45E4: $20 $2B
 
     ldh  a, [hJoypadState]                        ; $45E6: $F0 $CC
-    and  $10                                      ; $45E8: $E6 $10
+    and  J_A                                      ; $45E8: $E6 $10
     jr   z, jr_005_4611                           ; $45EA: $28 $25
 
 jr_005_45EC:
-    ld   a, [$C3CF]                               ; $45EC: $FA $CF $C3
+    ld   a, [wC3CF]                               ; $45EC: $FA $CF $C3
     and  a                                        ; $45EF: $A7
     jr   nz, jr_005_4611                          ; $45F0: $20 $1F
 
     inc  a                                        ; $45F2: $3C
-    ld   [$C3CF], a                               ; $45F3: $EA $CF $C3
+    ld   [wC3CF], a                               ; $45F3: $EA $CF $C3
     ld   hl, wEntitiesStatusTable                 ; $45F6: $21 $80 $C2
     add  hl, bc                                   ; $45F9: $09
     ld   [hl], $07                                ; $45FA: $36 $07
@@ -206,9 +206,9 @@ func_005_4624::
     jp   IncrementEntityState                     ; $4660: $C3 $12 $3B
 
 func_005_4663::
-    call func_005_7AB1                            ; $4663: $CD $B1 $7A
+    call UpdateEntityPosWithSpeed_05              ; $4663: $CD $B1 $7A
     call label_3B23                               ; $4666: $CD $23 $3B
-    ldh  a, [hFFE8]                               ; $4669: $F0 $E8
+    ldh  a, [hMultiPurposeG]                               ; $4669: $F0 $E8
     and  a                                        ; $466B: $A7
     jr   z, jr_005_4685                           ; $466C: $28 $17
 
@@ -253,13 +253,13 @@ func_005_46AF::
 
     ld   a, $0C                                   ; $46BB: $3E $0C
     call GetVectorTowardsLink_trampoline          ; $46BD: $CD $B5 $3B
-    ldh  a, [hScratch0]                           ; $46C0: $F0 $D7
+    ldh  a, [hMultiPurpose0]                           ; $46C0: $F0 $D7
     cpl                                           ; $46C2: $2F
     inc  a                                        ; $46C3: $3C
     ld   hl, wEntitiesSpeedYTable                 ; $46C4: $21 $50 $C2
     add  hl, bc                                   ; $46C7: $09
     ld   [hl], a                                  ; $46C8: $77
-    ldh  a, [hScratch1]                           ; $46C9: $F0 $D8
+    ldh  a, [hMultiPurpose1]                           ; $46C9: $F0 $D8
     cpl                                           ; $46CB: $2F
     inc  a                                        ; $46CC: $3C
 
@@ -269,7 +269,7 @@ jr_005_46CD:
     ld   [hl], a                                  ; $46D1: $77
 
 jr_005_46D2:
-    call func_005_7AB1                            ; $46D2: $CD $B1 $7A
+    call UpdateEntityPosWithSpeed_05              ; $46D2: $CD $B1 $7A
     call label_3B23                               ; $46D5: $CD $23 $3B
     ldh  a, [hFrameCounter]                       ; $46D8: $F0 $E7
     rra                                           ; $46DA: $1F
@@ -345,7 +345,7 @@ jr_005_474D:
 
 func_005_474E::
     call label_3B44                               ; $474E: $CD $44 $3B
-    call func_005_7AB1                            ; $4751: $CD $B1 $7A
+    call UpdateEntityPosWithSpeed_05              ; $4751: $CD $B1 $7A
     ldh  a, [hActiveEntityPosX]                   ; $4754: $F0 $EE
     cp   $A9                                      ; $4756: $FE $A9
     jp   nc, func_005_7B4B                        ; $4758: $D2 $4B $7B

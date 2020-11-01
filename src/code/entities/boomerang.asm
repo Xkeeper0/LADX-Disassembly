@@ -24,11 +24,11 @@ BoomerangEntityHandler::
 
 jr_019_4481:
     ld   a, $08                                   ; $4481: $3E $08
-    ld   [$C19E], a                               ; $4483: $EA $9E $C1
+    ld   [wC19E], a                               ; $4483: $EA $9E $C1
     call label_3B7B                               ; $4486: $CD $7B $3B
 
 jr_019_4489:
-    call func_019_7DB8                            ; $4489: $CD $B8 $7D
+    call UpdateEntityPosWithSpeed_19              ; $4489: $CD $B8 $7D
     call label_3B2E                               ; $448C: $CD $2E $3B
     call func_019_44CC                            ; $448F: $CD $CC $44
     ldh  a, [hActiveEntityState]                  ; $4492: $F0 $F0
@@ -97,10 +97,10 @@ jr_019_44DA:
     call func_014_5526_trampoline                 ; $44E3: $CD $78 $21
     ldh  a, [hSwordIntersectedAreaX]              ; $44E6: $F0 $CE
     add  $08                                      ; $44E8: $C6 $08
-    ldh  [hScratch0], a                           ; $44EA: $E0 $D7
+    ldh  [hMultiPurpose0], a                           ; $44EA: $E0 $D7
     ldh  a, [hSwordIntersectedAreaY]              ; $44EC: $F0 $CD
     add  $10                                      ; $44EE: $C6 $10
-    ldh  [hScratch1], a                           ; $44F0: $E0 $D8
+    ldh  [hMultiPurpose1], a                           ; $44F0: $E0 $D8
     ld   a, TRANSCIENT_VFX_SMOKE                  ; $44F2: $3E $08
     call AddTranscientVfx                         ; $44F4: $CD $C7 $0C
     ld   a, $13                                   ; $44F7: $3E $13

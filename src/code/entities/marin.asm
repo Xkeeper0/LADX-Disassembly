@@ -86,7 +86,7 @@ jr_005_4E96:
 
 jr_005_4ED1:
     call func_005_54EA                            ; $4ED1: $CD $EA $54
-    ld   a, [$C3C8]                               ; $4ED4: $FA $C8 $C3
+    ld   a, [wC3C8]                               ; $4ED4: $FA $C8 $C3
     cp   $01                                      ; $4ED7: $FE $01
     jr   nz, jr_005_4F39                          ; $4ED9: $20 $5E
 
@@ -115,7 +115,7 @@ MarinCreditsHandler:
     call SpawnNewEntity_trampoline                ; $4EFB: $CD $86 $3B
     jr   c, jr_005_4F39                           ; $4EFE: $38 $39
 
-    ldh  a, [hScratch1]                           ; $4F00: $F0 $D8
+    ldh  a, [hMultiPurpose1]                           ; $4F00: $F0 $D8
     ld   hl, wEntitiesPosYTable                   ; $4F02: $21 $10 $C2
     add  hl, de                                   ; $4F05: $19
     sub  $08                                      ; $4F06: $D6 $08
@@ -132,7 +132,7 @@ MarinCreditsHandler:
     ld   c, a                                     ; $4F15: $4F
     ld   hl, Data_005_4E5E                        ; $4F16: $21 $5E $4E
     add  hl, bc                                   ; $4F19: $09
-    ldh  a, [hScratch0]                           ; $4F1A: $F0 $D7
+    ldh  a, [hMultiPurpose0]                           ; $4F1A: $F0 $D7
     add  [hl]                                     ; $4F1C: $86
     ld   hl, wEntitiesPosXTable                   ; $4F1D: $21 $00 $C2
     add  hl, de                                   ; $4F20: $19
@@ -153,7 +153,7 @@ MarinCreditsHandler:
 
 jr_005_4F39:
     ld   a, c                                     ; $4F39: $79
-    ld   [$C50F], a                               ; $4F3A: $EA $0F $C5
+    ld   [wC50F], a                               ; $4F3A: $EA $0F $C5
     ld   de, Data_005_4E2A                        ; $4F3D: $11 $2A $4E
     call RenderActiveEntitySpritesPair            ; $4F40: $CD $C0 $3B
     call func_005_54C3                            ; $4F43: $CD $C3 $54
@@ -182,7 +182,7 @@ func_005_4F64::
     cp   $C0                                      ; $4F66: $FE $C0
     jr   nc, jr_005_4F6F                          ; $4F68: $30 $05
 
-    ld   a, [$C3C8]                               ; $4F6A: $FA $C8 $C3
+    ld   a, [wC3C8]                               ; $4F6A: $FA $C8 $C3
     and  a                                        ; $4F6D: $A7
     ret  nz                                       ; $4F6E: $C0
 
@@ -190,11 +190,11 @@ jr_005_4F6F:
     call func_005_5506                            ; $4F6F: $CD $06 $55
     ret  nc                                       ; $4F72: $D0
 
-    ld   a, [wOverworldRoomStatus + $08]                               ; $4F73: $FA $08 $D8
+    ld   a, [wOverworldRoomStatus + $08]          ; $4F73: $FA $08 $D8
     and  $10                                      ; $4F76: $E6 $10
     jr   z, jr_005_4FA7                           ; $4F78: $28 $2D
 
-    ld   hl, wOverworldRoomStatus + $92                                ; $4F7A: $21 $92 $D8
+    ld   hl, wOverworldRoomStatus + $92           ; $4F7A: $21 $92 $D8
     ld   a, [hl]                                  ; $4F7D: $7E
     and  $40                                      ; $4F7E: $E6 $40
     jr   nz, jr_005_4F89                          ; $4F80: $20 $07
@@ -205,7 +205,7 @@ jr_005_4F6F:
 
 jr_005_4F89:
     ld   a, [wOcarinaSongFlags]                   ; $4F89: $FA $49 $DB
-    and  $04                                      ; $4F8C: $E6 $04
+    and  BALLAD_OF_THE_WIND_FISH_FLAG             ; $4F8C: $E6 $04
     jr   z, jr_005_4F95                           ; $4F8E: $28 $05
 
 jr_005_4F90:
@@ -213,12 +213,12 @@ jr_005_4F90:
     jp   OpenDialogInTable1                       ; $4F92: $C3 $73 $23
 
 jr_005_4F95:
-    ld   e, $0B                                   ; $4F95: $1E $0B
+    ld   e, INVENTORY_SLOT_COUNT -1               ; $4F95: $1E $0B
     ld   hl, wBButtonSlot                         ; $4F97: $21 $00 $DB
 
 jr_005_4F9A:
     ld   a, [hl+]                                 ; $4F9A: $2A
-    cp   $09                                      ; $4F9B: $FE $09
+    cp   INVENTORY_OCARINA                        ; $4F9B: $FE $09
     jr   z, jr_005_4FA7                           ; $4F9D: $28 $08
 
     dec  e                                        ; $4F9F: $1D
@@ -258,18 +258,18 @@ jr_005_4FAC:
 
 jr_005_4FD0:
     push bc                                       ; $4FD0: $C5
-    ld   c, $0B                                   ; $4FD1: $0E $0B
+    ld   c, INVENTORY_SLOT_COUNT -1               ; $4FD1: $0E $0B
     ld   hl, wBButtonSlot                         ; $4FD3: $21 $00 $DB
 
 jr_005_4FD6:
     ld   a, [hl+]                                 ; $4FD6: $2A
-    cp   $09                                      ; $4FD7: $FE $09
+    cp   INVENTORY_OCARINA                        ; $4FD7: $FE $09
     jr   nz, jr_005_4FF4                          ; $4FD9: $20 $19
 
     ld   e, $04                                   ; $4FDB: $1E $04
     ld   d, $4A                                   ; $4FDD: $16 $4A
     ld   a, [wOcarinaSongFlags]                   ; $4FDF: $FA $49 $DB
-    and  $04                                      ; $4FE2: $E6 $04
+    and  BALLAD_OF_THE_WIND_FISH_FLAG             ; $4FE2: $E6 $04
     jr   z, jr_005_4FFA                           ; $4FE4: $28 $14
 
     ld   e, $05                                   ; $4FE6: $1E $05
@@ -334,8 +334,8 @@ func_005_5020::
     inc  [hl]                                     ; $5031: $34
     ld   [wMusicTrackToPlay], a                   ; $5032: $EA $68 $D3
     ldh  [hDefaultMusicTrack], a                  ; $5035: $E0 $B0
-    ldh  [$FFBD], a                               ; $5037: $E0 $BD
-    ld   hl, $C3C8                                ; $5039: $21 $C8 $C3
+    ldh  [hFFBD], a                               ; $5037: $E0 $BD
+    ld   hl, wC3C8                                ; $5039: $21 $C8 $C3
     ld   [hl], $01                                ; $503C: $36 $01
 
 jr_005_503E:
@@ -343,7 +343,7 @@ jr_005_503E:
     jr   nz, jr_005_5054                          ; $5040: $20 $12
 
     ld   a, [wOcarinaSongFlags]                   ; $5042: $FA $49 $DB
-    and  $04                                      ; $5045: $E6 $04
+    and  BALLAD_OF_THE_WIND_FISH_FLAG             ; $5045: $E6 $04
     jr   nz, jr_005_5054                          ; $5047: $20 $0B
 
     call IncrementEntityState                     ; $5049: $CD $12 $3B
@@ -407,11 +407,11 @@ jr_005_508A:
     jr   c, jr_005_50B7                           ; $50B0: $38 $05
 
     xor  a                                        ; $50B2: $AF
-    ld   [$C3C8], a                               ; $50B3: $EA $C8 $C3
+    ld   [wC3C8], a                               ; $50B3: $EA $C8 $C3
     ret                                           ; $50B6: $C9
 
 jr_005_50B7:
-    ld   hl, $C3C8                                ; $50B7: $21 $C8 $C3
+    ld   hl, wC3C8                                ; $50B7: $21 $C8 $C3
     ld   [hl], $01                                ; $50BA: $36 $01
     ld   a, e                                     ; $50BC: $7B
     srl  d                                        ; $50BD: $CB $3A
@@ -434,13 +434,12 @@ jr_005_50D2:
     cp   $1D                                      ; $50D2: $FE $1D
     ret  c                                        ; $50D4: $D8
 
-    ld   a, $00                                   ; $50D5: $3E $00
+    ld   a, LINK_ANIMATION_STATE_STANDING_DOWN    ; $50D5: $3E $00
     ldh  [hLinkAnimationState], a                 ; $50D7: $E0 $9D
     ldh  a, [hFrameCounter]                       ; $50D9: $F0 $E7
-    ld   e, $75                                   ; $50DB: $1E $75
+    ld   e, LINK_ANIMATION_STATE_UNKNOWN_75       ; $50DB: $1E $75
     and  $40                                      ; $50DD: $E6 $40
     jr   z, jr_005_50E2                           ; $50DF: $28 $01
-
     inc  e                                        ; $50E1: $1C
 
 jr_005_50E2:
@@ -504,7 +503,7 @@ func_005_512B::
     jr   nz, jr_005_514F                          ; $5138: $20 $15
 
     ld   a, $01                                   ; $513A: $3E $01
-    ld   [$DE00], a                               ; $513C: $EA $00 $DE
+    ld   [wDE00], a                               ; $513C: $EA $00 $DE
     ld   a, MUSIC_TOOL_ACQUIRED                   ; $513F: $3E $10
     ld   [wMusicTrackToPlay], a                   ; $5141: $EA $68 $D3
     ld   a, $05                                   ; $5144: $3E $05
@@ -530,7 +529,7 @@ Data_005_515F::
 
 func_005_5161::
     ld   a, $01                                   ; $5161: $3E $01
-    ld   [$DE00], a                               ; $5163: $EA $00 $DE
+    ld   [wDE00], a                               ; $5163: $EA $00 $DE
     call GetEntityTransitionCountdown             ; $5166: $CD $05 $0C
     jr   nz, jr_005_5197                          ; $5169: $20 $2C
 
@@ -539,7 +538,7 @@ func_005_5161::
     ret  nz                                       ; $516F: $C0
 
     ld   hl, wOcarinaSongFlags                    ; $5170: $21 $49 $DB
-    set  2, [hl]                                  ; $5173: $CB $D6
+    set  BALLAD_OF_THE_WIND_FISH_FLAG_BIT, [hl]   ; $5173: $CB $D6
     xor  a                                        ; $5175: $AF
     ld   [wSelectedSongIndex], a                               ; $5176: $EA $4A $DB
     call IncrementEntityState                     ; $5179: $CD $12 $3B
@@ -572,7 +571,7 @@ jr_005_5197:
     call OpenDialog                               ; $519E: $CD $85 $23
 
 jr_005_51A1:
-    ld   a, $6C                                   ; $51A1: $3E $6C
+    ld   a, LINK_ANIMATION_STATE_GOT_ITEM       ; $51A1: $3E $6C
     ldh  [hLinkAnimationState], a                 ; $51A3: $E0 $9D
     ld   a, $02                                   ; $51A5: $3E $02
     ldh  [hLinkInteractiveMotionBlocked], a       ; $51A7: $E0 $A1
@@ -724,7 +723,7 @@ func_005_52AF::
     ldh  [hLinkPositionY], a                      ; $52BB: $E0 $99
     ld   a, $02                                   ; $52BD: $3E $02
     ldh  [hLinkInteractiveMotionBlocked], a       ; $52BF: $E0 $A1
-    ld   a, $FF                                   ; $52C1: $3E $FF
+    ld   a, LINK_ANIMATION_STATE_NO_UPDATE       ; $52C1: $3E $FF
     ldh  [hLinkAnimationState], a                 ; $52C3: $E0 $9D
     ld   de, Data_005_5258                        ; $52C5: $11 $58 $52
     call RenderActiveEntitySpritesPair            ; $52C8: $CD $C0 $3B
@@ -753,11 +752,11 @@ func_005_52DB::
 
     call IncrementEntityState                     ; $52EF: $CD $12 $3B
     ld   a, $01                                   ; $52F2: $3E $01
-    ldh  [hLinkPositionZ], a                      ; $52F4: $E0 $A2
+    ldh  [hLinkPositionZHigh], a                      ; $52F4: $E0 $A2
     ld   a, $02                                   ; $52F6: $3E $02
-    ld   [$C146], a                               ; $52F8: $EA $46 $C1
+    ld   [wIsLinkInTheAir], a                     ; $52F8: $EA $46 $C1
     ld   a, $12                                   ; $52FB: $3E $12
-    ldh  [$FFA3], a                               ; $52FD: $E0 $A3
+    ldh  [hLinkPositionZLow], a                               ; $52FD: $E0 $A3
     ld   a, $0C                                   ; $52FF: $3E $0C
     ldh  [hLinkPositionXIncrement], a             ; $5301: $E0 $9A
     xor  a                                        ; $5303: $AF
@@ -782,7 +781,7 @@ func_005_5312::
 ; Add item to inventory slot (used for assigning the shield)
 AssignItemToSlot:
     ld   hl, wBButtonSlot                         ; $5321: $21 $00 $DB
-    ld   e, $0C                                   ; $5324: $1E $0C
+    ld   e, INVENTORY_SLOT_COUNT                  ; $5324: $1E $0C
 
     ; Search if a matching item exists in inventory
 .searchLoop
@@ -808,7 +807,7 @@ AssignItemToSlot:
     inc  hl                                       ; $5336: $23
     inc  e                                        ; $5337: $1C
     ld   a, e                                     ; $5338: $7B
-    cp   $0C                                      ; $5339: $FE $0C
+    cp   INVENTORY_SLOT_COUNT                     ; $5339: $FE $0C
     jr   nz, .assignLoop                          ; $533B: $20 $F3
 
 .return

@@ -36,7 +36,7 @@ FloatingItem2EntityHandler::
     jr   nz, jr_006_7B32                          ; $7B2B: $20 $05
 
     ld   a, $01                                   ; $7B2D: $3E $01
-    ld   [$DE00], a                               ; $7B2F: $EA $00 $DE
+    ld   [wDE00], a                               ; $7B2F: $EA $00 $DE
 
 jr_006_7B32:
     ld   hl, Data_006_7AFB                        ; $7B32: $21 $FB $7A
@@ -88,7 +88,7 @@ jr_006_7B61:
     and  a                                        ; $7B7D: $A7
     jr   nz, jr_006_7B85                          ; $7B7E: $20 $05
 
-    ldh  a, [hLinkPositionZ]                      ; $7B80: $F0 $A2
+    ldh  a, [hLinkPositionZHigh]                      ; $7B80: $F0 $A2
     cp   $0C                                      ; $7B82: $FE $0C
     ret  c                                        ; $7B84: $D8
 

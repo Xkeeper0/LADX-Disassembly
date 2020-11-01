@@ -119,14 +119,14 @@ jr_005_49FD:
     call func_005_5506                            ; $49FD: $CD $06 $55
     jr   nc, jr_005_4A0C                          ; $4A00: $30 $0A
 
-    ld   a, [$C19B]                               ; $4A02: $FA $9B $C1
+    ld   a, [wC19B]                               ; $4A02: $FA $9B $C1
     and  a                                        ; $4A05: $A7
     ret  nz                                       ; $4A06: $C0
 
     jp_open_dialog $00D                           ; $4A07
 
 jr_005_4A0C:
-    ld   hl, $C1AD                                ; $4A0C: $21 $AD $C1
+    ld   hl, wC1AD                                ; $4A0C: $21 $AD $C1
     ld   [hl], b                                  ; $4A0F: $70
     ret                                           ; $4A10: $C9
 
@@ -137,7 +137,7 @@ func_005_4A17::
     ld   a, $02                                   ; $4A17: $3E $02
     ldh  [hLinkInteractiveMotionBlocked], a       ; $4A19: $E0 $A1
     xor  a                                        ; $4A1B: $AF
-    ld   [$C19B], a                               ; $4A1C: $EA $9B $C1
+    ld   [wC19B], a                               ; $4A1C: $EA $9B $C1
     call func_005_7B24                            ; $4A1F: $CD $24 $7B
     ld   a, e                                     ; $4A22: $7B
     xor  $01                                      ; $4A23: $EE $01
@@ -182,15 +182,15 @@ jr_005_4A46:
     ld   a, ENTITY_BOMB                           ; $4A59: $3E $02
     call SpawnNewEntity_trampoline                ; $4A5B: $CD $86 $3B
 
-    ldh  a, [hScratch0]                           ; $4A5E: $F0 $D7
+    ldh  a, [hMultiPurpose0]                           ; $4A5E: $F0 $D7
     ld   hl, wEntitiesPosXTable                   ; $4A60: $21 $00 $C2
     add  hl, de                                   ; $4A63: $19
     ld   [hl], a                                  ; $4A64: $77
-    ldh  a, [hScratch1]                           ; $4A65: $F0 $D8
+    ldh  a, [hMultiPurpose1]                           ; $4A65: $F0 $D8
     ld   hl, wEntitiesPosYTable                   ; $4A67: $21 $10 $C2
     add  hl, de                                   ; $4A6A: $19
     ld   [hl], a                                  ; $4A6B: $77
-    ldh  a, [hScratch3]                           ; $4A6C: $F0 $DA
+    ldh  a, [hMultiPurpose3]                           ; $4A6C: $F0 $DA
     ld   hl, wEntitiesPosZTable                   ; $4A6E: $21 $10 $C3
     add  hl, de                                   ; $4A71: $19
     ld   [hl], a                                  ; $4A72: $77
@@ -232,7 +232,7 @@ jr_005_4A9E:
     inc  [hl]                                     ; $4AAD: $34
 
 jr_005_4AAE:
-    call func_005_7AB1                            ; $4AAE: $CD $B1 $7A
+    call UpdateEntityPosWithSpeed_05              ; $4AAE: $CD $B1 $7A
     call label_3B23                               ; $4AB1: $CD $23 $3B
     call GetEntityDropTimer                       ; $4AB4: $CD $FB $0B
     cp   $06                                      ; $4AB7: $FE $06
@@ -282,7 +282,7 @@ jr_005_4AE8:
     dec  [hl]                                     ; $4AE8: $35
 
 jr_005_4AE9:
-    jp   func_005_7AEA                            ; $4AE9: $C3 $EA $7A
+    jp   AddEntityZSpeedToPos_05                  ; $4AE9: $C3 $EA $7A
 
 jr_005_4AEC:
     ld   hl, wEntitiesCollisionsTable             ; $4AEC: $21 $A0 $C2
@@ -354,7 +354,7 @@ jr_005_4B40:
 func_005_4B41::
     ld   a, $02                                   ; $4B41: $3E $02
     ldh  [hLinkInteractiveMotionBlocked], a       ; $4B43: $E0 $A1
-    call func_005_7AEA                            ; $4B45: $CD $EA $7A
+    call AddEntityZSpeedToPos_05                  ; $4B45: $CD $EA $7A
     ld   hl, wEntitiesSpeedZTable                 ; $4B48: $21 $20 $C3
     add  hl, bc                                   ; $4B4B: $09
     dec  [hl]                                     ; $4B4C: $35
@@ -444,7 +444,7 @@ label_005_4BC1:
     ld   de, Data_005_4BBF                        ; $4BC9: $11 $BF $4B
     call RenderActiveEntitySprite                 ; $4BCC: $CD $77 $3C
     call func_005_7A3A                            ; $4BCF: $CD $3A $7A
-    call func_005_7AB1                            ; $4BD2: $CD $B1 $7A
+    call UpdateEntityPosWithSpeed_05              ; $4BD2: $CD $B1 $7A
     call GetEntityTransitionCountdown             ; $4BD5: $CD $05 $0C
     jp   z, func_005_7B4B                         ; $4BD8: $CA $4B $7B
 
@@ -574,7 +574,7 @@ jr_005_4C88:
     call_open_dialog $054                         ; $4C8C
     jp   IncrementEntityState                     ; $4C91: $C3 $12 $3B
 
-; This data is pushed into DC88
+; This data is pushed into wObjPal8
 data_005_4C94::
     db   $FF, $47, $31, $52, $C5, $28, $00, $00
 
@@ -591,7 +591,7 @@ TarinShield1Handler::
     and  a                                        ; $4CAD: $A7
     jr   z, jr_005_4CC3                           ; $4CAE: $28 $13
 
-    ld   hl, $DC88                                ; $4CB0: $21 $88 $DC
+    ld   hl, wObjPal8                             ; $4CB0: $21 $88 $DC
     ld   de, data_005_4C94                        ; $4CB3: $11 $94 $4C
 
 jr_005_4CB6:
@@ -626,7 +626,7 @@ TarinShield2Handler::
 
     ld   a, $01                                   ; $4CD5: $3E $01
     ld   [wShieldLevel], a                        ; $4CD7: $EA $44 $DB
-    ld   a, $22                                   ; $4CDA: $3E $22
+    ld   a, LINK_ANIMATION_STATE_STANDING_SHIELD_DOWN       ; $4CDA: $3E $22
     ldh  [hLinkAnimationState], a                 ; $4CDC: $E0 $9D
     call_open_dialog $091                         ; $4CDE
     jp   IncrementEntityState                     ; $4CE3: $C3 $12 $3B
@@ -642,7 +642,7 @@ jr_005_4CE6:
     ld   de, data_005_4cc6                        ; $4CF3: $11 $C6 $4C
     call RenderActiveEntitySprite                 ; $4CF6: $CD $77 $3C
     call CopyEntityPositionToActivePosition       ; $4CF9: $CD $8A $3D
-    ld   a, $6C                                   ; $4CFC: $3E $6C
+    ld   a, LINK_ANIMATION_STATE_GOT_ITEM         ; $4CFC: $3E $6C
     ldh  [hLinkAnimationState], a                 ; $4CFE: $E0 $9D
     ld   a, $02                                   ; $4D00: $3E $02
     ldh  [hLinkInteractiveMotionBlocked], a       ; $4D02: $E0 $A1
@@ -723,12 +723,12 @@ jr_005_4D5D:
 
     ld   a, $3F                                   ; $4D67: $3E $3F
     call SpawnNewEntity_trampoline                ; $4D69: $CD $86 $3B
-    ldh  a, [hScratch0]                           ; $4D6C: $F0 $D7
+    ldh  a, [hMultiPurpose0]                           ; $4D6C: $F0 $D7
     add  $06                                      ; $4D6E: $C6 $06
     ld   hl, wEntitiesPosXTable                   ; $4D70: $21 $00 $C2
     add  hl, de                                   ; $4D73: $19
     ld   [hl], a                                  ; $4D74: $77
-    ldh  a, [hScratch1]                           ; $4D75: $F0 $D8
+    ldh  a, [hMultiPurpose1]                           ; $4D75: $F0 $D8
     sub  $03                                      ; $4D77: $D6 $03
     ld   hl, wEntitiesPosYTable                   ; $4D79: $21 $10 $C2
     add  hl, de                                   ; $4D7C: $19

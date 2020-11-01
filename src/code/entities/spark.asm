@@ -13,7 +13,7 @@ Data_006_662D::
 SparkClockwiseEntityHandler::
 SparkCounterClockwiseEntityHandler::
     ld   a, $01                                   ; $6635: $3E $01
-    ldh  [$FFBE], a                               ; $6637: $E0 $BE
+    ldh  [hFFBE], a                               ; $6637: $E0 $BE
     ldh  a, [hFrameCounter]                       ; $6639: $F0 $E7
     rra                                           ; $663B: $1F
     and  $01                                      ; $663C: $E6 $01
@@ -23,7 +23,7 @@ SparkCounterClockwiseEntityHandler::
     call func_006_64C6                            ; $6646: $CD $C6 $64
     call func_006_64F7                            ; $6649: $CD $F7 $64
     call label_3B44                               ; $664C: $CD $44 $3B
-    call func_006_6541                            ; $664F: $CD $41 $65
+    call UpdateEntityPosWithSpeed_06              ; $664F: $CD $41 $65
     call func_006_66CC                            ; $6652: $CD $CC $66
     ld   hl, wEntitiesPrivateState1Table          ; $6655: $21 $B0 $C2
     add  hl, bc                                   ; $6658: $09

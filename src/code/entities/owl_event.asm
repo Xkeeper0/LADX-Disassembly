@@ -1,6 +1,6 @@
 OwlEventEntityHandler::
     ld   a, c                                     ; $67F5: $79
-    ld   [$C501], a                               ; $67F6: $EA $01 $C5
+    ld   [wC501], a                               ; $67F6: $EA $01 $C5
     ldh  a, [hMapRoom]                            ; $67F9: $F0 $F6
     cp   $64                        ; Ghost's gravestone
     jr   nz, jr_006_680D                          ; $67FD: $20 $0E
@@ -197,7 +197,7 @@ jr_006_68F6:
     ld   a, MUSIC_OWL                             ; $68FD: $3E $22
     ld   [wMusicTrackToPlay], a                   ; $68FF: $EA $68 $D3
     ldh  [hDefaultMusicTrack], a                  ; $6902: $E0 $B0
-    ldh  [$FFBD], a                               ; $6904: $E0 $BD
+    ldh  [hFFBD], a                               ; $6904: $E0 $BD
     ldh  a, [hMapRoom]                            ; $6906: $F0 $F6
     cp   $16                                      ; $6908: $FE $16
     jr   z, jr_006_6914                           ; $690A: $28 $08
@@ -235,7 +235,7 @@ OwlState1Handler::
     ld   a, $05                                   ; $693B: $3E $05
     ld   [wC111], a                               ; $693D: $EA $11 $C1
     call func_006_69BD                            ; $6940: $CD $BD $69
-    call func_006_6541                            ; $6943: $CD $41 $65
+    call UpdateEntityPosWithSpeed_06              ; $6943: $CD $41 $65
     ld   hl, wEntitiesPosZTable                   ; $6946: $21 $10 $C3
     add  hl, bc                                   ; $6949: $09
     ld   a, [hl]                                  ; $694A: $7E
@@ -248,7 +248,7 @@ jr_006_6951:
     ld   hl, wEntitiesSpeedZTable                 ; $6951: $21 $20 $C3
     add  hl, bc                                   ; $6954: $09
     ld   [hl], $FC                                ; $6955: $36 $FC
-    call func_006_657A                            ; $6957: $CD $7A $65
+    call AddEntityZSpeedToPos_06                  ; $6957: $CD $7A $65
     call PlayBoomerangSfx_trampoline              ; $695A: $CD $F8 $29
     ldh  a, [hFrameCounter]                       ; $695D: $F0 $E7
     and  $03                                      ; $695F: $E6 $03
@@ -322,12 +322,12 @@ func_006_69BD::
 OwlState4Handler::
     call func_006_64C6                            ; $69CA: $CD $C6 $64
     call func_006_69BD                            ; $69CD: $CD $BD $69
-    call func_006_6541                            ; $69D0: $CD $41 $65
+    call UpdateEntityPosWithSpeed_06              ; $69D0: $CD $41 $65
     call func_006_5E54                            ; $69D3: $CD $54 $5E
     ld   hl, wEntitiesSpeedZTable                 ; $69D6: $21 $20 $C3
     add  hl, bc                                   ; $69D9: $09
     ld   [hl], $04                                ; $69DA: $36 $04
-    call func_006_657A                            ; $69DC: $CD $7A $65
+    call AddEntityZSpeedToPos_06                  ; $69DC: $CD $7A $65
     ld   hl, wEntitiesStatusTable                 ; $69DF: $21 $80 $C2
     add  hl, bc                                   ; $69E2: $09
     ld   a, [hl]                                  ; $69E3: $7E
@@ -351,7 +351,7 @@ ENDC
 
     ld   a, MUSIC_ACTIVE_POWER_UP
     ld   [wMusicTrackToPlay], a                   ; $69FF: $EA $68 $D3
-    ldh  [$FFBD], a                               ; $6A02: $E0 $BD
+    ldh  [hFFBD], a                               ; $6A02: $E0 $BD
 
 jr_006_6A04:
     ret                                           ; $6A04: $C9
@@ -371,12 +371,12 @@ jr_006_6A0F:
 
     ld   a, $20                                   ; $6A15: $3E $20
     call GetVectorTowardsLink_trampoline          ; $6A17: $CD $B5 $3B
-    ldh  a, [hScratch0]                           ; $6A1A: $F0 $D7
+    ldh  a, [hMultiPurpose0]                           ; $6A1A: $F0 $D7
     cpl                                           ; $6A1C: $2F
     inc  a                                        ; $6A1D: $3C
     ld   hl, wEntitiesSpeedYTable                 ; $6A1E: $21 $50 $C2
     call func_006_6A2B                            ; $6A21: $CD $2B $6A
-    ldh  a, [hScratch1]                           ; $6A24: $F0 $D8
+    ldh  a, [hMultiPurpose1]                           ; $6A24: $F0 $D8
     cpl                                           ; $6A26: $2F
     inc  a                                        ; $6A27: $3C
     ld   hl, wEntitiesSpeedXTable                 ; $6A28: $21 $40 $C2

@@ -42,7 +42,7 @@ jr_006_6F03:
     ld   hl, wEntitiesPrivateState1Table          ; $6F15: $21 $B0 $C2
     add  hl, bc                                   ; $6F18: $09
     ldh  a, [hActiveEntityPosX]                   ; $6F19: $F0 $EE
-    ldh  [hScratch0], a                           ; $6F1B: $E0 $D7
+    ldh  [hMultiPurpose0], a                           ; $6F1B: $E0 $D7
     ld   e, [hl]                                  ; $6F1D: $5E
     inc  [hl]                                     ; $6F1E: $34
     ld   a, [hl]                                  ; $6F1F: $7E
@@ -70,7 +70,7 @@ jr_006_6F3C:
     ld   hl, Data_006_6EDD                        ; $6F3D: $21 $DD $6E
     add  hl, de                                   ; $6F40: $19
     ld   a, [hl]                                  ; $6F41: $7E
-    ldh  [hScratch1], a                           ; $6F42: $E0 $D8
+    ldh  [hMultiPurpose1], a                           ; $6F42: $E0 $D8
     jp   label_006_7035                           ; $6F44: $C3 $35 $70
 
 jr_006_6F47:
@@ -78,14 +78,14 @@ jr_006_6F47:
 
 jr_006_6F48:
     call DecrementEntityIgnoreHitsCountdown       ; $6F48: $CD $56 $0C
-    ldh  a, [hLinkPositionZ]                      ; $6F4B: $F0 $A2
+    ldh  a, [hLinkPositionZHigh]                      ; $6F4B: $F0 $A2
     and  a                                        ; $6F4D: $A7
     jr   nz, jr_006_6F53                          ; $6F4E: $20 $03
 
     call label_3B39                               ; $6F50: $CD $39 $3B
 
 jr_006_6F53:
-    call func_006_654E                            ; $6F53: $CD $4E $65
+    call AddEntitySpeedToPos_06                   ; $6F53: $CD $4E $65
     call label_3B23                               ; $6F56: $CD $23 $3B
     ld   hl, wEntitiesSpeedXTable                 ; $6F59: $21 $40 $C2
     add  hl, bc                                   ; $6F5C: $09
@@ -155,9 +155,9 @@ RollingBonesBarRollingHandler::
     inc  a                                        ; $6FA1: $3C
     ld   [hl], a                                  ; $6FA2: $77
     ld   a, $20                                   ; $6FA3: $3E $20
-    ld   [$C157], a                               ; $6FA5: $EA $57 $C1
+    ld   [wC157], a                               ; $6FA5: $EA $57 $C1
     xor  a                                        ; $6FA8: $AF
-    ld   [$C158], a                               ; $6FA9: $EA $58 $C1
+    ld   [wC158], a                               ; $6FA9: $EA $58 $C1
     ld   a, JINGLE_HUGE_BUMP                      ; $6FAC: $3E $0B
     ldh  [hJingle], a                             ; $6FAE: $E0 $F2
     call IncrementEntityState                     ; $6FB0: $CD $12 $3B

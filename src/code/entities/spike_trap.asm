@@ -15,7 +15,7 @@ Data_006_750A::
 
 SpikeTrapEntityHandler::
     ld   a, $01                                   ; $7510: $3E $01
-    ldh  [$FFBE], a                               ; $7512: $E0 $BE
+    ldh  [hFFBE], a                               ; $7512: $E0 $BE
     ld   de, Data_006_74FA                        ; $7514: $11 $FA $74
     call RenderActiveEntitySpritesPair            ; $7517: $CD $C0 $3B
     call func_006_64C6                            ; $751A: $CD $C6 $64
@@ -105,7 +105,7 @@ jr_006_759A:
     jp   IncrementEntityState                     ; $759E: $C3 $12 $3B
 
 SpikeTrapState2Handler::
-    call func_006_6541                            ; $75A1: $CD $41 $65
+    call UpdateEntityPosWithSpeed_06              ; $75A1: $CD $41 $65
     call GetEntityTransitionCountdown             ; $75A4: $CD $05 $0C
     jr   nz, jr_006_75B5                          ; $75A7: $20 $0C
 
@@ -146,7 +146,7 @@ SpikeTrapState3Handler::
     ld   hl, wEntitiesSpeedYTable                 ; $75DB: $21 $50 $C2
     add  hl, bc                                   ; $75DE: $09
     ld   [hl], a                                  ; $75DF: $77
-    call func_006_6541                            ; $75E0: $CD $41 $65
+    call UpdateEntityPosWithSpeed_06              ; $75E0: $CD $41 $65
     ld   hl, wEntitiesPrivateState1Table          ; $75E3: $21 $B0 $C2
     add  hl, bc                                   ; $75E6: $09
     ld   a, [hl]                                  ; $75E7: $7E

@@ -5,7 +5,7 @@ HookshotHitEntityHandler::
     ld   hl, wActiveProjectileCount               ; $69B2: $21 $4D $C1
     inc  [hl]                                     ; $69B5: $34
     ld   a, $0A                                   ; $69B6: $3E $0A
-    ld   [$C19E], a                               ; $69B8: $EA $9E $C1
+    ld   [wC19E], a                               ; $69B8: $EA $9E $C1
     call func_003_75A2                            ; $69BB: $CD $A2 $75
     ldh  a, [hFrameCounter]                       ; $69BE: $F0 $E7
     rra                                           ; $69C0: $1F
@@ -51,16 +51,16 @@ jr_003_69F8:
     ld   [hl], b                                  ; $69FC: $70
     call GetEntityPrivateCountdown1                                      ; $69FD: $CD $00 $0C
     ld   [hl], b                                  ; $6A00: $70
-    ldh  a, [hFFE9]                               ; $6A01: $F0 $E9
+    ldh  a, [hMultiPurposeH]                               ; $6A01: $F0 $E9
     ld   e, a                                     ; $6A03: $5F
     ld   d, b                                     ; $6A04: $50
     call func_014_5526_trampoline                 ; $6A05: $CD $78 $21
     ldh  a, [hSwordIntersectedAreaX]              ; $6A08: $F0 $CE
     add  $08                                      ; $6A0A: $C6 $08
-    ldh  [hScratch0], a                           ; $6A0C: $E0 $D7
+    ldh  [hMultiPurpose0], a                           ; $6A0C: $E0 $D7
     ldh  a, [hSwordIntersectedAreaY]              ; $6A0E: $F0 $CD
     add  $10                                      ; $6A10: $C6 $10
-    ldh  [hScratch1], a                           ; $6A12: $E0 $D8
+    ldh  [hMultiPurpose1], a                           ; $6A12: $E0 $D8
     ld   a, $08                                   ; $6A14: $3E $08
     call AddTranscientVfx                         ; $6A16: $CD $C7 $0C
     ld   a, $13                                   ; $6A19: $3E $13

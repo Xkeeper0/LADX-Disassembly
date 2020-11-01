@@ -26,19 +26,19 @@ LinkPassOut0Handler::
     xor  a                                        ; $4203: $AF ; $4203: $AF
     ld   [wScreenShakeHorizontal], a              ; $4204: $EA $55 $C1 ; $4204: $EA $55 $C1
     ld   [wScreenShakeVertical], a                ; $4207: $EA $56 $C1 ; $4207: $EA $56 $C1
-    ldh  a, [$FFB7]                               ; $420A: $F0 $B7 ; $420A: $F0 $B7
+    ldh  a, [hFFB7]                               ; $420A: $F0 $B7 ; $420A: $F0 $B7
     and  a                                        ; $420C: $A7 ; $420C: $A7
 
 jr_001_420D::
     jr   nz, jr_001_4259                          ; $420D: $20 $4A ; $420D: $20 $4A
 
     ld   a, $10                                   ; $420F: $3E $10 ; $420F: $3E $10
-    ldh  [$FFB7], a                               ; $4211: $E0 $B7 ; $4211: $E0 $B7
+    ldh  [hFFB7], a                               ; $4211: $E0 $B7 ; $4211: $E0 $B7
     ld   a, $01                                   ; $4213: $3E $01 ; $4213: $3E $01
     ldh  [hFF9C], a                               ; $4215: $E0 $9C ; $4215: $E0 $9C
     ld   a, $0F                                   ; $4217: $3E $0F ; $4217: $3E $0F
     ld   [wTileMapToLoad], a                      ; $4219: $EA $FE $D6 ; $4219: $EA $FE $D6
-    ld   a, $FF                                   ; $421C: $3E $FF ; $421C: $3E $FF
+    ld   a, LINK_ANIMATION_STATE_NO_UPDATE       ; $421C: $3E $FF ; $421C: $3E $FF
     ldh  [hLinkAnimationState], a                 ; $421E: $E0 $9D ; $421E: $E0 $9D
     ld   a, [wDeathCount]                         ; $4220: $FA $57 $DB ; $4220: $FA $57 $DB
     add  $01                                      ; $4223: $C6 $01 ; $4223: $C6 $01
@@ -79,7 +79,7 @@ jr_001_4259::
     add  hl, de                                   ; $4264: $19 ; $4264: $19
     ld   a, [hl]                                  ; $4265: $7E ; $4265: $7E
     ldh  [hLinkAnimationState], a                 ; $4266: $E0 $9D ; $4266: $E0 $9D
-    ldh  a, [$FFB7]                               ; $4268: $F0 $B7 ; $4268: $F0 $B7
+    ldh  a, [hFFB7]                               ; $4268: $F0 $B7 ; $4268: $F0 $B7
     rra                                           ; $426A: $1F ; $426A: $1F
     rra                                           ; $426B: $1F ; $426B: $1F
     rra                                           ; $426C: $1F ; $426C: $1F
@@ -129,7 +129,7 @@ Data_001_42BA::
     db   $00, $04, $08, $0C, $10, $0C, $08, $04   ; $42C2 ; $42C2
 
 LinkPassOut3Handler::
-    ldh  a, [$FFB7]                               ; $42CA: $F0 $B7
+    ldh  a, [hFFB7]                               ; $42CA: $F0 $B7
     and  a                                        ; $42CC: $A7 ; $42CC: $A7
     jr   nz, jr_001_42D8                          ; $42CD: $20 $09 ; $42CD: $20 $09
 
@@ -144,17 +144,17 @@ jr_001_42D8::
 LinkPassOut4Handler::
     call func_001_4339                            ; $42D9: $CD $39 $43 ; $42D9: $CD $39 $43
     ldh  a, [hJoypadState]                        ; $42DC: $F0 $CC ; $42DC: $F0 $CC
-    and  $B0                                      ; $42DE: $E6 $B0 ; $42DE: $E6 $B0
+    and  J_A | J_B | J_START                      ; $42DE: $E6 $B0 ; $42DE: $E6 $B0
     jr   z, jr_001_4335                           ; $42E0: $28 $53 ; $42E0: $28 $53
 
-    ld   a, [$C13F]                               ; $42E2: $FA $3F $C1 ; $42E2: $FA $3F $C1
+    ld   a, [wC13F]                               ; $42E2: $FA $3F $C1 ; $42E2: $FA $3F $C1
     cp   $01                                      ; $42E5: $FE $01 ; $42E5: $FE $01
     jr   z, jr_001_432C                           ; $42E7: $28 $43 ; $42E7: $28 $43
 
     cp   $00                                      ; $42E9: $FE $00 ; $42E9: $FE $00
     jr   z, jr_001_42F2                           ; $42EB: $28 $05 ; $42EB: $28 $05
 
-    ld   [$DBD1], a                               ; $42ED: $EA $D1 $DB ; $42ED: $EA $D1 $DB
+    ld   [wDBD1], a                               ; $42ED: $EA $D1 $DB ; $42ED: $EA $D1 $DB
     jr   jr_001_42F5                              ; $42F0: $18 $03 ; $42F0: $18 $03
 
 jr_001_42F2::
@@ -176,8 +176,8 @@ jr_001_42FB::
     ldh  [rOBP1], a                               ; $4307: $E0 $49 ; $4307: $E0 $49
     ld   [wBGPalette], a                          ; $4309: $EA $97 $DB ; $4309: $EA $97 $DB
     ldh  [rBGP], a                                ; $430C: $E0 $47 ; $430C: $E0 $47
-    ld   [$D6FB], a                               ; $430E: $EA $FB $D6 ; $430E: $EA $FB $D6
-    ld   [$D475], a                               ; $4311: $EA $75 $D4 ; $4311: $EA $75 $D4
+    ld   [wD6FB], a                               ; $430E: $EA $FB $D6 ; $430E: $EA $FB $D6
+    ld   [wD475], a                               ; $4311: $EA $75 $D4 ; $4311: $EA $75 $D4
     ldh  a, [hLinkPositionX]                      ; $4314: $F0 $98 ; $4314: $F0 $98
     ld   [wMapEntrancePositionX], a               ; $4316: $EA $9D $DB ; $4316: $EA $9D $DB
     ldh  a, [hLinkPositionY]                      ; $4319: $F0 $99 ; $4319: $F0 $99
@@ -204,10 +204,10 @@ Data_001_4336::
     db GAMEOVER_OPTION_CONTINUE_Y + $10           ; $4338
 
 func_001_4339::
-    ld   hl, $C13F                                ; $4339: $21 $3F $C1 ; $4339: $21 $3F $C1
+    ld   hl, wC13F                                ; $4339: $21 $3F $C1 ; $4339: $21 $3F $C1
     call func_001_6BA8                            ; $433C: $CD $A8 $6B ; $433C: $CD $A8 $6B
     ldh  a, [hJoypadState]                        ; $433F: $F0 $CC ; $433F: $F0 $CC
-    and  $08                                      ; $4341: $E6 $08 ; $4341: $E6 $08
+    and  J_DOWN                                   ; $4341: $E6 $08 ; $4341: $E6 $08
     jr   z, jr_001_434D                           ; $4343: $28 $08 ; $4343: $28 $08
 
     ld   a, [hl]                                  ; $4345: $7E ; $4345: $7E
@@ -222,7 +222,7 @@ jr_001_434C::
 
 jr_001_434D::
     ldh  a, [hJoypadState]                        ; $434D: $F0 $CC ; $434D: $F0 $CC
-    and  $04                                      ; $434F: $E6 $04 ; $434F: $E6 $04
+    and  J_UP                                     ; $434F: $E6 $04 ; $434F: $E6 $04
     jr   z, jr_001_435C                           ; $4351: $28 $09 ; $4351: $28 $09
 
     ld   a, [hl]                                  ; $4353: $7E ; $4353: $7E
@@ -241,7 +241,7 @@ jr_001_435C::
     ld   hl, Data_001_4336                        ; $435F: $21 $36 $43 ; $435F: $21 $36 $43
     add  hl, de                                   ; $4362: $19 ; $4362: $19
     ld   a, [hl]                                  ; $4363: $7E ; $4363: $7E
-    ld   hl, $C018                                ; $4364: $21 $18 $C0 ; $4364: $21 $18 $C0
+    ld   hl, wOAMBuffer+$18                                ; $4364: $21 $18 $C0 ; $4364: $21 $18 $C0
     ld   [hl+], a                                 ; $4367: $22 ; $4367: $22
     ld   a, GAMEOVER_OPTION_X + $8                ; $4368: $3E $24 ; $4368: $3E $24
     ld   [hl+], a                                 ; $436A: $22 ; $436A: $22

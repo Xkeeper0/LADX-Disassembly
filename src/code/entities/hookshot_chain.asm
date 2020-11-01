@@ -1,5 +1,8 @@
-Data_18_7BDF::
-    db $11, $10, $0F, $0E
+LinkDirectionToLinkAnimationState_3::
+.right: db  LINK_ANIMATION_STATE_HOOKSHOT_CHAIN_RIGHT
+.left: db  LINK_ANIMATION_STATE_HOOKSHOT_CHAIN_LEFT
+.up:   db  LINK_ANIMATION_STATE_HOOKSHOT_CHAIN_UP
+.down:   db  LINK_ANIMATION_STATE_HOOKSHOT_CHAIN_DOWN
 
 HookshotChainEntityHandler::
     ld   a, [wLinkPlayingOcarinaCountdown]        ; $7BE3
@@ -8,18 +11,18 @@ HookshotChainEntityHandler::
 
     ld   a, $02                                   ; $7BEA: $3E $02
     ldh  [hLinkInteractiveMotionBlocked], a       ; $7BEC: $E0 $A1
-    ld   [$C1A4], a                               ; $7BEE: $EA $A4 $C1
-    ld   [$C1C6], a                               ; $7BF1: $EA $C6 $C1
+    ld   [wC1A4], a                               ; $7BEE: $EA $A4 $C1
+    ld   [wC1C6], a                               ; $7BF1: $EA $C6 $C1
     ld   a, c                                     ; $7BF4: $79
     inc  a                                        ; $7BF5: $3C
-    ld   [$C1A6], a                               ; $7BF6: $EA $A6 $C1
+    ld   [wC1A6], a                               ; $7BF6: $EA $A6 $C1
     xor  a                                        ; $7BF9: $AF
     call ResetSpinAttack                                ; $7BFA: $CD $AF $0C
-    ld   [$C13E], a                               ; $7BFD: $EA $3E $C1
+    ld   [wC13E], a                               ; $7BFD: $EA $3E $C1
     ldh  a, [hLinkDirection]                      ; $7C00: $F0 $9E
     ld   e, a                                     ; $7C02: $5F
     ld   d, $00                                   ; $7C03: $16 $00
-    ld   hl, Data_18_7BDF                         ; $7C05: $21 $DF $7B
+    ld   hl, LinkDirectionToLinkAnimationState_3  ; $7C05: $21 $DF $7B
     add  hl, de                                   ; $7C08: $19
     ld   a, [hl]                                  ; $7C09: $7E
     ldh  [hLinkAnimationState], a                 ; $7C0A: $E0 $9D
@@ -54,11 +57,11 @@ ENDC
 jr_018_7C21:
     ld   a, $30                                   ; $7C21: $3E $30
     call GetVectorTowardsLink_trampoline          ; $7C23: $CD $B5 $3B
-    ldh  a, [hScratch0]                           ; $7C26: $F0 $D7
+    ldh  a, [hMultiPurpose0]                           ; $7C26: $F0 $D7
     cpl                                           ; $7C28: $2F
     inc  a                                        ; $7C29: $3C
     ldh  [hLinkPositionYIncrement], a             ; $7C2A: $E0 $9B
-    ldh  a, [hScratch1]                           ; $7C2C: $F0 $D8
+    ldh  a, [hMultiPurpose1]                           ; $7C2C: $F0 $D8
     cpl                                           ; $7C2E: $2F
     inc  a                                        ; $7C2F: $3C
     ldh  [hLinkPositionXIncrement], a             ; $7C30: $E0 $9A
@@ -68,7 +71,7 @@ jr_018_7C21:
     jr   jr_018_7C46                              ; $7C37: $18 $0D
 
 jr_018_7C39:
-    call func_018_7E5F                            ; $7C39: $CD $5F $7E
+    call UpdateEntityPosWithSpeed_18              ; $7C39: $CD $5F $7E
     call GetEntityTransitionCountdown             ; $7C3C: $CD $05 $0C
     jr   nz, jr_018_7C54                          ; $7C3F: $20 $13
 
@@ -80,13 +83,13 @@ jr_018_7C46:
     jr   nc, jr_018_7CAE                          ; $7C49: $30 $63
 
     xor  a                                        ; $7C4B: $AF
-    ld   [$C1C6], a                               ; $7C4C: $EA $C6 $C1
+    ld   [wC1C6], a                               ; $7C4C: $EA $C6 $C1
     call ClearEntityStatusBank18                  ; $7C4F: $CD $08 $7F
     jr   jr_018_7CAE                              ; $7C52: $18 $5A
 
 jr_018_7C54:
     ld   a, $06                                   ; $7C54: $3E $06
-    ld   [$C19E], a                               ; $7C56: $EA $9E $C1
+    ld   [wC19E], a                               ; $7C56: $EA $9E $C1
     call label_3B7B                               ; $7C59: $CD $7B $3B
     ld   hl, wEntitiesCollisionsTable             ; $7C5C: $21 $A0 $C2
     add  hl, bc                                   ; $7C5F: $09
@@ -152,8 +155,8 @@ jr_018_7CAF:
     ld   a, JINGLE_SWORD_POKING                   ; $7CB3: $3E $07
     ldh  [hJingle], a                             ; $7CB5: $E0 $F2
     ldh  a, [hActiveEntityPosX]                   ; $7CB7: $F0 $EE
-    ldh  [hScratch0], a                           ; $7CB9: $E0 $D7
+    ldh  [hMultiPurpose0], a                           ; $7CB9: $E0 $D7
     ldh  a, [hActiveEntityVisualPosY]             ; $7CBB: $F0 $EC
-    ldh  [hScratch1], a                           ; $7CBD: $E0 $D8
+    ldh  [hMultiPurpose1], a                           ; $7CBD: $E0 $D8
     ld   a, TRANSCIENT_VFX_SWORD_POKE             ; $7CBF: $3E $05
     jp   AddTranscientVfx                         ; $7CC1: $C3 $C7 $0C

@@ -26,7 +26,7 @@ PushedBlockEntityHandler::
 jr_003_525D:
     call RenderActiveEntitySpritesPair            ; $525D: $CD $C0 $3B
     call func_003_7F78                            ; $5260: $CD $78 $7F
-    call func_003_7F25                            ; $5263: $CD $25 $7F
+    call UpdateEntityPosWithSpeed_03              ; $5263: $CD $25 $7F
     call func_003_52D4                            ; $5266: $CD $D4 $52
     call CheckLinkCollisionWithEnemy.collisionEvenInTheAir  ; $5269: $CD $77 $6C
     jr   nc, jr_003_5276                          ; $526C: $30 $08
@@ -91,7 +91,7 @@ jr_003_52B5:
     ret  nz                                       ; $52C3: $C0
 
     call func_003_7893                            ; $52C4: $CD $93 $78
-    ld   a, [$C503]                               ; $52C7: $FA $03 $C5
+    ld   a, [wC503]                               ; $52C7: $FA $03 $C5
     cp   $A7                                      ; $52CA: $FE $A7
     jr   z, jr_003_52D1                           ; $52CC: $28 $03
 

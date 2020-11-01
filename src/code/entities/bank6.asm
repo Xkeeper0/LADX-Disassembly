@@ -36,13 +36,13 @@ func_006_641A::
 label_006_641F:
     call CopyLinkFinalPositionToPosition          ; $641F: $CD $BE $0C
     call ResetPegasusBoots                        ; $6422: $CD $B6 $0C
-    ld   a, [$C1A6]                               ; $6425: $FA $A6 $C1
+    ld   a, [wC1A6]                               ; $6425: $FA $A6 $C1
     and  a                                        ; $6428: $A7
     jr   z, jr_006_643C                           ; $6429: $28 $11
 
     ld   e, a                                     ; $642B: $5F
     ld   d, b                                     ; $642C: $50
-    ld   hl, $C39F                                ; $642D: $21 $9F $C3
+    ld   hl, wEntitiesUnknowTableR+15                                ; $642D: $21 $9F $C3
     add  hl, de                                   ; $6430: $19
     ld   a, [hl]                                  ; $6431: $7E
     cp   $03                                      ; $6432: $FE $03
@@ -133,14 +133,14 @@ func_006_645D::
     jr   nz, .return                              ; $649D: $20 $25
 
 .jr_006_649F
-    ld   hl, $C1AD                                ; $649F: $21 $AD $C1
+    ld   hl, wC1AD                                ; $649F: $21 $AD $C1
     ld   [hl], $01                                ; $64A2: $36 $01
     ld   a, [wDialogState]                        ; $64A4: $FA $9F $C1
     ld   hl, wInventoryAppearing                  ; $64A7: $21 $4F $C1
     or   [hl]                                     ; $64AA: $B6
-    ld   hl, $C146                                ; $64AB: $21 $46 $C1
+    ld   hl, wIsLinkInTheAir                      ; $64AB: $21 $46 $C1
     or   [hl]                                     ; $64AE: $B6
-    ld   hl, $C134                                ; $64AF: $21 $34 $C1
+    ld   hl, wC134                                ; $64AF: $21 $34 $C1
     or   [hl]                                     ; $64B2: $B6
     jr   nz, .return                              ; $64B3: $20 $0F
 
@@ -149,7 +149,7 @@ func_006_645D::
     jr   nz, .return                              ; $64BA: $20 $08
 
     ldh  a, [hJoypadState]                        ; $64BC: $F0 $CC
-    and  $10                                      ; $64BE: $E6 $10
+    and  J_A                                      ; $64BE: $E6 $10
     jr   z, .return                               ; $64C0: $28 $02
 
     scf                                           ; $64C2: $37
@@ -180,7 +180,7 @@ func_006_64CC::
     jr   nz, jr_006_64F5                          ; $64E0: $20 $13
 
 jr_006_64E2:
-    ld   hl, $C1A8                                ; $64E2: $21 $A8 $C1
+    ld   hl, wC1A8                                ; $64E2: $21 $A8 $C1
     ld   a, [wDialogState]                        ; $64E5: $FA $9F $C1
     or   [hl]                                     ; $64E8: $B6
     ld   hl, wInventoryAppearing                  ; $64E9: $21 $4F $C1
@@ -215,7 +215,7 @@ func_006_64F7::
     add  hl, bc                                   ; $650D: $09
     ld   a, [hl]                                  ; $650E: $7E
     push af                                       ; $650F: $F5
-    ld   hl, $C3F0                                ; $6510: $21 $F0 $C3
+    ld   hl, wC3F0                                ; $6510: $21 $F0 $C3
     add  hl, bc                                   ; $6513: $09
     ld   a, [hl]                                  ; $6514: $7E
     ld   hl, wEntitiesSpeedXTable                 ; $6515: $21 $40 $C2
@@ -227,7 +227,7 @@ func_006_64F7::
     ld   hl, wEntitiesSpeedYTable                 ; $651F: $21 $50 $C2
     add  hl, bc                                   ; $6522: $09
     ld   [hl], a                                  ; $6523: $77
-    call func_006_6541                            ; $6524: $CD $41 $65
+    call UpdateEntityPosWithSpeed_06              ; $6524: $CD $41 $65
     ld   hl, wEntitiesUnknowTableH                ; $6527: $21 $30 $C4
     add  hl, bc                                   ; $652A: $09
     ld   a, [hl]                                  ; $652B: $7E
@@ -250,70 +250,83 @@ jr_006_6533:
 jr_006_6540:
     ret                                           ; $6540: $C9
 
-func_006_6541::
-    call func_006_654E                            ; $6541: $CD $4E $65
+UpdateEntityPosWithSpeed_06::
+    call AddEntitySpeedToPos_06                   ; $6541: $CD $4E $65
     push bc                                       ; $6544: $C5
     ld   a, c                                     ; $6545: $79
     add  $10                                      ; $6546: $C6 $10
     ld   c, a                                     ; $6548: $4F
-    call func_006_654E                            ; $6549: $CD $4E $65
+    call AddEntitySpeedToPos_06                   ; $6549: $CD $4E $65
     pop  bc                                       ; $654C: $C1
     ret                                           ; $654D: $C9
 
-func_006_654E::
+; Update the entity's position using its speed.
+;
+; The values in the entity speed tables are the number of pixels to
+; move within 16 frames. For example, if it's 8, the entity will move
+; 1 pixel every other frame (8/16). If it's -16, the entity will move
+; -1 pixel every frame (-16/16).
+;
+; Inputs:
+;   bc  entity index
+AddEntitySpeedToPos_06::
     ld   hl, wEntitiesSpeedXTable                 ; $654E: $21 $40 $C2
     add  hl, bc                                   ; $6551: $09
     ld   a, [hl]                                  ; $6552: $7E
     and  a                                        ; $6553: $A7
-    jr   z, jr_006_6579                           ; $6554: $28 $23
+    ; No need to update the position if it's not moving
+    jr   z, .return                               ; $6554: $28 $23
 
     push af                                       ; $6556: $F5
     swap a                                        ; $6557: $CB $37
     and  $F0                                      ; $6559: $E6 $F0
-    ld   hl, wEntitiesUnknowTableN                ; $655B: $21 $60 $C2
+    ld   hl, wEntitiesSpeedXAccTable              ; $655B: $21 $60 $C2
     add  hl, bc                                   ; $655E: $09
     add  [hl]                                     ; $655F: $86
     ld   [hl], a                                  ; $6560: $77
+    ; Save carry in bit 0 of d
     rl   d                                        ; $6561: $CB $12
     ld   hl, wEntitiesPosXTable                   ; $6563: $21 $00 $C2
 
-jr_006_6566:
+.updatePosition
     add  hl, bc                                   ; $6566: $09
     pop  af                                       ; $6567: $F1
+    ; Sign extension for high nibble
     ld   e, $00                                   ; $6568: $1E $00
     bit  7, a                                     ; $656A: $CB $7F
-    jr   z, jr_006_6570                           ; $656C: $28 $02
+    jr   z, .positive                             ; $656C: $28 $02
 
     ld   e, $F0                                   ; $656E: $1E $F0
 
-jr_006_6570:
+.positive
     swap a                                        ; $6570: $CB $37
     and  $0F                                      ; $6572: $E6 $0F
     or   e                                        ; $6574: $B3
+    ; Get carry back from d
     rr   d                                        ; $6575: $CB $1A
     adc  [hl]                                     ; $6577: $8E
     ld   [hl], a                                  ; $6578: $77
 
-jr_006_6579:
+.return
     ret                                           ; $6579: $C9
 
-func_006_657A::
+AddEntityZSpeedToPos_06::
     ld   hl, wEntitiesSpeedZTable                 ; $657A: $21 $20 $C3
     add  hl, bc                                   ; $657D: $09
     ld   a, [hl]                                  ; $657E: $7E
     and  a                                        ; $657F: $A7
-    jr   z, jr_006_6579                           ; $6580: $28 $F7
+    jr   z, AddEntitySpeedToPos_06.return         ; $6580: $28 $F7
 
     push af                                       ; $6582: $F5
     swap a                                        ; $6583: $CB $37
     and  $F0                                      ; $6585: $E6 $F0
-    ld   hl, wEntitiesUnknowTableK                ; $6587: $21 $30 $C3
+    ld   hl, wEntitiesSpeedZAccTable              ; $6587: $21 $30 $C3
     add  hl, bc                                   ; $658A: $09
     add  [hl]                                     ; $658B: $86
     ld   [hl], a                                  ; $658C: $77
     rl   d                                        ; $658D: $CB $12
     ld   hl, wEntitiesPosZTable                   ; $658F: $21 $10 $C3
-    jr   jr_006_6566                              ; $6592: $18 $D2
+    jr   AddEntitySpeedToPos_06.updatePosition    ; $6592: $18 $D2
 
 func_006_6594::
     ld   e, $00                                   ; $6594: $1E $00
@@ -348,7 +361,7 @@ jr_006_65B2:
 func_006_65B4::
     call func_006_6594                            ; $65B4: $CD $94 $65
     ld   a, e                                     ; $65B7: $7B
-    ldh  [hScratch0], a                           ; $65B8: $E0 $D7
+    ldh  [hMultiPurpose0], a                           ; $65B8: $E0 $D7
     ld   a, d                                     ; $65BA: $7A
     bit  7, a                                     ; $65BB: $CB $7F
     jr   z, jr_006_65C1                           ; $65BD: $28 $02
@@ -360,7 +373,7 @@ jr_006_65C1:
     push af                                       ; $65C1: $F5
     call func_006_65A4                            ; $65C2: $CD $A4 $65
     ld   a, e                                     ; $65C5: $7B
-    ldh  [hScratch1], a                           ; $65C6: $E0 $D8
+    ldh  [hMultiPurpose1], a                           ; $65C6: $E0 $D8
     ld   a, d                                     ; $65C8: $7A
     bit  7, a                                     ; $65C9: $CB $7F
     jr   z, jr_006_65CF                           ; $65CB: $28 $02
@@ -373,11 +386,11 @@ jr_006_65CF:
     cp   d                                        ; $65D0: $BA
     jr   nc, jr_006_65D7                          ; $65D1: $30 $04
 
-    ldh  a, [hScratch0]                           ; $65D3: $F0 $D7
+    ldh  a, [hMultiPurpose0]                           ; $65D3: $F0 $D7
     jr   jr_006_65D9                              ; $65D5: $18 $02
 
 jr_006_65D7:
-    ldh  a, [hScratch1]                           ; $65D7: $F0 $D8
+    ldh  a, [hMultiPurpose1]                           ; $65D7: $F0 $D8
 
 jr_006_65D9:
     ld   e, a                                     ; $65D9: $5F
@@ -425,9 +438,9 @@ func_006_700A::
 label_006_702A:
     call func_006_64CC                            ; $702A: $CD $CC $64
     ldh  a, [hActiveEntityPosX]                   ; $702D: $F0 $EE
-    ldh  [hScratch0], a                           ; $702F: $E0 $D7
+    ldh  [hMultiPurpose0], a                           ; $702F: $E0 $D7
     ldh  a, [hActiveEntityVisualPosY]             ; $7031: $F0 $EC
-    ldh  [hScratch1], a                           ; $7033: $E0 $D8
+    ldh  [hMultiPurpose1], a                           ; $7033: $E0 $D8
 
 label_006_7035:
     ld   a, TRANSCIENT_VFX_POOF                   ; $7035: $3E $02
@@ -438,11 +451,11 @@ label_006_7035:
 
     ld   a, $36                                   ; $703F: $3E $36
     call SpawnNewEntity_trampoline                ; $7041: $CD $86 $3B
-    ldh  a, [hScratch0]                           ; $7044: $F0 $D7
+    ldh  a, [hMultiPurpose0]                           ; $7044: $F0 $D7
     ld   hl, wEntitiesPosXTable                   ; $7046: $21 $00 $C2
     add  hl, de                                   ; $7049: $19
     ld   [hl], a                                  ; $704A: $77
-    ldh  a, [hScratch1]                           ; $704B: $F0 $D8
+    ldh  a, [hMultiPurpose1]                           ; $704B: $F0 $D8
     ld   hl, wEntitiesPosYTable                   ; $704D: $21 $10 $C2
     add  hl, de                                   ; $7050: $19
     ld   [hl], a                                  ; $7051: $77

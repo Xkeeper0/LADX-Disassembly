@@ -97,7 +97,7 @@ jr_006_7100:
     ld   [hl], a                                  ; $711F: $77
 
 jr_006_7120:
-    jp   func_006_6541                            ; $7120: $C3 $41 $65
+    jp   UpdateEntityPosWithSpeed_06              ; $7120: $C3 $41 $65
 
 label_006_7123:
     ld   hl, Data_006_7071                        ; $7123: $21 $71 $70
@@ -127,7 +127,7 @@ jr_006_714A:
     ld   hl, wEntitiesSpeedZTable                 ; $714A: $21 $20 $C3
     add  hl, bc                                   ; $714D: $09
     ld   [hl], e                                  ; $714E: $73
-    call func_006_657A                            ; $714F: $CD $7A $65
+    call AddEntityZSpeedToPos_06                  ; $714F: $CD $7A $65
     call func_006_64C6                            ; $7152: $CD $C6 $64
     ldh  a, [hActiveEntityState]                  ; $7155: $F0 $F0
     JP_TABLE                                      ; $7157
@@ -209,12 +209,12 @@ jr_006_71BA:
     ld   hl, wEntitiesUnknownTableD               ; $71D2: $21 $D0 $C2
     add  hl, de                                   ; $71D5: $19
     ld   [hl], $01                                ; $71D6: $36 $01
-    ldh  a, [hScratch0]                           ; $71D8: $F0 $D7
+    ldh  a, [hMultiPurpose0]                           ; $71D8: $F0 $D7
     ld   hl, wEntitiesPosXTable                   ; $71DA: $21 $00 $C2
     add  hl, de                                   ; $71DD: $19
     add  $00                                      ; $71DE: $C6 $00
     ld   [hl], a                                  ; $71E0: $77
-    ldh  a, [hScratch1]                           ; $71E1: $F0 $D8
+    ldh  a, [hMultiPurpose1]                           ; $71E1: $F0 $D8
     ld   hl, wEntitiesPosYTable                   ; $71E3: $21 $10 $C2
     add  hl, de                                   ; $71E6: $19
     sub  $0E                                      ; $71E7: $D6 $0E

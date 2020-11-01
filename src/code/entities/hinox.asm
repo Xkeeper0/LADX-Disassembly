@@ -145,7 +145,7 @@ jr_006_5085:
     call ClearEntitySpeed                         ; $5090: $CD $7F $3D
 
 jr_006_5093:
-    call func_006_6541                            ; $5093: $CD $41 $65
+    call UpdateEntityPosWithSpeed_06              ; $5093: $CD $41 $65
     call label_3B23                               ; $5096: $CD $23 $3B
 
 func_006_5099::
@@ -192,7 +192,7 @@ HinoxState3Handler::
     ld   [hl], b                                  ; $50D6: $70
 
 jr_006_50D7:
-    call func_006_6541                            ; $50D7: $CD $41 $65
+    call UpdateEntityPosWithSpeed_06              ; $50D7: $CD $41 $65
     call label_3B23                               ; $50DA: $CD $23 $3B
     call func_006_6594                            ; $50DD: $CD $94 $65
     add  $18                                      ; $50E0: $C6 $18
@@ -220,10 +220,10 @@ jr_006_5102:
     jr   nz, jr_006_5117                          ; $5106: $20 $0F
 
     ldh  a, [hActiveEntityPosX]                   ; $5108: $F0 $EE
-    ldh  [hScratch0], a                           ; $510A: $E0 $D7
+    ldh  [hMultiPurpose0], a                           ; $510A: $E0 $D7
     ldh  a, [hActiveEntityVisualPosY]             ; $510C: $F0 $EC
     add  $0A                                      ; $510E: $C6 $0A
-    ldh  [hScratch1], a                           ; $5110: $E0 $D8
+    ldh  [hMultiPurpose1], a                           ; $5110: $E0 $D8
     ld   a, TRANSCIENT_VFX_PEGASUS_DUST           ; $5112: $3E $0B
     call AddTranscientVfx                         ; $5114: $CD $C7 $0C
 
@@ -263,9 +263,9 @@ jr_006_5145:
 jr_006_5157:
     ldh  [hLinkPositionXIncrement], a             ; $5157: $E0 $9A
     ld   a, $10                                   ; $5159: $3E $10
-    ldh  [$FFA3], a                               ; $515B: $E0 $A3
+    ldh  [hLinkPositionZLow], a                               ; $515B: $E0 $A3
     ld   a, $02                                   ; $515D: $3E $02
-    ld   [$C146], a                               ; $515F: $EA $46 $C1
+    ld   [wIsLinkInTheAir], a                     ; $515F: $EA $46 $C1
     ld   a, JINGLE_JUMP_DOWN                      ; $5162: $3E $08
     ldh  [hJingle], a                             ; $5164: $E0 $F2
     ld   a, $08                                   ; $5166: $3E $08
@@ -307,16 +307,16 @@ jr_006_5179:
     ld   hl, Data_006_512F                        ; $51A0: $21 $2F $51
     add  hl, de                                   ; $51A3: $19
     ld   a, [hl]                                  ; $51A4: $7E
-    ldh  [hLinkPositionZ], a                      ; $51A5: $E0 $A2
+    ldh  [hLinkPositionZHigh], a                      ; $51A5: $E0 $A2
     ld   a, $02                                   ; $51A7: $3E $02
-    ld   [$C146], a                               ; $51A9: $EA $46 $C1
+    ld   [wIsLinkInTheAir], a                     ; $51A9: $EA $46 $C1
     ldh  a, [hActiveEntityPosY]                   ; $51AC: $F0 $EF
     ldh  [hLinkPositionY], a                      ; $51AE: $E0 $99
 
 func_006_51B0::
     ld   a, $01                                   ; $51B0: $3E $01
     ldh  [hLinkInteractiveMotionBlocked], a       ; $51B2: $E0 $A1
-    ld   a, $6A                                   ; $51B4: $3E $6A
+    ld   a, LINK_ANIMATION_STATE_UNKNOWN_6A       ; $51B4: $3E $6A
     ldh  [hLinkAnimationState], a                 ; $51B6: $E0 $9D
     ld   [wC167], a                               ; $51B8: $EA $67 $C1
 
@@ -347,12 +347,12 @@ jr_006_51D0:
     call SpawnNewEntity_trampoline                ; $51D6: $CD $86 $3B
     jr   c, jr_006_51F6                           ; $51D9: $38 $1B
 
-    ldh  a, [hScratch0]                           ; $51DB: $F0 $D7
+    ldh  a, [hMultiPurpose0]                           ; $51DB: $F0 $D7
     sub  $0C                                      ; $51DD: $D6 $0C
     ld   hl, wEntitiesPosXTable                   ; $51DF: $21 $00 $C2
     add  hl, de                                   ; $51E2: $19
     ld   [hl], a                                  ; $51E3: $77
-    ldh  a, [hScratch1]                           ; $51E4: $F0 $D8
+    ldh  a, [hMultiPurpose1]                           ; $51E4: $F0 $D8
     sub  $00                                      ; $51E6: $D6 $00
     ld   hl, wEntitiesPosYTable                   ; $51E8: $21 $10 $C2
     add  hl, de                                   ; $51EB: $19

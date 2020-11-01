@@ -10,7 +10,7 @@ ThreeOfAKindEntityHandler::
     call RenderActiveEntitySpritesPair            ; $493A: $CD $C0 $3B
     call func_006_64C6                            ; $493D: $CD $C6 $64
     call DecrementEntityIgnoreHitsCountdown       ; $4940: $CD $56 $0C
-    call func_006_6541                            ; $4943: $CD $41 $65
+    call UpdateEntityPosWithSpeed_06              ; $4943: $CD $41 $65
     call label_3B23                               ; $4946: $CD $23 $3B
     ldh  a, [hActiveEntityState]                  ; $4949: $F0 $F0
     JP_TABLE                                      ; $494B
@@ -114,7 +114,7 @@ ThreeOfAKindState2Handler::
     and  a                                        ; $49D9: $A7
     jp   nz, label_006_4AA7                       ; $49DA: $C2 $A7 $4A
 
-    ldh  [hScratch0], a                           ; $49DD: $E0 $D7
+    ldh  [hMultiPurpose0], a                           ; $49DD: $E0 $D7
     ld   e, $0F                                   ; $49DF: $1E $0F
     ld   d, b                                     ; $49E1: $50
 
@@ -143,9 +143,9 @@ jr_006_49E2:
     and  a                                        ; $4A01: $A7
     jr   nz, jr_006_4A09                          ; $4A02: $20 $05
 
-    ldh  a, [hScratch0]                           ; $4A04: $F0 $D7
+    ldh  a, [hMultiPurpose0]                           ; $4A04: $F0 $D7
     inc  a                                        ; $4A06: $3C
-    ldh  [hScratch0], a                           ; $4A07: $E0 $D7
+    ldh  [hMultiPurpose0], a                           ; $4A07: $E0 $D7
 
 jr_006_4A09:
     dec  e                                        ; $4A09: $1D
@@ -153,7 +153,7 @@ jr_006_4A09:
     cp   $FF                                      ; $4A0B: $FE $FF
     jr   nz, jr_006_49E2                          ; $4A0D: $20 $D3
 
-    ldh  a, [hScratch0]                           ; $4A0F: $F0 $D7
+    ldh  a, [hMultiPurpose0]                           ; $4A0F: $F0 $D7
     cp   $03                                      ; $4A11: $FE $03
     jp   nz, label_006_4AA7                       ; $4A13: $C2 $A7 $4A
 
@@ -178,7 +178,7 @@ jr_006_4A1B:
     ld   hl, wEntitiesDirectionTable              ; $4A2C: $21 $80 $C3
     add  hl, de                                   ; $4A2F: $19
     ld   a, [hl]                                  ; $4A30: $7E
-    ld   hl, hScratch2                            ; $4A31: $21 $D9 $FF
+    ld   hl, hMultiPurpose2                            ; $4A31: $21 $D9 $FF
     add  hl, bc                                   ; $4A34: $09
     ld   [hl], a                                  ; $4A35: $77
     inc  bc                                       ; $4A36: $03
@@ -192,8 +192,8 @@ jr_006_4A37:
     pop  bc                                       ; $4A3D: $C1
     call PlayWrongAnswerJingle                    ; $4A3E: $CD $20 $0C
     ld   e, $00                                   ; $4A41: $1E $00
-    ldh  a, [hScratch2]                           ; $4A43: $F0 $D9
-    ld   hl, hScratch3                            ; $4A45: $21 $DA $FF
+    ldh  a, [hMultiPurpose2]                           ; $4A43: $F0 $D9
+    ld   hl, hMultiPurpose3                            ; $4A45: $21 $DA $FF
     cp   [hl]                                     ; $4A48: $BE
     jr   nz, jr_006_4A62                          ; $4A49: $20 $17
 
@@ -223,7 +223,7 @@ ENDC
 
 jr_006_4A62:
     ld   a, e                                     ; $4A62: $7B
-    ldh  [hFFE8], a                               ; $4A63: $E0 $E8
+    ldh  [hMultiPurposeG], a                               ; $4A63: $E0 $E8
     ld   e, $0F                                   ; $4A65: $1E $0F
     ld   d, b                                     ; $4A67: $50
 
@@ -240,7 +240,7 @@ jr_006_4A68:
     cp   $90                                      ; $4A75: $FE $90
     jr   nz, jr_006_4AA1                          ; $4A77: $20 $28
 
-    ldh  a, [hFFE8]                               ; $4A79: $F0 $E8
+    ldh  a, [hMultiPurposeG]                               ; $4A79: $F0 $E8
     and  a                                        ; $4A7B: $A7
     jr   nz, jr_006_4A85                          ; $4A7C: $20 $07
 

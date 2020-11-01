@@ -21,8 +21,8 @@ Kid72EntityHandler::
     ld   de, Data_006_607D                        ; $6087: $11 $7D $60
     call RenderActiveEntitySprite                 ; $608A: $CD $77 $3C
     call func_006_64C6                            ; $608D: $CD $C6 $64
-    call func_006_6541                            ; $6090: $CD $41 $65
-    call func_006_657A                            ; $6093: $CD $7A $65
+    call UpdateEntityPosWithSpeed_06              ; $6090: $CD $41 $65
+    call AddEntityZSpeedToPos_06                  ; $6093: $CD $7A $65
     ld   hl, wEntitiesSpeedZTable                 ; $6096: $21 $20 $C3
     add  hl, bc                                   ; $6099: $09
     dec  [hl]                                     ; $609A: $35
@@ -90,7 +90,7 @@ func_006_60E5::
 jr_006_60F0:
     ld   [wMusicTrackToPlay], a                   ; $60F0: $EA $68 $D3
     ldh  [hDefaultMusicTrack], a                  ; $60F3: $E0 $B0
-    ldh  [$FFBD], a                               ; $60F5: $E0 $BD
+    ldh  [hFFBD], a                               ; $60F5: $E0 $BD
 
 label_006_60F7:
     ld   hl, wEntitiesUnknownTableD               ; $60F7: $21 $D0 $C2
@@ -127,7 +127,7 @@ jr_006_6110:
 jr_006_6124:
     ld   a, $08                                   ; $6124: $3E $08
     call ApplyVectorTowardsLink_trampoline        ; $6126: $CD $AA $3B
-    call func_006_6541                            ; $6129: $CD $41 $65
+    call UpdateEntityPosWithSpeed_06              ; $6129: $CD $41 $65
     ld   a, $02                                   ; $612C: $3E $02
     ldh  [hLinkInteractiveMotionBlocked], a       ; $612E: $E0 $A1
     ld   [wC167], a                               ; $6130: $EA $67 $C1
@@ -146,7 +146,7 @@ func_006_6134::
     call_open_dialog $220                         ; $6147
 
 jr_006_614C:
-    call func_006_657A                            ; $614C: $CD $7A $65
+    call AddEntityZSpeedToPos_06                  ; $614C: $CD $7A $65
     ld   hl, wEntitiesSpeedZTable                 ; $614F: $21 $20 $C3
     add  hl, bc                                   ; $6152: $09
     dec  [hl]                                     ; $6153: $35
@@ -184,7 +184,7 @@ label_006_6170:
     call RenderActiveEntitySpritesPair            ; $617C: $CD $C0 $3B
     call func_006_64C6                            ; $617F: $CD $C6 $64
     call func_006_6230                            ; $6182: $CD $30 $62
-    call func_006_657A                            ; $6185: $CD $7A $65
+    call AddEntityZSpeedToPos_06                  ; $6185: $CD $7A $65
     ld   hl, wEntitiesSpeedZTable                 ; $6188: $21 $20 $C3
     add  hl, bc                                   ; $618B: $09
     dec  [hl]                                     ; $618C: $35
@@ -192,7 +192,7 @@ label_006_6170:
     add  hl, bc                                   ; $6190: $09
     ld   a, [hl]                                  ; $6191: $7E
     and  $80                                      ; $6192: $E6 $80
-    ldh  [hFFE8], a                               ; $6194: $E0 $E8
+    ldh  [hMultiPurposeG], a                               ; $6194: $E0 $E8
     jr   z, jr_006_619F                           ; $6196: $28 $07
 
     xor  a                                        ; $6198: $AF
@@ -219,11 +219,11 @@ func_006_61A6::
     call SpawnNewEntity_trampoline                ; $61B7: $CD $86 $3B
     jr   c, jr_006_61EB                           ; $61BA: $38 $2F
 
-    ldh  a, [hScratch0]                           ; $61BC: $F0 $D7
+    ldh  a, [hMultiPurpose0]                           ; $61BC: $F0 $D7
     ld   hl, wEntitiesPosXTable                   ; $61BE: $21 $00 $C2
     add  hl, de                                   ; $61C1: $19
     ld   [hl], a                                  ; $61C2: $77
-    ldh  a, [hScratch1]                           ; $61C3: $F0 $D8
+    ldh  a, [hMultiPurpose1]                           ; $61C3: $F0 $D8
     ld   hl, wEntitiesPosYTable                   ; $61C5: $21 $10 $C2
     add  hl, de                                   ; $61C8: $19
     ld   [hl], a                                  ; $61C9: $77
@@ -267,7 +267,7 @@ jr_006_61F8:
     cp   $40                                      ; $61FB: $FE $40
     jr   nc, jr_006_620A                          ; $61FD: $30 $0B
 
-    ldh  a, [hFFE8]                               ; $61FF: $F0 $E8
+    ldh  a, [hMultiPurposeG]                               ; $61FF: $F0 $E8
     and  a                                        ; $6201: $A7
     jr   z, jr_006_620A                           ; $6202: $28 $06
 

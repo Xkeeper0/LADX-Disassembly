@@ -39,7 +39,7 @@ jr_006_4049:
 RichardState0Handler::
     call IncrementEntityState                     ; $4056: $CD $12 $3B
     ld   a, [wGoldenLeavesCount]                  ; $4059: $FA $15 $DB
-    cp   $06                                      ; $405C: $FE $06
+    cp   SLIME_KEY                                ; $405C: $FE $06
     ret  c                                        ; $405E: $D8
 
     ld   [hl], $04                                ; $405F: $36 $04
@@ -96,6 +96,7 @@ jr_006_40A0:
     ld   hl, wEntitiesPrivateState1Table          ; $40B0: $21 $B0 $C2
     add  hl, bc                                   ; $40B3: $09
     ld   [hl], $01                                ; $40B4: $36 $01
+    ; reset wGoldenLeavesCount ???
     ld   a, $FF                                   ; $40B6: $3E $FF
     ld   [wGoldenLeavesCount], a                  ; $40B8: $EA $15 $DB
     ld   a, $09                                   ; $40BB: $3E $09
@@ -130,14 +131,14 @@ jr_006_40E0:
     ld   hl, wEntitiesSpeedXTable                 ; $40E0: $21 $40 $C2
     add  hl, bc                                   ; $40E3: $09
     ld   [hl], $F8                                ; $40E4: $36 $F8
-    jp   func_006_654E                            ; $40E6: $C3 $4E $65
+    jp   AddEntitySpeedToPos_06                   ; $40E6: $C3 $4E $65
 
 RichardState4Handler::
     call func_006_645D                            ; $40E9: $CD $5D $64
     jr   nc, jr_006_40FC                          ; $40EC: $30 $0E
 
     ld   a, [wGoldenLeavesCount]                  ; $40EE: $FA $15 $DB
-    cp   $06                                      ; $40F1: $FE $06
+    cp   SLIME_KEY                                ; $40F1: $FE $06
     ld   a, $3E                                   ; $40F3: $3E $3E
     jr   z, jr_006_40F9                           ; $40F5: $28 $02
 
@@ -171,4 +172,4 @@ jr_006_40FC:
     ld   a, $70                                   ; $411D: $3E $70
     ld   [hl+], a                                 ; $411F: $22
     call ClearEntityStatus_06                     ; $4120: $CD $DB $65
-    jp   ApplyMapFadeOutTransition                ; $4123: $C3 $7D $0C
+    jp   ApplyMapFadeOutTransitionWithNoise       ; $4123: $C3 $7D $0C

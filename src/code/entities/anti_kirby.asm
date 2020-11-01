@@ -2,7 +2,7 @@ AntiKirbyEntityHandler::
     call func_006_44B6                            ; $423A: $CD $B6 $44
     call func_006_64C6                            ; $423D: $CD $C6 $64
     call func_006_64F7                            ; $4240: $CD $F7 $64
-    call func_006_657A                            ; $4243: $CD $7A $65
+    call AddEntityZSpeedToPos_06                  ; $4243: $CD $7A $65
     ld   hl, wEntitiesSpeedZTable                 ; $4246: $21 $20 $C3
     add  hl, bc                                   ; $4249: $09
     dec  [hl]                                     ; $424A: $35
@@ -12,7 +12,7 @@ AntiKirbyEntityHandler::
     add  hl, bc                                   ; $4250: $09
     ld   a, [hl]                                  ; $4251: $7E
     and  $80                                      ; $4252: $E6 $80
-    ldh  [hFFE8], a                               ; $4254: $E0 $E8
+    ldh  [hMultiPurposeG], a                               ; $4254: $E0 $E8
     jr   z, jr_006_425E                           ; $4256: $28 $06
 
     ld   [hl], b                                  ; $4258: $70
@@ -62,7 +62,7 @@ jr_006_4294:
     call IncrementEntityState                     ; $429F: $CD $12 $3B
 
 label_006_42A2:
-    ldh  a, [hFFE8]                               ; $42A2: $F0 $E8
+    ldh  a, [hMultiPurposeG]                               ; $42A2: $F0 $E8
     and  a                                        ; $42A4: $A7
     jr   z, jr_006_42AD                           ; $42A5: $28 $06
 
@@ -71,7 +71,7 @@ label_006_42A2:
     ld   [hl], $10                                ; $42AB: $36 $10
 
 jr_006_42AD:
-    call func_006_6541                            ; $42AD: $CD $41 $65
+    call UpdateEntityPosWithSpeed_06              ; $42AD: $CD $41 $65
     call label_3B23                               ; $42B0: $CD $23 $3B
     ld   hl, wEntitiesDirectionTable              ; $42B3: $21 $80 $C3
     add  hl, bc                                   ; $42B6: $09
@@ -155,7 +155,7 @@ label_006_431B:
 
 jr_006_432B:
     ld   a, $01                                   ; $432B: $3E $01
-    ld   [$D3E6], a                               ; $432D: $EA $E6 $D3
+    ld   [wD3E6], a                               ; $432D: $EA $E6 $D3
     ld   hl, wEntitiesSpeedZTable                 ; $4330: $21 $20 $C3
     add  hl, bc                                   ; $4333: $09
     ld   [hl], b                                  ; $4334: $70
@@ -180,7 +180,7 @@ jr_006_434A:
 
 jr_006_434B:
     ldh  a, [hLinkAnimationState]                 ; $434B: $F0 $9D
-    cp   $FF                                      ; $434D: $FE $FF
+    cp   LINK_ANIMATION_STATE_NO_UPDATE          ; $434D: $FE $FF
     jr   z, label_006_43B8                        ; $434F: $28 $67
 
     call func_006_6594                            ; $4351: $CD $94 $65
@@ -215,11 +215,11 @@ jr_006_434B:
 
     ld   a, $08                                   ; $437F: $3E $08
     call GetVectorTowardsLink_trampoline          ; $4381: $CD $B5 $3B
-    ldh  a, [hScratch0]                           ; $4384: $F0 $D7
+    ldh  a, [hMultiPurpose0]                           ; $4384: $F0 $D7
     cpl                                           ; $4386: $2F
     inc  a                                        ; $4387: $3C
     ldh  [hLinkPositionYIncrement], a             ; $4388: $E0 $9B
-    ldh  a, [hScratch1]                           ; $438A: $F0 $D8
+    ldh  a, [hMultiPurpose1]                           ; $438A: $F0 $D8
     cpl                                           ; $438C: $2F
     inc  a                                        ; $438D: $3C
     ldh  [hLinkPositionXIncrement], a             ; $438E: $E0 $9A
@@ -258,7 +258,7 @@ AntiKirbyState3Handler::
     call GetEntityTransitionCountdown             ; $43C5: $CD $05 $0C
     jr   z, jr_006_43F5                           ; $43C8: $28 $2B
 
-    ldh  a, [hFFE8]                               ; $43CA: $F0 $E8
+    ldh  a, [hMultiPurposeG]                               ; $43CA: $F0 $E8
     and  a                                        ; $43CC: $A7
     jr   z, jr_006_43E2                           ; $43CD: $28 $13
 
@@ -281,7 +281,7 @@ jr_006_43E2:
     ld   a, [hl]                                  ; $43E6: $7E
     add  $08                                      ; $43E7: $C6 $08
     call SetEntitySpriteVariant                   ; $43E9: $CD $0C $3B
-    ld   a, $FF                                   ; $43EC: $3E $FF
+    ld   a, LINK_ANIMATION_STATE_NO_UPDATE       ; $43EC: $3E $FF
     ldh  [hLinkAnimationState], a                 ; $43EE: $E0 $9D
     ld   a, $02                                   ; $43F0: $3E $02
     ldh  [hLinkInteractiveMotionBlocked], a       ; $43F2: $E0 $A1
@@ -306,11 +306,11 @@ jr_006_43F5:
 jr_006_440C:
     ldh  [hLinkPositionXIncrement], a             ; $440C: $E0 $9A
     ld   a, $10                                   ; $440E: $3E $10
-    ldh  [$FFA3], a                               ; $4410: $E0 $A3
+    ldh  [hLinkPositionZLow], a                               ; $4410: $E0 $A3
     ld   a, $20                                   ; $4412: $3E $20
     ld   [wInvincibilityCounter], a               ; $4414: $EA $C7 $DB
     ld   a, $02                                   ; $4417: $3E $02
-    ld   [$C146], a                               ; $4419: $EA $46 $C1
+    ld   [wIsLinkInTheAir], a                     ; $4419: $EA $46 $C1
     ld   a, $02                                   ; $441C: $3E $02
     ld   [wSubtractHealthBuffer], a               ; $441E: $EA $94 $DB
     ld   a, JINGLE_JUMP_DOWN                      ; $4421: $3E $08

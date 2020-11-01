@@ -119,9 +119,9 @@ DropFairyEffectHandler::
     ld   [hl], $80                                ; $5DDA: $36 $80
 
     ld   a, $88                                   ; $5DDC: $3E $88
-    ldh  [hScratch0], a                           ; $5DDE: $E0 $D7
+    ldh  [hMultiPurpose0], a                           ; $5DDE: $E0 $D7
     ld   a, $30                                   ; $5DE0: $3E $30
-    ldh  [hScratch1], a                           ; $5DE2: $E0 $D8
+    ldh  [hMultiPurpose1], a                           ; $5DE2: $E0 $D8
     ld   a, TRANSCIENT_VFX_POOF                   ; $5DE4: $3E $02
     jp   MakeEffectObjectAppear                   ; $5DE6: $C3 $F6 $5D
 
@@ -129,9 +129,9 @@ RevealStairwayEffectHandler::
     call EventEffectGuard                         ; $5DE9: $CD $AF $5D
 
     ld   a, $88                                   ; $5DEC: $3E $88
-    ldh  [hScratch0], a                           ; $5DEE: $E0 $D7
+    ldh  [hMultiPurpose0], a                           ; $5DEE: $E0 $D7
     ld   a, $20                                   ; $5DF0: $3E $20
-    ldh  [hScratch1], a                           ; $5DF2: $E0 $D8
+    ldh  [hMultiPurpose1], a                           ; $5DF2: $E0 $D8
     ld   a, TRANSCIENT_VFX_STAIRS_APPEARS         ; $5DF4: $3E $04
 
 MakeEffectObjectAppear::
@@ -178,7 +178,7 @@ ClearMidbossEffectHandler::
 
 ; Open all the locked doors of the room
 OpenLockedDoorsEffectHandler::
-    ld   a, [$C190]                               ; $5E25: $FA $90 $C1
+    ld   a, [wC190]                               ; $5E25: $FA $90 $C1
     and  a                                        ; $5E28: $A7
     jr   nz, jr_002_5E2E                          ; $5E29: $20 $03
 
@@ -209,7 +209,7 @@ jr_002_5E2E:
     cp   MAP_COLOR_DUNGEON                                      ; $5E51: $FE $FF
     jr   nz, jr_002_5E5A                          ; $5E53: $20 $05
 
-    ld   hl, $DDE0                                ; $5E55: $21 $E0 $DD
+    ld   hl, wColorDungeonRoomStatus                                ; $5E55: $21 $E0 $DD
     jr   jr_002_5E63                              ; $5E58: $18 $09
 
 jr_002_5E5A:
@@ -228,14 +228,14 @@ jr_002_5E63:
     ldh  [hJingle], a                               ; $5E68: $E0 $F2
 
 jr_002_5E6A:
-    ld   a, [$C190]                               ; $5E6A: $FA $90 $C1
+    ld   a, [wC190]                               ; $5E6A: $FA $90 $C1
     and  a                                        ; $5E6D: $A7
     ret  z                                        ; $5E6E: $C8
 
     xor  a                                        ; $5E6F: $AF
     ld   [wRoomEvent], a                          ; $5E70: $EA $8E $C1
     ld   a, $01                                   ; $5E73: $3E $01
-    ld   [$C18C], a                               ; $5E75: $EA $8C $C1
+    ld   [wC18C], a                               ; $5E75: $EA $8C $C1
     jp   EnqueueDoorUnlockedSfx                   ; $5E78: $C3 $20 $54
 
 func_002_5E7B::
@@ -254,8 +254,8 @@ func_002_5E7B::
     jr   nz, .return                              ; $5E8F: $20 $11
 
     ld   a, $01                                   ; $5E91: $3E $01
-    ld   [$C18D], a                               ; $5E93: $EA $8D $C1
-    ld   [$C190], a                               ; $5E96: $EA $90 $C1
+    ld   [wC18D], a                               ; $5E93: $EA $8D $C1
+    ld   [wC190], a                               ; $5E96: $EA $90 $C1
     ld   a, $04                                   ; $5E99: $3E $04
     ld   [wC111], a                               ; $5E9B: $EA $11 $C1
     ld   a, WAVE_SFX_BOSS_AGONY                        ; $5E9E: $3E $10
@@ -273,7 +273,7 @@ Data_002_5EA7::
 RevealChestEffectHandler::
     call EventEffectGuard                         ; $5EAB: $CD $AF $5D
     ld   a, $88                                   ; $5EAE: $3E $88
-    ldh  [hScratch0], a                           ; $5EB0: $E0 $D7
+    ldh  [hMultiPurpose0], a                           ; $5EB0: $E0 $D7
     ldh  a, [hLinkPositionY]                      ; $5EB2: $F0 $99
     sub  $30                                      ; $5EB4: $D6 $30
     add  $08                                      ; $5EB6: $C6 $08
@@ -293,7 +293,7 @@ jr_002_5ECA:
     ld   a, $30                                   ; $5ECA: $3E $30
 
 jr_002_5ECC:
-    ldh  [hScratch1], a                           ; $5ECC: $E0 $D8
+    ldh  [hMultiPurpose1], a                           ; $5ECC: $E0 $D8
     ld   a, TRANSCIENT_VFX_CHEST_APPEARS          ; $5ECE: $3E $03
     jp   AddTranscientVfx                         ; $5ED0: $C3 $C7 $0C
 
@@ -332,7 +332,7 @@ jr_002_5EED:
     add  hl, de                                   ; $5F03: $19
     ld   a, $A0                                   ; $5F04: $3E $A0
     ld   [hl], a                                  ; $5F06: $77
-    ld   [$DDD8], a                               ; $5F07: $EA $D8 $DD
+    ld   [wDDD8], a                               ; $5F07: $EA $D8 $DD
     call label_2887                               ; $5F0A: $CD $87 $28
     ld   a, [wRequests]                           ; $5F0D: $FA $00 $D6
     ld   e, a                                     ; $5F10: $5F
@@ -349,9 +349,9 @@ jr_002_5EED:
     ld   de, Data_002_5EA7                        ; $5F24: $11 $A7 $5E
 
 label_002_5F27:
-    ldh  a, [$FFCF]                               ; $5F27: $F0 $CF
+    ldh  a, [hFFCF]                               ; $5F27: $F0 $CF
     ld   [hl+], a                                 ; $5F29: $22
-    ldh  a, [$FFD0]                               ; $5F2A: $F0 $D0
+    ldh  a, [hFFD0]                               ; $5F2A: $F0 $D0
     ld   [hl+], a                                 ; $5F2C: $22
     ld   a, $81                                   ; $5F2D: $3E $81
     ld   [hl+], a                                 ; $5F2F: $22
@@ -361,9 +361,9 @@ label_002_5F27:
     ld   a, [de]                                  ; $5F33: $1A
     inc  de                                       ; $5F34: $13
     ld   [hl+], a                                 ; $5F35: $22
-    ldh  a, [$FFCF]                               ; $5F36: $F0 $CF
+    ldh  a, [hFFCF]                               ; $5F36: $F0 $CF
     ld   [hl+], a                                 ; $5F38: $22
-    ldh  a, [$FFD0]                               ; $5F39: $F0 $D0
+    ldh  a, [hFFD0]                               ; $5F39: $F0 $D0
     inc  a                                        ; $5F3B: $3C
     ld   [hl+], a                                 ; $5F3C: $22
     ld   a, $81                                   ; $5F3D: $3E $81
@@ -392,15 +392,15 @@ Data_002_5F54::
 
 func_002_5F5C::
     ld   a, $01                                   ; $5F5C: $3E $01
-    ldh  [$FFAC], a                               ; $5F5E: $E0 $AC
+    ldh  [hFFAC], a                               ; $5F5E: $E0 $AC
     ld   a, $10                                   ; $5F60: $3E $10
     ldh  [hSwordIntersectedAreaY], a                               ; $5F62: $E0 $CD
     add  $10                                      ; $5F64: $C6 $10
-    ldh  [$FFAE], a                               ; $5F66: $E0 $AE
+    ldh  [hFFAE], a                               ; $5F66: $E0 $AE
     ld   a, $80                                   ; $5F68: $3E $80
     ldh  [hSwordIntersectedAreaX], a                               ; $5F6A: $E0 $CE
     add  $08                                      ; $5F6C: $C6 $08
-    ldh  [$FFAD], a                               ; $5F6E: $E0 $AD
+    ldh  [hFFAD], a                               ; $5F6E: $E0 $AD
     swap a                                        ; $5F70: $CB $37
     and  $0F                                      ; $5F72: $E6 $0F
     ld   e, a                                     ; $5F74: $5F
@@ -413,7 +413,7 @@ func_002_5F5C::
     add  hl, de                                   ; $5F80: $19
     ld   a, $BE                                   ; $5F81: $3E $BE
     ld   [hl], a                                  ; $5F83: $77
-    ld   [$DDD8], a                               ; $5F84: $EA $D8 $DD
+    ld   [wDDD8], a                               ; $5F84: $EA $D8 $DD
     call label_2887                               ; $5F87: $CD $87 $28
     ld   a, [wRequests]                           ; $5F8A: $FA $00 $D6
     ld   e, a                                     ; $5F8D: $5F
@@ -430,9 +430,9 @@ func_002_5F5C::
 ; Some trigger are marked as resolved directly by their respective
 ; entities. There function checks for all the other triggers.
 CheckTriggersResolution::
-    ; hScratch0 = event trigger
+    ; hMultiPurpose0 = event trigger
     and  EVENT_TRIGGER_MASK                       ; $5F9F: $E6 $1F
-    ldh  [hScratch0], a                           ; $5FA1: $E0 $D7
+    ldh  [hMultiPurpose0], a                           ; $5FA1: $E0 $D7
     dec  a                                        ; $5FA3: $3D
     JP_TABLE                                      ; $5FA4: $C7
 ._01 dw CheckKillEnemiesTrigger
@@ -452,7 +452,7 @@ CheckTriggersResolution::
 ._0F dw Events.return
 ._10 dw CheckAnswerTunicsTrigger
 
-Events
+Events::
 .return
     ret                                           ; $5FC5: $C9
 
@@ -474,14 +474,14 @@ jr_002_5FD4:
     ret                                           ; $5FD9: $C9
 
 CheckLightTorchesTrigger::
-    ld   a, [$C1A2]                               ; $5FDA: $FA $A2 $C1
+    ld   a, [wC1A2]                               ; $5FDA: $FA $A2 $C1
     cp   $02                                      ; $5FDD: $FE $02
     jp   z, MarkTriggerAsResolved                 ; $5FDF: $CA $60 $0C
 
     ret                                           ; $5FE2: $C9
 
 CheckStepOnButtonTrigger::
-    ld   a, [$C1CB]                               ; $5FE3: $FA $CB $C1
+    ld   a, [wC1CB]                               ; $5FE3: $FA $CB $C1
     and  a                                        ; $5FE6: $A7
     jp   nz, MarkTriggerAsResolved               ; $5FE7: $C2 $60 $0C
 
@@ -489,7 +489,7 @@ CheckStepOnButtonTrigger::
 
 CheckKillInOrderTrigger::
     ld   c, $00                                   ; $5FEB: $0E $00
-    ld   hl, $DBB6                                ; $5FED: $21 $B6 $DB
+    ld   hl, wDBB6                                ; $5FED: $21 $B6 $DB
 
 jr_002_5FF0:
     ld   a, [hl+]                                 ; $5FF0: $2A
@@ -527,15 +527,15 @@ jr_002_6011:
     cp   $FF                                      ; $6013: $FE $FF
     jr   nz, jr_002_6000                          ; $6015: $20 $E9
 
-    ldh  a, [hScratch0]                               ; $6017: $F0 $D7
+    ldh  a, [hMultiPurpose0]                      ; $6017: $F0 $D7
     cp   $08                                      ; $6019: $FE $08
     jr   nz, jr_002_6029                          ; $601B: $20 $0C
 
-    ld   a, [$D460]                               ; $601D: $FA $60 $D4
+    ld   a, [wD460]                               ; $601D: $FA $60 $D4
     and  a                                        ; $6020: $A7
     jr   z, jr_002_602C                           ; $6021: $28 $09
 
-    ld   a, [wC113]                               ; $6023: $FA $13 $C1
+    ld   a, [wEnemyWasKilled]                     ; $6023: $FA $13 $C1
     and  a                                        ; $6026: $A7
     jr   nz, jr_002_602C                          ; $6027: $20 $03
 
@@ -552,9 +552,9 @@ CheckAnswerTunicsTrigger::
     ret  nz                                       ; $6031: $C0
 
     xor  a                                        ; $6032: $AF
-    ldh  [hScratch0], a                               ; $6033: $E0 $D7
+    ldh  [hMultiPurpose0], a                      ; $6033: $E0 $D7
     ld   de, $00                                  ; $6035: $11 $00 $00
-    ldh  a, [hMapRoom]                           ; $6038: $F0 $F6
+    ldh  a, [hMapRoom]                            ; $6038: $F0 $F6
     cp   $12                                      ; $603A: $FE $12
     jr   z, jr_002_609B                           ; $603C: $28 $5D
 
@@ -578,13 +578,13 @@ jr_002_604F:
     and  a                                        ; $6054: $A7
     jr   z, jr_002_6064                           ; $6055: $28 $0D
 
-    ld   hl, $C3B0                                ; $6057: $21 $B0 $C3
+    ld   hl, wEntitiesSpriteVariantTable                                ; $6057: $21 $B0 $C3
     add  hl, de                                   ; $605A: $19
     ld   a, [hl]                                  ; $605B: $7E
     cp   $08                                      ; $605C: $FE $08
     jr   nz, jr_002_6064                          ; $605E: $20 $04
 
-    ld   hl, hScratch0                                ; $6060: $21 $D7 $FF
+    ld   hl, hMultiPurpose0                                ; $6060: $21 $D7 $FF
     inc  [hl]                                     ; $6063: $34
 
 jr_002_6064:
@@ -601,7 +601,7 @@ jr_002_6064:
     ld   e, $04                                   ; $6072: $1E $04
 
 jr_002_6074:
-    ldh  a, [hScratch0]                               ; $6074: $F0 $D7
+    ldh  a, [hMultiPurpose0]                               ; $6074: $F0 $D7
     cp   e                                        ; $6076: $BB
     ret  nz                                       ; $6077: $C0
 
@@ -615,7 +615,7 @@ jr_002_6074:
 
     call EventEffectGuard                         ; $6084: $CD $AF $5D
     call OpenLockedDoorsEffectHandler             ; $6087: $CD $25 $5E
-    ld   hl, $DDE0                                ; $608A: $21 $E0 $DD
+    ld   hl, wColorDungeonRoomStatus                                ; $608A: $21 $E0 $DD
     ldh  a, [hMapRoom]                            ; $608D: $F0 $F6
     ld   e, a                                     ; $608F: $5F
     ld   d, $00                                   ; $6090: $16 $00
@@ -651,7 +651,7 @@ jr_002_60A8:
     cp   $04                                      ; $60B5: $FE $04
     jr   nz, jr_002_60BD                          ; $60B7: $20 $04
 
-    ld   hl, hScratch0                                ; $60B9: $21 $D7 $FF
+    ld   hl, hMultiPurpose0                                ; $60B9: $21 $D7 $FF
     inc  [hl]                                     ; $60BC: $34
 
 jr_002_60BD:
@@ -660,7 +660,7 @@ jr_002_60BD:
     and  $0F                                      ; $60BF: $E6 $0F
     jr   nz, jr_002_609B                          ; $60C1: $20 $D8
 
-    ldh  a, [hScratch0]                           ; $60C3: $F0 $D7
+    ldh  a, [hMultiPurpose0]                           ; $60C3: $F0 $D7
     cp   $02                                      ; $60C5: $FE $02
     ret  nz                                       ; $60C7: $C0
 

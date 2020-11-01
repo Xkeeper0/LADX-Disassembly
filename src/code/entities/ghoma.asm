@@ -53,7 +53,7 @@ jr_005_7BF6:
 jr_005_7C1C:
     call BossIntro                                ; $7C1C: $CD $E8 $3E
     call label_3B39                               ; $7C1F: $CD $39 $3B
-    call func_005_7AB1                            ; $7C22: $CD $B1 $7A
+    call UpdateEntityPosWithSpeed_05              ; $7C22: $CD $B1 $7A
     call label_3B23                               ; $7C25: $CD $23 $3B
     call DecrementEntityIgnoreHitsCountdown       ; $7C28: $CD $56 $0C
     ldh  a, [hActiveEntityState]                  ; $7C2B: $F0 $F0
@@ -426,11 +426,11 @@ jr_005_7E3A:
     call SpawnNewEntity_trampoline                ; $7E40: $CD $86 $3B
     jr   c, jr_005_7E61                           ; $7E43: $38 $1C
 
-    ldh  a, [hScratch0]                           ; $7E45: $F0 $D7
+    ldh  a, [hMultiPurpose0]                           ; $7E45: $F0 $D7
     ld   hl, wEntitiesPosXTable                   ; $7E47: $21 $00 $C2
     add  hl, de                                   ; $7E4A: $19
     ld   [hl], a                                  ; $7E4B: $77
-    ldh  a, [hScratch1]                           ; $7E4C: $F0 $D8
+    ldh  a, [hMultiPurpose1]                           ; $7E4C: $F0 $D8
     ld   hl, wEntitiesPosYTable                   ; $7E4E: $21 $10 $C2
     add  hl, de                                   ; $7E51: $19
     ld   [hl], a                                  ; $7E52: $77
@@ -518,7 +518,7 @@ jr_005_7EBF:
     jr   nz, jr_005_7EAE                          ; $7EC3: $20 $E9
 
     xor  a                                        ; $7EC5: $AF
-    ld   [$C1CF], a                               ; $7EC6: $EA $CF $C1
+    ld   [wC1CF], a                               ; $7EC6: $EA $CF $C1
     jp   label_27DD                               ; $7EC9: $C3 $DD $27
 
 jr_005_7ECC:

@@ -17,7 +17,7 @@ jr_006_4F48:
     call func_006_64C6                            ; $4F4B: $CD $C6 $64
     call func_006_64F7                            ; $4F4E: $CD $F7 $64
     call label_3B39                               ; $4F51: $CD $39 $3B
-    call func_006_6541                            ; $4F54: $CD $41 $65
+    call UpdateEntityPosWithSpeed_06              ; $4F54: $CD $41 $65
     call label_3B23                               ; $4F57: $CD $23 $3B
     ldh  a, [hFrameCounter]                       ; $4F5A: $F0 $E7
     rra                                           ; $4F5C: $1F
@@ -35,7 +35,7 @@ jr_006_4F48:
     and  $07                                      ; $4F6F: $E6 $07
     add  $04                                      ; $4F71: $C6 $04
     call GetVectorTowardsLink_trampoline          ; $4F73: $CD $B5 $3B
-    ldh  a, [hScratch0]                           ; $4F76: $F0 $D7
+    ldh  a, [hMultiPurpose0]                           ; $4F76: $F0 $D7
     ld   hl, wEntitiesSpeedYTable                 ; $4F78: $21 $50 $C2
     call func_006_4FA3                            ; $4F7B: $CD $A3 $4F
     ld   hl, wEntitiesCollisionsTable             ; $4F7E: $21 $A0 $C2
@@ -49,7 +49,7 @@ jr_006_4F48:
     ld   [hl], b                                  ; $4F8B: $70
 
 jr_006_4F8C:
-    ldh  a, [hScratch1]                           ; $4F8C: $F0 $D8
+    ldh  a, [hMultiPurpose1]                           ; $4F8C: $F0 $D8
     ld   hl, wEntitiesSpeedXTable                 ; $4F8E: $21 $40 $C2
     call func_006_4FA3                            ; $4F91: $CD $A3 $4F
     ld   hl, wEntitiesCollisionsTable             ; $4F94: $21 $A0 $C2

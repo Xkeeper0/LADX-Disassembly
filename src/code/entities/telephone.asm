@@ -62,7 +62,7 @@ jr_006_6AA9:
     jp   c, label_006_6BAD                        ; $6AEC: $DA $AD $6B
 
     ld   a, [wGoldenLeavesCount]                  ; $6AEF: $FA $15 $DB
-    cp   $05                                      ; $6AF2: $FE $05
+    cp   GOLDEN_LEAVES_5                          ; $6AF2: $FE $05
     jr   nc, jr_006_6B09                          ; $6AF4: $30 $13
 
     ld   hl, wEntitiesPrivateState1Table          ; $6AF6: $21 $B0 $C2
@@ -108,7 +108,7 @@ jr_006_6B09:
     jr   z, jr_006_6B3F                           ; $6B34: $28 $09
 
     ld   e, $4B                                   ; $6B36: $1E $4B
-    ld   a, [wIndoorARoomStatus + $E3]                               ; $6B38: $FA $E3 $D9
+    ld   a, [wIndoorARoomStatus + $E3]            ; $6B38: $FA $E3 $D9
     and  $40                                      ; $6B3B: $E6 $40
     jr   z, label_006_6BAD                        ; $6B3D: $28 $6E
 
@@ -120,7 +120,7 @@ jr_006_6B3F:
 
     ld   e, $45                                   ; $6B48: $1E $45
     ld   a, [wOcarinaSongFlags]                   ; $6B4A: $FA $49 $DB
-    and  $01                                      ; $6B4D: $E6 $01
+    and  FROGS_SONG_OF_THE_SOUL_FLAG              ; $6B4D: $E6 $01
     jp   z, label_006_6BB3                        ; $6B4F: $CA $B3 $6B
 
     ld   e, $4D                                   ; $6B52: $1E $4D

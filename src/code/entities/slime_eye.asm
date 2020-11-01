@@ -6,7 +6,7 @@ Data_004_496D::
 
 label_004_496F:
     xor  a                                        ; $496F: $AF
-    ldh  [hFFE8], a                               ; $4970: $E0 $E8
+    ldh  [hMultiPurposeG], a                               ; $4970: $E0 $E8
 
 .loop
     ld   a, $5B                                   ; $4972: $3E $5B
@@ -15,11 +15,11 @@ label_004_496F:
     add  hl, de                                   ; $497A: $19
     ld   [hl], $01                                ; $497B: $36 $01
     push bc                                       ; $497D: $C5
-    ldh  a, [hFFE8]                               ; $497E: $F0 $E8
+    ldh  a, [hMultiPurposeG]                               ; $497E: $F0 $E8
     ld   c, a                                     ; $4980: $4F
     ld   hl, Data_004_496B                        ; $4981: $21 $6B $49
     add  hl, bc                                   ; $4984: $09
-    ldh  a, [hScratch0]                               ; $4985: $F0 $D7
+    ldh  a, [hMultiPurpose0]                               ; $4985: $F0 $D7
     add  [hl]                                     ; $4987: $86
     ld   hl, wEntitiesPosXTable                         ; $4988: $21 $00 $C2
     add  hl, de                                   ; $498B: $19
@@ -36,7 +36,7 @@ label_004_496F:
     ld   hl, wEntitiesStateTable                  ; $499D: $21 $90 $C2
     add  hl, de                                   ; $49A0: $19
     ld   [hl], $01                                ; $49A1: $36 $01
-    ldh  a, [hScratch1]                               ; $49A3: $F0 $D8
+    ldh  a, [hMultiPurpose1]                               ; $49A3: $F0 $D8
     ld   hl, wEntitiesPosYTable                   ; $49A5: $21 $10 $C2
     add  hl, de                                   ; $49A8: $19
     ld   [hl], a                                  ; $49A9: $77
@@ -44,9 +44,9 @@ label_004_496F:
     add  hl, de                                   ; $49AD: $19
     ld   [hl], $05                                ; $49AE: $36 $05
     pop  bc                                       ; $49B0: $C1
-    ldh  a, [hFFE8]                               ; $49B1: $F0 $E8
+    ldh  a, [hMultiPurposeG]                               ; $49B1: $F0 $E8
     inc  a                                        ; $49B3: $3C
-    ldh  [hFFE8], a                               ; $49B4: $E0 $E8
+    ldh  [hMultiPurposeG], a                               ; $49B4: $E0 $E8
     cp   $02                                      ; $49B6: $FE $02
     jr   nz, .loop                                ; $49B8: $20 $B8
 
@@ -83,7 +83,7 @@ func_004_49DC::
 ._03 dw SlimeEyeState3Handler                     ; $49EB
 
 SlimeEyeState0Handler::
-    ld   a, [$C157]                               ; $49ED: $FA $57 $C1
+    ld   a, [wC157]                               ; $49ED: $FA $57 $C1
     cp   $05                                      ; $49F0: $FE $05
     jr   nz, jr_004_49FB                          ; $49F2: $20 $07
 
@@ -96,7 +96,7 @@ jr_004_49FB:
     jr   nz, jr_004_4A2C                          ; $49FE: $20 $2C
 
     ld   [hl], $50                                ; $4A00: $36 $50
-    ld   a, [$C1AE]                               ; $4A02: $FA $AE $C1
+    ld   a, [wC1AE]                               ; $4A02: $FA $AE $C1
     cp   $02                                      ; $4A05: $FE $02
     jr   nc, jr_004_4A2C                          ; $4A07: $30 $23
 
@@ -124,7 +124,7 @@ jr_004_4A2C:
 SlimeEyeState1Handler::
     call func_004_4DB5                            ; $4A2D: $CD $B5 $4D
     call func_004_7FA3                            ; $4A30: $CD $A3 $7F
-    call func_004_6E03                            ; $4A33: $CD $03 $6E
+    call AddEntityZSpeedToPos_04                            ; $4A33: $CD $03 $6E
     ld   hl, wEntitiesSpeedZTable                                ; $4A36: $21 $20 $C3
     add  hl, bc                                   ; $4A39: $09
     ld   a, [hl]                                  ; $4A3A: $7E
@@ -143,13 +143,13 @@ jr_004_4A41:
 
     ld   [hl], b                                  ; $4A49: $70
     ld   a, $50                                   ; $4A4A: $3E $50
-    ld   [$C157], a                               ; $4A4C: $EA $57 $C1
+    ld   [wC157], a                               ; $4A4C: $EA $57 $C1
     ld   a, $04                                   ; $4A4F: $3E $04
-    ld   [$C158], a                               ; $4A51: $EA $58 $C1
+    ld   [wC158], a                               ; $4A51: $EA $58 $C1
     call GetEntityTransitionCountdown                 ; $4A54: $CD $05 $0C
     ld   [hl], $40                                ; $4A57: $36 $40
     call PlayBombExplosionSfx                                ; $4A59: $CD $4B $0C
-    ld   a, [$C146]                               ; $4A5C: $FA $46 $C1
+    ld   a, [wIsLinkInTheAir]                     ; $4A5C: $FA $46 $C1
     and  a                                        ; $4A5F: $A7
     jr   nz, jr_004_4A67                          ; $4A60: $20 $05
 
@@ -175,7 +175,7 @@ SlimeEyeState3Handler::
     call func_004_4DB5                            ; $4A7E: $CD $B5 $4D
     call func_004_7FA3                            ; $4A81: $CD $A3 $7F
     call DecrementEntityIgnoreHitsCountdown       ; $4A84: $CD $56 $0C
-    ld   hl, $C300                                ; $4A87: $21 $00 $C3
+    ld   hl, wEntitiesPrivateCountdown2Table                                ; $4A87: $21 $00 $C3
     add  hl, bc                                   ; $4A8A: $09
     ld   a, [hl]                                  ; $4A8B: $7E
     and  a                                        ; $4A8C: $A7
@@ -223,14 +223,14 @@ jr_004_4AA5:
 
 jr_004_4ACB:
     xor  a                                        ; $4ACB: $AF
-    ldh  [hFFE8], a                               ; $4ACC: $E0 $E8
+    ldh  [hMultiPurposeG], a                               ; $4ACC: $E0 $E8
     ld   a, $14                                   ; $4ACE: $3E $14
     call func_004_4B37                            ; $4AD0: $CD $37 $4B
     call label_3B70                               ; $4AD3: $CD $70 $3B
     ld   hl, wEntitiesFlashCountdownTable         ; $4AD6: $21 $20 $C4
     add  hl, bc                                   ; $4AD9: $09
     ld   a, [hl]                                  ; $4ADA: $7E
-    ld   hl, $C300                                ; $4ADB: $21 $00 $C3
+    ld   hl, wEntitiesPrivateCountdown2Table                                ; $4ADB: $21 $00 $C3
     add  hl, bc                                   ; $4ADE: $09
     or   [hl]                                     ; $4ADF: $B6
     jr   nz, jr_004_4AEF                          ; $4AE0: $20 $0D
@@ -238,7 +238,7 @@ jr_004_4ACB:
     call func_004_4B2E                            ; $4AE2: $CD $2E $4B
     call label_3B44                               ; $4AE5: $CD $44 $3B
     ld   a, $01                                   ; $4AE8: $3E $01
-    ldh  [hFFE8], a                               ; $4AEA: $E0 $E8
+    ldh  [hMultiPurposeG], a                               ; $4AEA: $E0 $E8
     call label_3B70                               ; $4AEC: $CD $70 $3B
 
 jr_004_4AEF:

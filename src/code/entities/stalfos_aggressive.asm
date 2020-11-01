@@ -57,7 +57,7 @@ jr_006_4AEC:
     call IncrementEntityState                     ; $4B09: $CD $12 $3B
 
 jr_006_4B0C:
-    call func_006_6541                            ; $4B0C: $CD $41 $65
+    call UpdateEntityPosWithSpeed_06              ; $4B0C: $CD $41 $65
     call label_3B23                               ; $4B0F: $CD $23 $3B
     ldh  a, [hFrameCounter]                       ; $4B12: $F0 $E7
     rra                                           ; $4B14: $1F
@@ -66,9 +66,9 @@ jr_006_4B0C:
     jp   SetEntitySpriteVariant                   ; $4B18: $C3 $0C $3B
 
 StalfosAggressiveState2Handler::
-    call func_006_6541                            ; $4B1B: $CD $41 $65
+    call UpdateEntityPosWithSpeed_06              ; $4B1B: $CD $41 $65
     call label_3B23                               ; $4B1E: $CD $23 $3B
-    call func_006_657A                            ; $4B21: $CD $7A $65
+    call AddEntityZSpeedToPos_06                  ; $4B21: $CD $7A $65
     ld   hl, wEntitiesSpeedZTable                 ; $4B24: $21 $20 $C3
     add  hl, bc                                   ; $4B27: $09
     dec  [hl]                                     ; $4B28: $35
@@ -91,7 +91,7 @@ StalfosAggressiveState3Handler::
     call GetEntityTransitionCountdown             ; $4B41: $CD $05 $0C
     ret  nz                                       ; $4B44: $C0
 
-    call func_006_657A                            ; $4B45: $CD $7A $65
+    call AddEntityZSpeedToPos_06                  ; $4B45: $CD $7A $65
     ld   hl, wEntitiesPosZTable                   ; $4B48: $21 $10 $C3
     add  hl, bc                                   ; $4B4B: $09
     ld   a, [hl]                                  ; $4B4C: $7E
@@ -118,8 +118,8 @@ jr_006_4B53:
     ret  nc                                       ; $4B68: $D0
 
     ldh  a, [hActiveEntityPosX]                   ; $4B69: $F0 $EE
-    ldh  [hScratch0], a                           ; $4B6B: $E0 $D7
+    ldh  [hMultiPurpose0], a                           ; $4B6B: $E0 $D7
     ldh  a, [hActiveEntityVisualPosY]             ; $4B6D: $F0 $EC
     add  $0C                                      ; $4B6F: $C6 $0C
-    ldh  [hScratch1], a                           ; $4B71: $E0 $D8
+    ldh  [hMultiPurpose1], a                           ; $4B71: $E0 $D8
     jp   label_D15                                ; $4B73: $C3 $15 $0D

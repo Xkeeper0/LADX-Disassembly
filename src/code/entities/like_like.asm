@@ -35,7 +35,7 @@ label_006_7E09:
 
 LikeLikeState1Handler::
     ldh  a, [hJoypadState]                        ; $7E0C: $F0 $CC
-    and  $30                                      ; $7E0E: $E6 $30
+    and  J_A | J_B                                ; $7E0E: $E6 $30
     jr   z, jr_006_7E27                           ; $7E10: $28 $15
 
     ld   hl, wEntitiesUnknowTableY                ; $7E12: $21 $D0 $C3
@@ -53,7 +53,7 @@ LikeLikeState1Handler::
     ret                                           ; $7E26: $C9
 
 jr_006_7E27:
-    ld   a, $FF                                   ; $7E27: $3E $FF
+    ld   a, LINK_ANIMATION_STATE_NO_UPDATE       ; $7E27: $3E $FF
     ldh  [hLinkAnimationState], a                 ; $7E29: $E0 $9D
     ld   hl, wEntitiesPrivateState1Table          ; $7E2B: $21 $B0 $C2
     add  hl, bc                                   ; $7E2E: $09
@@ -66,7 +66,7 @@ jr_006_7E27:
 
 jr_006_7E37:
     ld   a, [hl]                                  ; $7E37: $7E
-    cp   $04                                      ; $7E38: $FE $04
+    cp   INVENTORY_SHIELD                         ; $7E38: $FE $04
     jr   nz, jr_006_7E4E                          ; $7E3A: $20 $12
 
     ld   a, [wShieldLevel]                        ; $7E3C: $FA $44 $DB
@@ -97,7 +97,7 @@ jr_006_7E55:
     ldh  a, [hActiveEntityPosY]                   ; $7E5F: $F0 $EF
     ldh  [hLinkPositionY], a                      ; $7E61: $E0 $99
     xor  a                                        ; $7E63: $AF
-    ld   [$C146], a                               ; $7E64: $EA $46 $C1
-    ldh  [hLinkPositionZ], a                      ; $7E67: $E0 $A2
+    ld   [wIsLinkInTheAir], a                     ; $7E64: $EA $46 $C1
+    ldh  [hLinkPositionZHigh], a                      ; $7E67: $E0 $A2
     call func_006_7F05                            ; $7E69: $CD $05 $7F
     jp   func_006_7F05                            ; $7E6C: $C3 $05 $7F

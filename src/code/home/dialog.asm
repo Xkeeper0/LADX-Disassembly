@@ -94,13 +94,13 @@ OpenDialog::
 
     ; Initialize dialog variables
     xor  a                                        ; $238E: $AF
-    ld   [$C16F], a                               ; $238F: $EA $6F $C1
+    ld   [wDialogOpenCloseAnimationFrame], a                               ; $238F: $EA $6F $C1
     ld   [wDialogCharacterIndex], a               ; $2392: $EA $70 $C1
     ld   [wDialogCharacterIndexHi], a             ; $2395: $EA $64 $C1
-    ld   [$C108], a                               ; $2398: $EA $08 $C1
+    ld   [wNameIndex], a                               ; $2398: $EA $08 $C1
     ld   [wDialogIndexHi], a                      ; $239B: $EA $12 $C1
     ld   a, $0F                                   ; $239E: $3E $0F
-    ld   [$C5AB], a                               ; $23A0: $EA $AB $C5
+    ld   [wDialogSFX], a                               ; $23A0: $EA $AB $C5
     ; Determine if the dialog is displayed on top or bottom
     ; wDialogState = hLinkPositionY < $48 ? $81 : $01
     ldh  a, [hLinkPositionY]                      ; $23A3: $F0 $99
@@ -118,7 +118,7 @@ DialogClosingEndHandler::
     xor  a                                        ; $23B1: $AF
     ld   [wDialogState], a                        ; $23B2: $EA $9F $C1
     ld   a, $18                                   ; $23B5: $3E $18
-    ld   [$C134], a                               ; $23B7: $EA $34 $C1
+    ld   [wC134], a                               ; $23B7: $EA $34 $C1
     ldh  a, [hIsGBC]                              ; $23BA: $F0 $FE
     and  a                                        ; $23BC: $A7
     ret  z                                        ; $23BD: $C8
@@ -127,7 +127,7 @@ DialogClosingEndHandler::
     cp   a, GAMEPLAY_WORLD                        ; $23C1: $FE $0B
     ret  nz                                       ; $23C3: $C0
 
-    ld   a, [$C3CC]                               ; $23C4: $FA $CC $C3
+    ld   a, [wBGPaletteEffectAddress]                               ; $23C4: $FA $CC $C3
     cp   a, $08                                   ; $23C7: $FE $08
     ret  c                                        ; $23C9: $D8
 
@@ -171,13 +171,13 @@ label_23EF::
     ld   a, [wBGOriginLow]                        ; $2403: $FA $2F $C1
     add  a, [hl]                                  ; $2406: $86
     ld   l, a                                     ; $2407: $6F
-    ldh  [hScratch0], a                           ; $2408: $E0 $D7
+    ldh  [hMultiPurpose0], a                           ; $2408: $E0 $D7
     ld   hl, data_23D6                            ; $240A: $21 $D6 $23
     add  hl, de                                   ; $240D: $19
     ld   a, [wBGOriginHigh]                       ; $240E: $FA $2E $C1
     add  a, [hl]                                  ; $2411: $86
     ld   h, a                                     ; $2412: $67
-    ldh  a, [hScratch0]                           ; $2413: $F0 $D7
+    ldh  a, [hMultiPurpose0]                           ; $2413: $F0 $D7
     ld   l, a                                     ; $2415: $6F
     xor  a                                        ; $2416: $AF
     ld   e, a                                     ; $2417: $5F
@@ -204,9 +204,9 @@ label_242B::
     cp   $12                                      ; $242D: $FE $12
     jr   nz, label_241E                           ; $242F: $20 $ED
     ld   e, $00                                   ; $2431: $1E $00
-    ldh  a, [hScratch0]                           ; $2433: $F0 $D7
+    ldh  a, [hMultiPurpose0]                           ; $2433: $F0 $D7
     add  a, $20                                   ; $2435: $C6 $20
-    ldh  [hScratch0], a                           ; $2437: $E0 $D7
+    ldh  [hMultiPurpose0], a                           ; $2437: $E0 $D7
     jr   nc, label_243C                           ; $2439: $30 $01
     inc  h                                        ; $243B: $24
 
@@ -251,9 +251,9 @@ label_2464::
     cp   $12                                      ; $2466: $FE $12
     jr   nz, label_2444                           ; $2468: $20 $DA
     ld   e, $00                                   ; $246A: $1E $00
-    ldh  a, [hScratch0]                           ; $246C: $F0 $D7
+    ldh  a, [hMultiPurpose0]                           ; $246C: $F0 $D7
     add  a, $20                                   ; $246E: $C6 $20
-    ldh  [hScratch0], a                           ; $2470: $E0 $D7
+    ldh  [hMultiPurpose0], a                           ; $2470: $E0 $D7
     jr   nc, label_2475                           ; $2472: $30 $01
     inc  h                                        ; $2474: $24
 
@@ -275,8 +275,8 @@ IncrementDialogStateAndReturn::
     ret                                           ; $2489: $C9
 
 DialogFinishedHandler::
-    ; If $C1AB == 0...
-    ld   a, [$C1AB]                               ; $248A: $FA $AB $C1
+    ; If wC1AB == 0...
+    ld   a, [wC1AB]                               ; $248A: $FA $AB $C1
     and  a                                        ; $248D: $A7
     jr   nz, UpdateDialogState_return             ; $248E: $20 $1E
     ; ... and A or B is pressed...
@@ -286,9 +286,9 @@ DialogFinishedHandler::
     ; ... update dialog state
 
 UpdateDialogState::
-    ; Clear $C16F
+    ; Clear wDialogOpenCloseAnimationFrame
     xor  a                                        ; $2496: $AF
-    ld   [$C16F], a                               ; $2497: $EA $6F $C1
+    ld   [wDialogOpenCloseAnimationFrame], a                               ; $2497: $EA $6F $C1
 
 .if
     ; If GameplayType == PHOTO_ALBUM
@@ -352,7 +352,7 @@ DialogLetterAnimationEndHandler::
     ld   hl, wRequests                            ; $24EE: $21 $00 $D6
     add  hl, de                                   ; $24F1: $19
     ldi  [hl], a                                  ; $24F2: $22
-    ld   [$C175], a                               ; $24F3: $EA $75 $C1
+    ld   [wC175], a                               ; $24F3: $EA $75 $C1
     push hl                                       ; $24F6: $E5
     ld   hl, Data_01C_4601                        ; $24F7: $21 $01 $46
     add  hl, bc                                   ; $24FA: $09
@@ -371,7 +371,7 @@ DialogLetterAnimationEndHandler::
 
 .jp_250D
     ld   a, d                                     ; $250D: $7A
-    ld   [$C176], a                               ; $250E: $EA $76 $C1
+    ld   [wC176], a                               ; $250E: $EA $76 $C1
     pop  hl                                       ; $2511: $E1
     ldi  [hl], a                                  ; $2512: $22
     xor  a                                        ; $2513: $AF
@@ -459,10 +459,10 @@ ENDC
     ld   a, [hli]                                 ; $2580: $2A
     ld   e, a                                     ; $2581: $5F
     ld   a, [hl]                                  ; $2582: $7E
-    ld   [$C3C3], a ; upcoming character, used in code for the arrow ; $2583: $EA $C3 $C3
+    ld   [wC3C3], a ; upcoming character, used in code for the arrow ; $2583: $EA $C3 $C3
     call ReloadSavedBank                          ; $2586: $CD $1D $08
     ld   a, e                                     ; $2589: $7B
-    ldh  [hScratch0], a                           ; $258A: $E0 $D7
+    ldh  [hMultiPurpose0], a                           ; $258A: $E0 $D7
     cp   "<ask>" ; $fe                            ; $258C: $FE $FE
     jr   nz, .notChoice                           ; $258E: $20 $14
     pop  hl                                       ; $2590: $E1
@@ -555,7 +555,7 @@ ENDR
 .handleNameChar
 
 .notName
-    ldh  [hScratch1], a                           ; $2608: $E0 $D8
+    ldh  [hMultiPurpose1], a                           ; $2608: $E0 $D8
     ld   e, a                                     ; $260A: $5F
     ld   a, BANK(AsciiToTileMap)                  ; $260B: $3E $1C
     ld   [MBC3SelectBank], a                      ; $260D: $EA $00 $21
@@ -590,7 +590,7 @@ ENDR
 
     ld   a, BANK(DakutenTable)                    ; $263C: $3E $1C
     ld   [MBC3SelectBank], a ; current character  ; $263E: $EA $00 $21
-    ldh  a, [hScratch1]                           ; $2641: $F0 $D8
+    ldh  a, [hMultiPurpose1]                           ; $2641: $F0 $D8
     ld   e, a                                     ; $2643: $5F
     ld   d, $00                                   ; $2644: $16 $00
 IF __DO_CHECK_DAKUTEN__
@@ -604,9 +604,9 @@ ENDC
     and  a                                        ; $2648: $A7
     jr   z, .noDakuten                            ; $2649: $28 $18
     ld   e, a                                     ; $264B: $5F
-    ld   a, [$C175]                               ; $264C: $FA $75 $C1
+    ld   a, [wC175]                               ; $264C: $FA $75 $C1
     ldi  [hl], a                                  ; $264F: $22
-    ld   a, [$C176]                               ; $2650: $FA $76 $C1
+    ld   a, [wC176]                               ; $2650: $FA $76 $C1
     sub  a, $20                                   ; $2653: $D6 $20
     ldi  [hl], a                                  ; $2655: $22
     ld   a, $00                                   ; $2656: $3E $00
@@ -628,8 +628,8 @@ ENDC
     adc  a, $00                                   ; $266E: $CE $00
     ld   [wDialogCharacterIndexHi], a             ; $2670: $EA $64 $C1
     xor  a                                        ; $2673: $AF
-    ; $C1CC = 01 when an unfinished textbox is waiting for a button press to continue.
-    ld   [$C1CC], a                               ; $2674: $EA $CC $C1
+    ; wC1CC = 01 when an unfinished textbox is waiting for a button press to continue.
+    ld   [wC1CC], a                               ; $2674: $EA $CC $C1
     ld   a, [wDialogNextCharPosition]             ; $2677: $FA $71 $C1
     cp   $1F                                      ; $267A: $FE $1F
     jr   z, label_268E                            ; $267C: $28 $10
@@ -656,27 +656,27 @@ DialogBreakHandler::
     ld   a, [wDialogCharacterIndex]               ; $2695: $FA $70 $C1
     and  $1F                                      ; $2698: $E6 $1F
     jr   nz, .jp_26E1                             ; $269A: $20 $45
-    ld   a, [$C3C3]                               ; $269C: $FA $C3 $C3
+    ld   a, [wC3C3]                               ; $269C: $FA $C3 $C3
     cp   $FF                                      ; $269F: $FE $FF
     jp   z, DialogDrawNextCharacterHandler.label_25AD ; $26A1: $CA $AD $25
     cp   $FE                                      ; $26A4: $FE $FE
     jp   z, DialogDrawNextCharacterHandler.choice ; $26A6: $CA $95 $25
-    ; $C1CC = 01 when an unfinished textbox is waiting for a button press to continue.
-    ld   a, [$C1CC]                               ; $26A9: $FA $CC $C1
+    ; wC1CC = 01 when an unfinished textbox is waiting for a button press to continue.
+    ld   a, [wC1CC]                               ; $26A9: $FA $CC $C1
     and  a                                        ; $26AC: $A7
     jr   nz, .jp_26B6                             ; $26AD: $20 $07
     inc  a                                        ; $26AF: $3C
-    ; $C1CC = 01 when an unfinished textbox is waiting for a button press to continue.
-    ld   [$C1CC], a                               ; $26B0: $EA $CC $C1
+    ; wC1CC = 01 when an unfinished textbox is waiting for a button press to continue.
+    ld   [wC1CC], a                               ; $26B0: $EA $CC $C1
     call DialogDrawNextCharacterHandler.endDialog ; $26B3: $CD $9F $25
 
 .jp_26B6
     call func_27BB                                ; $26B6: $CD $BB $27
     ; If
     ldh  a, [hJoypadState]                        ; $26B9: $F0 $CC
-    bit  4, a                                     ; $26BB: $CB $67
+    bit  J_BIT_A, a                               ; $26BB: $CB $67
     jr   nz, .jp_26E1                             ; $26BD: $20 $22
-    bit  5, a                                     ; $26BF: $CB $6F
+    bit  J_BIT_B, a                               ; $26BF: $CB $6F
     jr   z, DialogScrollingStartHandler           ; $26C1: $28 $51
     ld   a, BANK(DialogBankTable)                 ; $26C3: $3E $1C
     ld   [MBC3SelectBank], a                      ; $26C5: $EA $00 $21
@@ -836,10 +836,11 @@ label_278B::
     jp   UpdateDialogState                        ; $2790: $C3 $96 $24
 
 DialogChoiceHandler::
+    ; Was A pushed? 
     ldh  a, [hJoypadState]                        ; $2793: $F0 $CC
-    bit  4, a               ; Was A pushed?       ; $2795: $CB $67
+    bit  J_BIT_A, a                               ; $2795: $CB $67
     jp   nz, .jp_27B7                             ; $2797: $C2 $B7 $27
-    and  J_LEFT | J_RIGHT                         ; $279A: $E6 $03
+    and  J_RIGHT | J_LEFT                         ; $279A: $E6 $03
     jr   z, .jp_27AA                              ; $279C: $28 $0C
     ld   hl, wDialogAskSelectionIndex             ; $279E: $21 $77 $C1
     ld   a, [hl]                                  ; $27A1: $7E

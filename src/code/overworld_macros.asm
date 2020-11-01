@@ -40,7 +40,7 @@ jr_024_75A9:
     ld   d, $00                                   ; $75A9: $16 $00
     ld   hl, wRoomObjectsArea                     ; $75AB: $21 $00 $D7
     add  hl, de                                   ; $75AE: $19
-    ldh  a, [hScratch0]                           ; $75AF: $F0 $D7
+    ldh  a, [hMultiPurpose0]                           ; $75AF: $F0 $D7
     and  a                                        ; $75B1: $A7
     jr   z, jr_024_75CD                           ; $75B2: $28 $19
 
@@ -50,7 +50,7 @@ jr_024_75A9:
 jr_024_75B7:
     call func_024_75CD                            ; $75B7: $CD $CD $75
     dec  bc                                       ; $75BA: $0B
-    ldh  a, [hScratch0]                           ; $75BB: $F0 $D7
+    ldh  a, [hMultiPurpose0]                           ; $75BB: $F0 $D7
     and  $40                                      ; $75BD: $E6 $40
     ld   d, $F1                                   ; $75BF: $16 $F1
     jr   z, jr_024_75C5                           ; $75C1: $28 $02
@@ -290,7 +290,7 @@ Data_024_7789::
     db   $68, $7D, $39, $0E, $FF, $33, $FF, $77
 
 func_024_7801::
-    ld   a, [$D00C]                               ; $7801: $FA $0C $D0
+    ld   a, [wD00C]                               ; $7801: $FA $0C $D0
     cp   $22                                      ; $7804: $FE $22
     ret  nc                                       ; $7806: $D0
 
@@ -310,20 +310,20 @@ func_024_7815::
     ld   hl, Data_024_7711                        ; $7816: $21 $11 $77
     add  hl, bc                                   ; $7819: $09
     ld   bc, $08                                  ; $781A: $01 $08 $00
-    ld   de, $DC10                                ; $781D: $11 $10 $DC
+    ld   de, wBGPal1                              ; $781D: $11 $10 $DC
     call CopyData                                 ; $7820: $CD $14 $29
     pop  bc                                       ; $7823: $C1
     ld   hl, Data_024_7789                        ; $7824: $21 $89 $77
     add  hl, bc                                   ; $7827: $09
     ld   bc, $08                                  ; $7828: $01 $08 $00
-    ld   de, $DC48                                ; $782B: $11 $48 $DC
+    ld   de, wBGPal8                              ; $782B: $11 $48 $DC
     call CopyData                                 ; $782E: $CD $14 $29
     xor  a                                        ; $7831: $AF
-    ld   [wPaletteUnknownC], a                    ; $7832: $EA $D3 $DD
+    ld   [wPalettePartialCopyColorIndexStart], a  ; $7832: $EA $D3 $DD
     ld   a, $20                                   ; $7835: $3E $20
-    ld   [wPaletteUnknownD], a                    ; $7837: $EA $D4 $DD
+    ld   [wPalettePartialCopyColorCount], a       ; $7837: $EA $D4 $DD
     ld   a, $81                                   ; $783A: $3E $81
-    ld   [wPaletteDataFlags], a                    ; $783C: $EA $D1 $DD
+    ld   [wPaletteDataFlags], a                   ; $783C: $EA $D1 $DD
     ret                                           ; $783F: $C9
 
 ; Palette data?
@@ -398,7 +398,7 @@ func_024_7A40::
     and  $07                                      ; $7A42: $E6 $07
     ret  nz                                       ; $7A44: $C0
 
-    ld   hl, $D022                                ; $7A45: $21 $22 $D0
+    ld   hl, wD022                                ; $7A45: $21 $22 $D0
     ld   a, [hl]                                  ; $7A48: $7E
     cp   $07                                      ; $7A49: $FE $07
     ret  z                                        ; $7A4B: $C8
@@ -414,15 +414,15 @@ func_024_7A40::
     rl   b                                        ; $7A59: $CB $10
     ld   hl, Data_024_7840                        ; $7A5B: $21 $40 $78
     add  hl, bc                                   ; $7A5E: $09
-    ld   bc, $40                                ; $7A5F: $01 $40 $00
-    ld   de, $DC50                                ; $7A62: $11 $50 $DC
+    ld   bc, $40                                  ; $7A5F: $01 $40 $00
+    ld   de, wObjPal1                             ; $7A62: $11 $50 $DC
     call CopyData                                 ; $7A65: $CD $14 $29
     xor  a                                        ; $7A68: $AF
-    ld   [wPaletteUnknownC], a                    ; $7A69: $EA $D3 $DD
+    ld   [wPalettePartialCopyColorIndexStart], a  ; $7A69: $EA $D3 $DD
     ld   a, $20                                   ; $7A6C: $3E $20
-    ld   [wPaletteUnknownD], a                    ; $7A6E: $EA $D4 $DD
+    ld   [wPalettePartialCopyColorCount], a       ; $7A6E: $EA $D4 $DD
     ld   a, $82                                   ; $7A71: $3E $82
-    ld   [wPaletteDataFlags], a                    ; $7A73: $EA $D1 $DD
+    ld   [wPaletteDataFlags], a                   ; $7A73: $EA $D1 $DD
     ret                                           ; $7A76: $C9
 
 ; Palette data?
@@ -480,13 +480,13 @@ func_024_7B77::
 .jr_024_7B8E
 
     ld   bc, $40                                ; $7B8E: $01 $40 $00
-    ld   de, $DC10                                ; $7B91: $11 $10 $DC
+    ld   de, wBGPal1                              ; $7B91: $11 $10 $DC
     call CopyData                                 ; $7B94: $CD $14 $29
 
     xor  a                                        ; $7B97: $AF
-    ld   [wPaletteUnknownC], a                    ; $7B98: $EA $D3 $DD
+    ld   [wPalettePartialCopyColorIndexStart], a  ; $7B98: $EA $D3 $DD
     ld   a, $20                                   ; $7B9B: $3E $20
-    ld   [wPaletteUnknownD], a                    ; $7B9D: $EA $D4 $DD
+    ld   [wPalettePartialCopyColorCount], a       ; $7B9D: $EA $D4 $DD
     ld   a, $81                                   ; $7BA0: $3E $81
     ld   [wPaletteDataFlags], a                   ; $7BA2: $EA $D1 $DD
     pop  bc                                       ; $7BA5: $C1

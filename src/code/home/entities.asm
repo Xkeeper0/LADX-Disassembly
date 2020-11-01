@@ -70,13 +70,13 @@ AnimateEntities::
     ld   a, [wDialogState]                        ; $399B: $FA $9F $C1
     and  a                                        ; $399E: $A7
     jr   nz, .C111End                             ; $399F: $20 $0D
-    ; … decrement $C111
-    ld   a, [$C111]                               ; $39A1: $FA $11 $C1
-    ld   [$C1A8], a                               ; $39A4: $EA $A8 $C1
+    ; … decrement wC111
+    ld   a, [wC111]                               ; $39A1: $FA $11 $C1
+    ld   [wC1A8], a                               ; $39A4: $EA $A8 $C1
     and  a                                        ; $39A7: $A7
     jr   z, .C111End                              ; $39A8: $28 $04
     dec  a                                        ; $39AA: $3D
-    ld   [$C111], a                               ; $39AB: $EA $11 $C1
+    ld   [wC111], a                               ; $39AB: $EA $11 $C1
 .C111End
 
     ; If Link is passing out, return
@@ -85,7 +85,7 @@ AnimateEntities::
     ret  z                                        ; $39B3: $C8
 
     xor  a                                        ; $39B4: $AF
-    ld   [$C3C1], a                               ; $39B5: $EA $C1 $C3
+    ld   [wC3C1], a                               ; $39B5: $EA $C1 $C3
     ldh  a, [hMapId]                              ; $39B8: $F0 $F7
     cp   MAP_CAVE_B                               ; $39BA: $FE $0A
     ldh  a, [hFrameCounter]                       ; $39BC: $F0 $E7
@@ -106,7 +106,7 @@ AnimateEntities::
     ld   a, [wDialogState]                        ; $39DA: $FA $9F $C1
     and  a                                        ; $39DD: $A7
     jr   nz, .label_39E3                          ; $39DE: $20 $03
-    ld   [$C1AD], a                               ; $39E0: $EA $AD $C1
+    ld   [wC1AD], a                               ; $39E0: $EA $AD $C1
 
 .label_39E3
     ld   a, BANK(func_020_6352)                   ; $39E3: $3E $20
@@ -169,7 +169,7 @@ AnimateEntity::
     ld   a, [hl]                                  ; $3A23: $7E
     ldh  [hActiveEntityState], a                  ; $3A24: $E0 $F0
 
-    ld   hl, $C3B0                                ; $3A26: $21 $B0 $C3
+    ld   hl, wEntitiesSpriteVariantTable                                ; $3A26: $21 $B0 $C3
     add  hl, bc                                   ; $3A29: $09
     ld   a, [hl]                                  ; $3A2A: $7E
     ldh  [hActiveEntitySpriteVariant], a          ; $3A2B: $E0 $F1
@@ -181,7 +181,7 @@ AnimateEntity::
     ldh  a, [hActiveEntityType]                   ; $3A35: $F0 $EB
     cp   ENTITY_RAFT_RAFT_OWNER                   ; $3A37: $FE $6A
     jr   nz, .raftManEnd                          ; $3A39: $20 $05
-    ldh  a, [$FFB2]                               ; $3A3B: $F0 $B2
+    ldh  a, [slowWalkingSpeed]                               ; $3A3B: $F0 $B2
     and  a                                        ; $3A3D: $A7
     jr   nz, .entityLifted                        ; $3A3E: $20 $06
 .raftManEnd
@@ -751,16 +751,16 @@ RenderActiveEntitySpritesRect::
     ld   d, h                                     ; $3CF7: $54
     pop  hl                                       ; $3CF8: $E1
 
-    ; Save counter to hScratch0
+    ; Save counter to hMultiPurpose0
     ld   a, c                                     ; $3CF9: $79
-    ldh  [hScratch0], a                           ; $3CFA: $E0 $D7
+    ldh  [hMultiPurpose0], a                           ; $3CFA: $E0 $D7
 
     ld   a, [wActiveEntityIndex]                  ; $3CFC: $FA $23 $C1
     ld   c, a                                     ; $3CFF: $4F
     call SkipDisabledEntityDuringRoomTransition   ; $3D00: $CD $57 $3D
 
-    ; Restore counter from hScratch0
-    ldh  a, [hScratch0]                           ; $3D03: $F0 $D7
+    ; Restore counter from hMultiPurpose0
+    ldh  a, [hMultiPurpose0]                           ; $3D03: $F0 $D7
     ld   c, a                                     ; $3D05: $4F
 
 .loop
@@ -1024,9 +1024,9 @@ label_3E8E::
     ret  nz                                       ; $3E9A: $C0
 
     ldh  a, [hActiveEntityPosX]                   ; $3E9B: $F0 $EE
-    ldh  [hScratch0], a                           ; $3E9D: $E0 $D7
+    ldh  [hMultiPurpose0], a                           ; $3E9D: $E0 $D7
     ldh  a, [hActiveEntityVisualPosY]             ; $3E9F: $F0 $EC
-    ldh  [hScratch1], a                           ; $3EA1: $E0 $D8
+    ldh  [hMultiPurpose1], a                           ; $3EA1: $E0 $D8
     ld   a, TRANSCIENT_VFX_SMOKE                  ; $3EA3: $3E $08
     call AddTranscientVfx                         ; $3EA5: $CD $C7 $0C
     ld   hl, wTranscientVfxCountdownTable         ; $3EA8: $21 $20 $C5
@@ -1035,7 +1035,7 @@ label_3E8E::
     ret                                           ; $3EAE: $C9
 
 label_3EAF::
-    ld   hl, $C3F0                                ; $3EAF: $21 $F0 $C3
+    ld   hl, wC3F0                                ; $3EAF: $21 $F0 $C3
     add  hl, bc                                   ; $3EB2: $09
     ld   a, [hl]                                  ; $3EB3: $7E
     bit  7, a                                     ; $3EB4: $CB $7F
@@ -1044,7 +1044,7 @@ label_3EAF::
     inc  a                                        ; $3EB9: $3C
 
 .jr_3EBA
-    ldh  [hScratch0], a                           ; $3EBA: $E0 $D7
+    ldh  [hMultiPurpose0], a                           ; $3EBA: $E0 $D7
     ld   hl, wEntitiesUnknowTableS                ; $3EBC: $21 $00 $C4
     add  hl, bc                                   ; $3EBF: $09
     ld   a, [hl]                                  ; $3EC0: $7E
@@ -1055,7 +1055,7 @@ label_3EAF::
 
 .jr_3EC7
     ld   e, $03                                   ; $3EC7: $1E $03
-    ld   hl, hScratch0                            ; $3EC9: $21 $D7 $FF
+    ld   hl, hMultiPurpose0                            ; $3EC9: $21 $D7 $FF
     cp   [hl]                                     ; $3ECC: $BE
     jr   c, .jr_3ED1                              ; $3ECD: $38 $02
     ld   e, $0C                                   ; $3ECF: $1E $0C
@@ -1112,7 +1112,7 @@ BossIntro::
 .endIf:
     ld   [wMusicTrackToPlay], a                   ; $3F11: $EA $68 $D3
 
-ldh  [$FFBD], a                                   ; $3F14: $E0 $BD
+ldh  [hFFBD], a                                   ; $3F14: $E0 $BD
     ld   a, [wTransitionSequenceCounter]          ; $3F16: $FA $6B $C1
     cp   $04                                      ; $3F19: $FE $04
     ret  nz                                       ; $3F1B: $C0
@@ -1154,7 +1154,7 @@ data_3F48::
 
 DidKillEnemy::
     ld   a, BANK(SpawnEnemyDrop)                  ; $3F50: $3E $03
-    ld   [wC113], a                               ; $3F52: $EA $13 $C1
+    ld   [wEnemyWasKilled], a                     ; $3F52: $EA $13 $C1
     ld   [MBC3SelectBank], a                      ; $3F55: $EA $00 $21
     call SpawnEnemyDrop                           ; $3F58: $CD $CF $55
     call ReloadSavedBank                          ; $3F5B: $CD $1D $08
@@ -1172,7 +1172,7 @@ DidKillEnemy::
     inc  a                                        ; $3F6D: $3C
     ld   [wKillCount2], a                         ; $3F6E: $EA $B5 $DB
     ld   a, [hl]                                  ; $3F71: $7E
-    ld   hl, $DBB6                                ; $3F72: $21 $B6 $DB
+    ld   hl, wDBB6                                ; $3F72: $21 $B6 $DB
     add  hl, de                                   ; $3F75: $19
     ld   [hl], a                                  ; $3F76: $77
     pop  af                                       ; $3F77: $F1

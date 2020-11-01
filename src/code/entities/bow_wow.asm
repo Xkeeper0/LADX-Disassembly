@@ -51,7 +51,7 @@ jr_005_4060:
     jp   label_005_40A2                           ; $4079: $C3 $A2 $40
 
 jr_005_407C:
-    ld   a, [$C1A8]                               ; $407C: $FA $A8 $C1
+    ld   a, [wC1A8]                               ; $407C: $FA $A8 $C1
     ld   hl, wDialogState                         ; $407F: $21 $9F $C1
     or   [hl]                                     ; $4082: $B6
     ld   hl, wInventoryAppearing                  ; $4083: $21 $4F $C1
@@ -94,7 +94,7 @@ func_005_40AF::
     add  hl, bc                                   ; $40BA: $09
     ld   [hl], a                                  ; $40BB: $77
     ld   e, $10                                   ; $40BC: $1E $10
-    ld   hl, $D100                                ; $40BE: $21 $00 $D1
+    ld   hl, wD100                                ; $40BE: $21 $00 $D1
 
 jr_005_40C1:
     ld   [hl+], a                                 ; $40C1: $22
@@ -113,7 +113,7 @@ jr_005_40C1:
     add  hl, bc                                   ; $40D5: $09
     sub  [hl]                                     ; $40D6: $96
     ld   e, $10                                   ; $40D7: $1E $10
-    ld   hl, $D110                                ; $40D9: $21 $10 $D1
+    ld   hl, wD110                                ; $40D9: $21 $10 $D1
 
 jr_005_40DC:
     ld   [hl+], a                                 ; $40DC: $22
@@ -134,9 +134,9 @@ func_005_40E6::
     jr   z, jr_005_40FA                           ; $40EE: $28 $0A
 
     ldh  a, [hLinkPositionX]                      ; $40F0: $F0 $98
-    ldh  [hScratch0], a                           ; $40F2: $E0 $D7
-    ldh  a, [$FFB3]                               ; $40F4: $F0 $B3
-    ldh  [hScratch1], a                           ; $40F6: $E0 $D8
+    ldh  [hMultiPurpose0], a                           ; $40F2: $E0 $D7
+    ldh  a, [hFFB3]                               ; $40F4: $F0 $B3
+    ldh  [hMultiPurpose1], a                           ; $40F6: $E0 $D8
     jr   jr_005_4129                              ; $40F8: $18 $2F
 
 jr_005_40FA:
@@ -169,11 +169,11 @@ jr_005_4127:
     jr   jr_005_4137                              ; $4127: $18 $0E
 
 jr_005_4129:
-    ldh  a, [hScratch0]                           ; $4129: $F0 $D7
+    ldh  a, [hMultiPurpose0]                           ; $4129: $F0 $D7
     ld   hl, wEntitiesPrivateState1Table          ; $412B: $21 $B0 $C2
     add  hl, bc                                   ; $412E: $09
     ld   [hl], a                                  ; $412F: $77
-    ldh  a, [hScratch1]                           ; $4130: $F0 $D8
+    ldh  a, [hMultiPurpose1]                           ; $4130: $F0 $D8
     ld   hl, wEntitiesPrivateState2Table          ; $4132: $21 $C0 $C2
     add  hl, bc                                   ; $4135: $09
     ld   [hl], a                                  ; $4136: $77
@@ -187,7 +187,7 @@ jr_005_4137:
     add  hl, bc                                   ; $4142: $09
     ld   a, [hl]                                  ; $4143: $7E
     ld   [$D151], a                               ; $4144: $EA $51 $D1
-    call func_005_7AEA                            ; $4147: $CD $EA $7A
+    call AddEntityZSpeedToPos_05                  ; $4147: $CD $EA $7A
     ld   hl, wEntitiesSpeedZTable                 ; $414A: $21 $20 $C3
     add  hl, bc                                   ; $414D: $09
     dec  [hl]                                     ; $414E: $35
@@ -198,7 +198,7 @@ jr_005_4137:
     add  hl, bc                                   ; $4155: $09
     ld   a, [hl]                                  ; $4156: $7E
     and  $80                                      ; $4157: $E6 $80
-    ldh  [hFFE8], a                               ; $4159: $E0 $E8
+    ldh  [hMultiPurposeG], a                               ; $4159: $E0 $E8
     jr   z, jr_005_4160                           ; $415B: $28 $03
 
     xor  a                                        ; $415D: $AF
@@ -280,7 +280,7 @@ func_005_41CF::
     ld   [hl], b                                  ; $41D9: $70
 
 jr_005_41DA:
-    ldh  a, [hFFE8]                               ; $41DA: $F0 $E8
+    ldh  a, [hMultiPurposeG]                               ; $41DA: $F0 $E8
     and  a                                        ; $41DC: $A7
     jr   z, jr_005_41E5                           ; $41DD: $28 $06
 
@@ -289,14 +289,14 @@ jr_005_41DA:
     ld   [hl], $10                                ; $41E3: $36 $10
 
 jr_005_41E5:
-    call func_005_7AB1                            ; $41E5: $CD $B1 $7A
+    call UpdateEntityPosWithSpeed_05              ; $41E5: $CD $B1 $7A
     jp   func_005_4228                            ; $41E8: $C3 $28 $42
 
 func_005_41EB::
     call GetEntityTransitionCountdown             ; $41EB: $CD $05 $0C
     jr   z, jr_005_41F9                           ; $41EE: $28 $09
 
-    call func_005_7AB1                            ; $41F0: $CD $B1 $7A
+    call UpdateEntityPosWithSpeed_05              ; $41F0: $CD $B1 $7A
     call func_005_4228                            ; $41F3: $CD $28 $42
     dec  e                                        ; $41F6: $1D
     jr   z, jr_005_4206                           ; $41F7: $28 $0D
@@ -389,12 +389,12 @@ jr_005_4268:
     rra                                           ; $426B: $1F
     jr   c, jr_005_428E                           ; $426C: $38 $20
 
-    ld   hl, $D110                                ; $426E: $21 $10 $D1
+    ld   hl, wD110                                ; $426E: $21 $10 $D1
     add  hl, bc                                   ; $4271: $09
     ld   a, [hl]                                  ; $4272: $7E
     ld   [de], a                                  ; $4273: $12
     inc  de                                       ; $4274: $13
-    ld   hl, $D100                                ; $4275: $21 $00 $D1
+    ld   hl, wD100                                ; $4275: $21 $00 $D1
     add  hl, bc                                   ; $4278: $09
     ld   a, [hl]                                  ; $4279: $7E
     add  $04                                      ; $427A: $C6 $04
@@ -434,17 +434,17 @@ label_005_4297:
 
     ld   e, $0F                                   ; $42A7: $1E $0F
     ld   a, $FF                                   ; $42A9: $3E $FF
-    ldh  [hScratch0], a                           ; $42AB: $E0 $D7
+    ldh  [hMultiPurpose0], a                           ; $42AB: $E0 $D7
     jr   jr_005_42B7                              ; $42AD: $18 $08
 
 jr_005_42AF:
     ld   e, $00                                   ; $42AF: $1E $00
     ld   a, $01                                   ; $42B1: $3E $01
-    ldh  [hScratch0], a                           ; $42B3: $E0 $D7
+    ldh  [hMultiPurpose0], a                           ; $42B3: $E0 $D7
     ld   a, $10                                   ; $42B5: $3E $10
 
 jr_005_42B7:
-    ldh  [hScratch1], a                           ; $42B7: $E0 $D8
+    ldh  [hMultiPurpose1], a                           ; $42B7: $E0 $D8
 
 jr_005_42B9:
     ld   a, e                                     ; $42B9: $7B
@@ -517,11 +517,11 @@ jr_005_42B9:
     ret                                           ; $4322: $C9
 
 jr_005_4323:
-    ld   hl, hScratch0                            ; $4323: $21 $D7 $FF
+    ld   hl, hMultiPurpose0                            ; $4323: $21 $D7 $FF
     ld   a, e                                     ; $4326: $7B
     add  [hl]                                     ; $4327: $86
     ld   e, a                                     ; $4328: $5F
-    ld   hl, hScratch1                            ; $4329: $21 $D8 $FF
+    ld   hl, hMultiPurpose1                            ; $4329: $21 $D8 $FF
     cp   [hl]                                     ; $432C: $BE
     jr   nz, jr_005_42B9                          ; $432D: $20 $8A
 
@@ -618,16 +618,16 @@ func_005_43A8::
     ld   hl, wEntitiesPosXTable                   ; $43A8: $21 $00 $C2
     add  hl, bc                                   ; $43AB: $09
     ld   a, [hl]                                  ; $43AC: $7E
-    ld   [$D100], a                               ; $43AD: $EA $00 $D1
+    ld   [wD100], a                               ; $43AD: $EA $00 $D1
     ld   hl, wEntitiesPosYTable                   ; $43B0: $21 $10 $C2
     add  hl, bc                                   ; $43B3: $09
     ld   a, [hl]                                  ; $43B4: $7E
     ld   hl, wEntitiesPosZTable                   ; $43B5: $21 $10 $C3
     add  hl, bc                                   ; $43B8: $09
     sub  [hl]                                     ; $43B9: $96
-    ld   [$D110], a                               ; $43BA: $EA $10 $D1
-    ld   de, $D100                                ; $43BD: $11 $00 $D1
-    ld   hl, $D101                                ; $43C0: $21 $01 $D1
+    ld   [wD110], a                               ; $43BA: $EA $10 $D1
+    ld   de, wD100                                ; $43BD: $11 $00 $D1
+    ld   hl, wD101                                ; $43C0: $21 $01 $D1
     push bc                                       ; $43C3: $C5
     ld   c, $05                                   ; $43C4: $0E $05
 
@@ -656,8 +656,8 @@ jr_005_43D8:
     dec  c                                        ; $43DA: $0D
     jr   nz, jr_005_43C6                          ; $43DB: $20 $E9
 
-    ld   de, $D110                                ; $43DD: $11 $10 $D1
-    ld   hl, $D111                                ; $43E0: $21 $11 $D1
+    ld   de, wD110                                ; $43DD: $11 $10 $D1
+    ld   hl, wD111                                ; $43E0: $21 $11 $D1
     ld   c, $05                                   ; $43E3: $0E $05
 
 jr_005_43E5:
@@ -699,20 +699,20 @@ func_005_43FE::
     ldh  a, [hLinkPositionYIncrement]             ; $4406: $F0 $9B
     ld   hl, hLinkPositionXIncrement              ; $4408: $21 $9A $FF
     or   [hl]                                     ; $440B: $B6
-    ld   hl, $FFA3                                ; $440C: $21 $A3 $FF
+    ld   hl, hLinkPositionZLow                                ; $440C: $21 $A3 $FF
     or   [hl]                                     ; $440F: $B6
     jp   z, jr_005_44CA                           ; $4410: $CA $CA $44
 
     ld   hl, wEntitiesPrivateState1Table          ; $4413: $21 $B0 $C2
     add  hl, bc                                   ; $4416: $09
     ld   a, [hl]                                  ; $4417: $7E
-    ld   [$D106], a                               ; $4418: $EA $06 $D1
+    ld   [wD106], a                               ; $4418: $EA $06 $D1
     ld   hl, wEntitiesPrivateState2Table          ; $441B: $21 $C0 $C2
     add  hl, bc                                   ; $441E: $09
     ld   a, [hl]                                  ; $441F: $7E
-    ld   [$D116], a                               ; $4420: $EA $16 $D1
-    ld   de, $D106                                ; $4423: $11 $06 $D1
-    ld   hl, $D105                                ; $4426: $21 $05 $D1
+    ld   [wD116], a                               ; $4420: $EA $16 $D1
+    ld   de, wD106                                ; $4423: $11 $06 $D1
+    ld   hl, wD105                                ; $4426: $21 $05 $D1
     push bc                                       ; $4429: $C5
     ld   bc, $06                                  ; $442A: $01 $06 $00
 
@@ -749,8 +749,8 @@ jr_005_4448:
     dec  c                                        ; $444A: $0D
     jr   nz, jr_005_442D                          ; $444B: $20 $E0
 
-    ld   de, $D116                                ; $444D: $11 $16 $D1
-    ld   hl, $D115                                ; $4450: $21 $15 $D1
+    ld   de, wD116                                ; $444D: $11 $16 $D1
+    ld   hl, wD115                                ; $4450: $21 $15 $D1
     ld   c, $06                                   ; $4453: $0E $06
 
 jr_005_4455:
@@ -789,12 +789,12 @@ jr_005_4473:
     jr   nz, jr_005_4455                          ; $4476: $20 $DD
 
     ld   a, b                                     ; $4478: $78
-    ldh  [hScratch0], a                           ; $4479: $E0 $D7
+    ldh  [hMultiPurpose0], a                           ; $4479: $E0 $D7
     pop  bc                                       ; $447B: $C1
     and  $01                                      ; $447C: $E6 $01
     jr   z, jr_005_4499                           ; $447E: $28 $19
 
-    ld   hl, $D110                                ; $4480: $21 $10 $D1
+    ld   hl, wD110                                ; $4480: $21 $10 $D1
     ld   e, $06                                   ; $4483: $1E $06
 
 jr_005_4485:
@@ -819,11 +819,11 @@ jr_005_4492:
     call func_005_44B5                            ; $4496: $CD $B5 $44
 
 jr_005_4499:
-    ldh  a, [hScratch0]                           ; $4499: $F0 $D7
+    ldh  a, [hMultiPurpose0]                           ; $4499: $F0 $D7
     and  $02                                      ; $449B: $E6 $02
     jr   z, jr_005_44CA                           ; $449D: $28 $2B
 
-    ld   hl, $D100                                ; $449F: $21 $00 $D1
+    ld   hl, wD100                                ; $449F: $21 $00 $D1
     ld   e, $06                                   ; $44A2: $1E $06
 
 jr_005_44A4:
@@ -846,14 +846,14 @@ jr_005_44B1:
     jr   nz, jr_005_44A4                          ; $44B3: $20 $EF
 
 func_005_44B5::
-    ld   a, [$D110]                               ; $44B5: $FA $10 $D1
+    ld   a, [wD110]                               ; $44B5: $FA $10 $D1
     ld   hl, wEntitiesPosZTable                   ; $44B8: $21 $10 $C3
     add  hl, bc                                   ; $44BB: $09
     add  [hl]                                     ; $44BC: $86
     ld   hl, wEntitiesPosYTable                   ; $44BD: $21 $10 $C2
     add  hl, bc                                   ; $44C0: $09
     ld   [hl], a                                  ; $44C1: $77
-    ld   a, [$D100]                               ; $44C2: $FA $00 $D1
+    ld   a, [wD100]                               ; $44C2: $FA $00 $D1
     ld   hl, wEntitiesPosXTable                   ; $44C5: $21 $00 $C2
     add  hl, bc                                   ; $44C8: $09
     ld   [hl], a                                  ; $44C9: $77

@@ -15,7 +15,7 @@ func_005_5584::
     cp   $05                                      ; $558C: $FE $05
     jr   z, @+$3C                                 ; $558E: $28 $3A
 
-    ld   [$C1C6], a                               ; $5590: $EA $C6 $C1
+    ld   [wC1C6], a                               ; $5590: $EA $C6 $C1
     ld   hl, wEntitiesPrivateState2Table          ; $5593: $21 $C0 $C2
     add  hl, bc                                   ; $5596: $09
     ld   a, [hl]                                  ; $5597: $7E
@@ -123,12 +123,12 @@ jr_005_561E:
     ld   hl, wEntitiesUnknownTableD               ; $5638: $21 $D0 $C2
     add  hl, de                                   ; $563B: $19
     ld   [hl], $02                                ; $563C: $36 $02
-    ldh  a, [hScratch0]                           ; $563E: $F0 $D7
+    ldh  a, [hMultiPurpose0]                           ; $563E: $F0 $D7
     sub  $14                                      ; $5640: $D6 $14
     ld   hl, wEntitiesPosXTable                         ; $5642: $21 $00 $C2
     add  hl, de                                   ; $5645: $19
     ld   [hl], a                                  ; $5646: $77
-    ldh  a, [hScratch1]                           ; $5647: $F0 $D8
+    ldh  a, [hMultiPurpose1]                           ; $5647: $F0 $D8
     sub  $04                                      ; $5649: $D6 $04
     ld   hl, wEntitiesPosYTable                         ; $564B: $21 $10 $C2
     add  hl, de                                   ; $564E: $19
@@ -151,7 +151,7 @@ jr_005_5650:
     call SpawnNewEntityInRange_trampoline         ; $5666: $CD $98 $3B
     jr   c, jr_005_56B1                           ; $5669: $38 $46
 
-    ld   hl, $C4D0                                ; $566B: $21 $D0 $C4
+    ld   hl, wEntitiesHealthGroup                                ; $566B: $21 $D0 $C4
     add  hl, de                                   ; $566E: $19
     ld   [hl], d                                  ; $566F: $72
     ld   hl, wEntitiesPhysicsFlagsTable                ; $5670: $21 $40 $C3
@@ -276,7 +276,7 @@ jr_005_572A:
     ld   hl, wEntitiesSpeedYTable                 ; $572F: $21 $50 $C2
     add  hl, bc                                   ; $5732: $09
     ld   [hl], a                                  ; $5733: $77
-    jp   func_005_7AB4                            ; $5734: $C3 $B4 $7A
+    jp   UpdateEntityYPosWithSpeed_05             ; $5734: $C3 $B4 $7A
 
 func_005_5737::
     ld   hl, wEntitiesUnknowTableY                ; $5737: $21 $D0 $C3
@@ -297,15 +297,15 @@ jr_005_574A:
     ld   hl, wEntitiesSpeedXTable                 ; $574B: $21 $40 $C2
     add  hl, bc                                   ; $574E: $09
     ld   [hl], $D0                                ; $574F: $36 $D0
-    call func_005_7ABE                            ; $5751: $CD $BE $7A
+    call AddEntitySpeedToPos_05                   ; $5751: $CD $BE $7A
     ldh  a, [hActiveEntityPosX]                   ; $5754: $F0 $EE
     cp   $18                                      ; $5756: $FE $18
     ret  nc                                       ; $5758: $D0
 
     ld   a, $30                                   ; $5759: $3E $30
-    ld   [$C157], a                               ; $575B: $EA $57 $C1
+    ld   [wC157], a                               ; $575B: $EA $57 $C1
     xor  a                                        ; $575E: $AF
-    ld   [$C158], a                               ; $575F: $EA $58 $C1
+    ld   [wC158], a                               ; $575F: $EA $58 $C1
     call PlayBombExplosionSfx                     ; $5762: $CD $4B $0C
     ld   hl, wEntitiesPrivateCountdown2Table      ; $5765: $21 $00 $C3
     add  hl, bc                                   ; $5768: $09
@@ -317,14 +317,14 @@ func_005_576E::
     add  hl, bc                                   ; $5771: $09
     ld   a, [hl]                                  ; $5772: $7E
     inc  [hl]                                     ; $5773: $34
-    ld   a, [$C157]                               ; $5774: $FA $57 $C1
+    ld   a, [wC157]                               ; $5774: $FA $57 $C1
     and  a                                        ; $5777: $A7
     jr   nz, jr_005_579B                          ; $5778: $20 $21
 
     ld   hl, wEntitiesSpeedXTable                 ; $577A: $21 $40 $C2
     add  hl, bc                                   ; $577D: $09
     ld   [hl], $20                                ; $577E: $36 $20
-    call func_005_7ABE                            ; $5780: $CD $BE $7A
+    call AddEntitySpeedToPos_05                   ; $5780: $CD $BE $7A
     ld   hl, wEntitiesPrivateState1Table          ; $5783: $21 $B0 $C2
     add  hl, bc                                   ; $5786: $09
     ldh  a, [hActiveEntityPosX]                   ; $5787: $F0 $EE
@@ -431,7 +431,7 @@ jr_005_5913:
     ld   hl, wEntitiesSpeedYTable                 ; $5921: $21 $50 $C2
     add  hl, bc                                   ; $5924: $09
     ld   [hl], $F8                                ; $5925: $36 $F8
-    call func_005_7AB4                            ; $5927: $CD $B4 $7A
+    call UpdateEntityYPosWithSpeed_05             ; $5927: $CD $B4 $7A
 
 jr_005_592A:
     ldh  a, [hActiveEntityVisualPosY]             ; $592A: $F0 $EC
@@ -474,7 +474,7 @@ jr_005_5962:
     ld   hl, wEntitiesSpeedYTable                 ; $5967: $21 $50 $C2
     add  hl, bc                                   ; $596A: $09
     ld   [hl], $0C                                ; $596B: $36 $0C
-    call func_005_7AB1                            ; $596D: $CD $B1 $7A
+    call UpdateEntityPosWithSpeed_05              ; $596D: $CD $B1 $7A
     ldh  a, [hActiveEntityVisualPosY]             ; $5970: $F0 $EC
     cp   $8B                                      ; $5972: $FE $8B
     jp   nc, func_005_7B4B                        ; $5974: $D2 $4B $7B
@@ -497,7 +497,7 @@ func_005_5984::
     cpl                                           ; $5989: $2F
     rra                                           ; $598A: $1F
     rra                                           ; $598B: $1F
-    and  $20                                      ; $598C: $E6 $20
+    and  OAMF_XFLIP                               ; $598C: $E6 $20
     ldh  [hActiveEntityFlipAttribute], a          ; $598E: $E0 $ED
     ld   de, Data_005_5978                        ; $5990: $11 $78 $59
     call RenderActiveEntitySpritesPair            ; $5993: $CD $C0 $3B
@@ -536,7 +536,7 @@ func_005_5984::
     call IncrementEntityState                     ; $59CB: $CD $12 $3B
 
 jr_005_59CE:
-    call func_005_7AB1                            ; $59CE: $CD $B1 $7A
+    call UpdateEntityPosWithSpeed_05              ; $59CE: $CD $B1 $7A
     call GetEntityTransitionCountdown             ; $59D1: $CD $05 $0C
     jr   nz, jr_005_59DD                          ; $59D4: $20 $07
 

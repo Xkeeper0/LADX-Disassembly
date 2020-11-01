@@ -13,7 +13,7 @@
 ;  - wait for next frame.
 RenderLoop::
     ; Set DidRenderFrame
-    ld   a, 1                                     ; $01DA: $3E $01
+    ld   a, TRUE                                  ; $01DA: $3E $01
     ldh  [hDidRenderFrame], a                     ; $01DC: $E0 $FD
 
 .RenderLoop_setScrollY:
@@ -172,7 +172,7 @@ ENDC
     ; Reset transition state
     xor  a                                        ; $0296: $AF
     ld   [wTransitionGfx], a                      ; $0297: $EA $7F $C1
-    ld   [$C3CA], a                               ; $029A: $EA $CA $C3
+    ld   [wC3CA], a                               ; $029A: $EA $CA $C3
     ; Resume rendering of interactive frames
     jp   RenderInteractiveFrame                   ; $029D: $C3 $D5 $02
 
