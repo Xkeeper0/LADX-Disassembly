@@ -2342,8 +2342,9 @@ wEnginePaused::
 wLCDControl::
   ds 1 ; D6FD
 
-; TODO comment
-wTileMapToLoad::
+; Index of a tileset that will by copied to VRAM on next vblank.
+; See possible values at TilesetLoadHandlersTable
+wTilesetToLoad::
   ds 1 ; D6FE
 
 ; TODO comment

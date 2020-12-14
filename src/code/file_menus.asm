@@ -30,17 +30,16 @@ FileSelectionEntryPoint::
 ._09 dw FileSelectionLoadSavedFile                ; $47E7
 
 FileSelectionPrepare0::
-    ; Load tilemap 4
-    ld   a, $04                                   ; $47E9: $3E $04
-    ld   [wTileMapToLoad], a                      ; $47EB: $EA $FE $D6
+    ld   a, TILESET_MENU                          ; $47E9: $3E $04
+    ld   [wTilesetToLoad], a                      ; $47EB: $EA $FE $D6
+
     xor  a                                        ; $47EE: $AF
     ld   [wIsFileSelectionArrowShifted], a                               ; $47EF: $EA $00 $D0
     jp   IncrementGameplaySubtypeAndReturn        ; $47F2: $C3 $D6 $44
 
 FileSelectionPrepare1::
-    ; Load tilemap 8
-    ld   a, $08                                   ; $47F5: $3E $08
-    ld   [wTileMapToLoad], a                      ; $47F7: $EA $FE $D6
+    ld   a, TILESET_FILL_TILEMAP                  ; $47F5: $3E $08
+    ld   [wTilesetToLoad], a                      ; $47F7: $EA $FE $D6
     jp   IncrementGameplaySubtypeAndReturn        ; $47FA: $C3 $D6 $44
 
 FileSelectionPrepare2::
@@ -116,7 +115,7 @@ func_4852::
     ld   a, $05                                   ; $486B: $3E $05
 
 .loop
-    ldh  [hMultiPurpose0], a                           ; $486D: $E0 $D7
+    ldh  [hMultiPurpose0], a                      ; $486D: $E0 $D7
     ld   a, [de]                                  ; $486F: $1A
     and  a                                        ; $4870: $A7
     ld   a, $7E                                   ; $4871: $3E $7E
@@ -134,7 +133,7 @@ func_4852::
 
     ldi  [hl], a                                  ; $4881: $22
     inc  de                                       ; $4882: $13
-    ldh  a, [hMultiPurpose0]                           ; $4883: $F0 $D7
+    ldh  a, [hMultiPurpose0]                      ; $4883: $F0 $D7
     dec  a                                        ; $4885: $3D
     jr   nz, .loop                                ; $4886: $20 $E5
     ld   a, b                                     ; $4888: $78
@@ -148,7 +147,7 @@ func_4852::
     ld   a, $05                                   ; $4892: $3E $05
 
 jr_001_4894::
-    ldh  [hMultiPurpose0], a                           ; $4894: $E0 $D7
+    ldh  [hMultiPurpose0], a                      ; $4894: $E0 $D7
     ld   a, [de]                                  ; $4896: $1A
     and  a                                        ; $4897: $A7
 
@@ -198,7 +197,7 @@ ENDC
 jr_001_48A9::
     ldi  [hl], a                                  ; $48A9: $22
     inc  de                                       ; $48AA: $13
-    ldh  a, [hMultiPurpose0]                           ; $48AB: $F0 $D7
+    ldh  a, [hMultiPurpose0]                      ; $48AB: $F0 $D7
     dec  a                                        ; $48AD: $3D
     jr   nz, jr_001_4894                          ; $48AE: $20 $E4
     xor  a                                        ; $48B0: $AF
@@ -445,8 +444,8 @@ LoadSelectedFile::
     ld   a, $01                                   ; $49D1: $3E $01
     call ClearFileMenuBG_trampoline               ; $49D3: $CD $FA $08
 
-    ld   a, $05                                   ; $49D6: $3E $05
-    ld   [wTileMapToLoad], a                      ; $49D8: $EA $FE $D6
+    ld   a, TILESET_BASE_OVERWORLD                ; $49D6: $3E $05
+    ld   [wTilesetToLoad], a                      ; $49D8: $EA $FE $D6
     jp   IncrementGameplaySubtypeAndReturn        ; $49DB: $C3 $D6 $44
 
 HandleFileSelectionCommand::
@@ -511,8 +510,8 @@ FileCreationEntryPoint::
 
 FileCreationInit1Handler::
     call IncrementGameplaySubtype                 ; $4A11: $CD $D6 $44
-    ld   a, $08                                   ; $4A14: $3E $08
-    ld   [wTileMapToLoad], a                      ; $4A16: $EA $FE $D6
+    ld   a, TILESET_FILL_TILEMAP                  ; $4A14: $3E $08
+    ld   [wTilesetToLoad], a                      ; $4A16: $EA $FE $D6
     xor  a                                        ; $4A19: $AF
     ld   [wDBA8], a                               ; $4A1A: $EA $A8 $DB
     ld   [wDBA9], a                               ; $4A1D: $EA $A9 $DB
@@ -743,11 +742,11 @@ func_001_4BF5::
     ldh  a, [hJoypadState]                        ; $4BF5: $F0 $CC
 
 jr_001_4BF7::
-    ldh  [hMultiPurpose0], a                           ; $4BF7: $E0 $D7
-    ldh  a, [hMultiPurpose0]                           ; $4BF9: $F0 $D7
+    ldh  [hMultiPurpose0], a                      ; $4BF7: $E0 $D7
+    ldh  a, [hMultiPurpose0]                      ; $4BF9: $F0 $D7
     and  $0C                                      ; $4BFB: $E6 $0C
     jr   nz, jr_001_4C41                          ; $4BFD: $20 $42
-    ldh  a, [hMultiPurpose0]                           ; $4BFF: $F0 $D7
+    ldh  a, [hMultiPurpose0]                      ; $4BFF: $F0 $D7
     and  $03                                      ; $4C01: $E6 $03
     jr   nz, jr_001_4C21                          ; $4C03: $20 $1C
     ldh  a, [hPressedButtonsMask]                 ; $4C05: $F0 $CB
@@ -979,8 +978,8 @@ jr_001_4D53::
     jp   IncrementGameplaySubtypeAndReturn        ; $4D53: $C3 $D6 $44 ; $4D53: $C3 $D6 $44
 
 FileDeletionState2Handler::
-    ld   a, $08                                   ; $4D56: $3E $08 ; $4D56: $3E $08
-    ld   [wTileMapToLoad], a                      ; $4D58: $EA $FE $D6 ; $4D58: $EA $FE $D6
+    ld   a, TILESET_FILL_TILEMAP                  ; $4D56: $3E $08 ; $4D56: $3E $08
+    ld   [wTilesetToLoad], a                      ; $4D58: $EA $FE $D6 ; $4D58: $EA $FE $D6
     xor  a                                        ; $4D5B: $AF ; $4D5B: $AF
     ld   [wSaveSlot], a                           ; $4D5C: $EA $A6 $DB ; $4D5C: $EA $A6 $DB
     ld   [wCreditsScratch0], a                    ; $4D5F: $EA $00 $D0 ; $4D5F: $EA $00 $D0
@@ -1037,11 +1036,11 @@ ELSE
     jr   z, jr_001_4DBD                            ; $4DAB: $28 $10 ; $4DAB: $28 $10
 
     xor  a                                        ; $4DAD: $AF ; $4DAD: $AF
-    ldh  [hMultiPurpose4], a                           ; $4DAE: $E0 $DB ; $4DAE: $E0 $DB
+    ldh  [hMultiPurpose4], a                      ; $4DAE: $E0 $DB ; $4DAE: $E0 $DB
     ld   a, [wDC06]                               ; $4DB0: $FA $06 $DC ; $4DB0: $FA $06 $DC
-    ldh  [hMultiPurpose2], a                           ; $4DB3: $E0 $D9 ; $4DB3: $E0 $D9
+    ldh  [hMultiPurpose2], a                      ; $4DB3: $E0 $D9 ; $4DB3: $E0 $D9
     ld   a, [wDC09]                               ; $4DB5: $FA $09 $DC ; $4DB5: $FA $09 $DC
-    ldh  [hMultiPurpose3], a                           ; $4DB8: $E0 $DA ; $4DB8: $E0 $DA
+    ldh  [hMultiPurpose3], a                      ; $4DB8: $E0 $DA ; $4DB8: $E0 $DA
     jp   label_001_5D53                               ; $4DBA: $C3 $53 $5D ; $4DBA: $C3 $53 $5D
 ENDC
 
@@ -1495,8 +1494,8 @@ FileCopyEntryPoint::
 ._0A dw FileCopyStateAHandler                     ; $4FA4
 
 FileCopyState2Handler::
-    ld   a, $08                                   ; $4FA6: $3E $08 ; $4FA6: $3E $08
-    ld   [wTileMapToLoad], a                      ; $4FA8: $EA $FE $D6 ; $4FA8: $EA $FE $D6
+    ld   a, TILESET_FILL_TILEMAP                  ; $4FA6: $3E $08 ; $4FA6: $3E $08
+    ld   [wTilesetToLoad], a                      ; $4FA8: $EA $FE $D6 ; $4FA8: $EA $FE $D6
     xor  a                                        ; $4FAB: $AF ; $4FAB: $AF
     ld   [wSaveSlot], a                           ; $4FAC: $EA $A6 $DB ; $4FAC: $EA $A6 $DB
     ld   [wCreditsScratch0], a                    ; $4FAF: $EA $00 $D0 ; $4FAF: $EA $00 $D0

@@ -197,7 +197,7 @@ func_91D::
 
 .jp_92F
     callsb GetBGAttributesAddressForObject        ; $092F: $3E $1A $EA $00 $21 $CD $76 $65
-    ldh  a, [hMultiPurpose8]                           ; $0937: $F0 $DF
+    ldh  a, [hMultiPurpose8]                      ; $0937: $F0 $DF
     ld   [MBC3SelectBank], a                      ; $0939: $EA $00 $21
     ld   hl, wDC91                                ; $093C: $21 $91 $DC
     ld   a, [wDC90]                               ; $093F: $FA $90 $DC
@@ -206,7 +206,7 @@ func_91D::
     ld   [wDC90], a                               ; $0945: $EA $90 $DC
     ld   d, $00                                   ; $0948: $16 $00
     add  hl, de                                   ; $094A: $19
-    ldh  a, [hMultiPurpose9]                           ; $094B: $F0 $E0
+    ldh  a, [hMultiPurpose9]                      ; $094B: $F0 $E0
     ld   d, a                                     ; $094D: $57
     ldh  a, [hMultiPurposeA]                           ; $094E: $F0 $E1
     ld   e, a                                     ; $0950: $5F
@@ -261,11 +261,11 @@ func_983::
     callsb func_01A_6710                          ; $0983: $3E $1A $EA $00 $21 $CD $10 $67
 
     ; Switch to the bank containing this room's palettes
-    ldh  a, [hMultiPurpose8]                           ; $098B: $F0 $DF
+    ldh  a, [hMultiPurpose8]                      ; $098B: $F0 $DF
     ld   [MBC3SelectBank], a                      ; $098D: $EA $00 $21
 
     ; Read value from address [hMultiPurposeA hMultiPurpose9]
-    ldh  a, [hMultiPurpose9]                           ; $0990: $F0 $E0
+    ldh  a, [hMultiPurpose9]                      ; $0990: $F0 $E0
     ld   h, a                                     ; $0992: $67
     ldh  a, [hMultiPurposeA]                           ; $0993: $F0 $E1
     ld   l, a                                     ; $0995: $6F
@@ -283,10 +283,10 @@ func_999::
     push bc                                       ; $099A: $C5
     call func_983                                 ; $099B: $CD $83 $09
 
-    ldh  [hMultiPurpose0], a                           ; $099E: $E0 $D7
+    ldh  [hMultiPurpose0], a                      ; $099E: $E0 $D7
     pop  bc                                       ; $09A0: $C1
     call func_983                                 ; $09A1: $CD $83 $09
-    ldh  [hMultiPurpose1], a                           ; $09A4: $E0 $D8
+    ldh  [hMultiPurpose1], a                      ; $09A4: $E0 $D8
     ld   a, [wDC90]                               ; $09A6: $FA $90 $DC
     ld   c, a                                     ; $09A9: $4F
     ld   b, $00                                   ; $09AA: $06 $00
@@ -300,9 +300,9 @@ func_999::
     ldi  [hl], a                                  ; $09BA: $22
     ld   a, $01                                   ; $09BB: $3E $01
     ldi  [hl], a                                  ; $09BD: $22
-    ldh  a, [hMultiPurpose0]                           ; $09BE: $F0 $D7
+    ldh  a, [hMultiPurpose0]                      ; $09BE: $F0 $D7
     ldi  [hl], a                                  ; $09C0: $22
-    ldh  a, [hMultiPurpose1]                           ; $09C1: $F0 $D8
+    ldh  a, [hMultiPurpose1]                      ; $09C1: $F0 $D8
     ldi  [hl], a                                  ; $09C3: $22
     xor  a                                        ; $09C4: $AF
     ldi  [hl], a                                  ; $09C5: $22
@@ -340,16 +340,17 @@ ReplaceObjects56and57_trampoline::
 ; Specific data-copying routines
 ;
 
-; Copy $100 bytes without DMA (used on DMG), then switch back to bank at h
+; Copy $100 bytes without DMA (used on DMG), then switch back to bank at h.
+;
 ; Inputs:
 ;  b   source address high byte
-;  c   destination address high byte
+;  c   destination address high byte (starting from $8000)
 ;  h   bank to switch back after the transfert
-Copy100Bytes_noDMA::
+CopyDataToVRAM_noDMA::
     ; Save h
     push hl                                       ; $0A01: $E5
 
-    ; Copy $100 bytes from "${b}00" to "${c}80"
+    ; Copy $100 bytes from "${b}00" to "$8000 + ${c}00"
     ld   l, $00                                   ; $0A02: $2E $00
     ld   e, l                                     ; $0A04: $5D
     ld   h, b                                     ; $0A05: $60
@@ -361,25 +362,28 @@ Copy100Bytes_noDMA::
 
     ; Switch back to the bank in h
     pop  hl                                       ; $0A10: $E1
-    jr   SelectBankAtHAndReturn                   ; $0A11: $18 $1A
+    jr   CopyDataToVRAM.restoreBankAndReturn      ; $0A11: $18 $1A
 
-; Copy $100 bytes from bank at a, then switch back to bank at h
+; Copy $100 bytes to VRAM, then switch back to bank at h.
+;
+; Uses GDMA if available (and otherwise fallbacks to direct CPU copy).
+;
 ; Inputs:
-;  a   bank to copy data from
+;  a   source bank
 ;  b   source address high byte
-;  c   destination address high byte
+;  c   destination address high byte (starting from $8000)
 ;  h   bank to switch back after the transfert
-Copy100BytesFromBankAtA::
+CopyDataToVRAM::
     ; Switch to bank in a
     ld   [MBC3SelectBank], a                      ; $0A13: $EA $00 $21
 
     ; If running on DMG, use a loop to copy the data
     ldh  a, [hIsGBC]                              ; $0A16: $F0 $FE
     and  a                                        ; $0A18: $A7
-    jr   z, Copy100Bytes_noDMA                    ; $0A19: $28 $E6
+    jr   z, CopyDataToVRAM_noDMA                  ; $0A19: $28 $E6
 
-    ; On CGB, configure a DMA transfert
-    ; to copy $0F bytes from "${b}00" to "${c}00"
+    ; On CGB, configure a GDMA transfert
+    ; to copy $0F bytes from "${b}00" to "$8000 + ${c}00"
     ld   a, b                                     ; $0A1B: $78
     ld   [rHDMA1], a                              ; $0A1C: $E0 $51
     ld   a, $00                                   ; $0A1E: $3E $00
@@ -392,7 +396,7 @@ Copy100BytesFromBankAtA::
     ld   [rHDMA5], a                              ; $0A2B: $E0 $55
 
     ; Fallthrough to switch back to the bank in h
-SelectBankAtHAndReturn::
+.restoreBankAndReturn
     ld   a, h                                     ; $0A2D: $7C
     ld   [MBC3SelectBank], a                      ; $0A2E: $EA $00 $21
     ret                                           ; $0A31: $C9
@@ -469,7 +473,7 @@ func_AB5::
     push af                                       ; $0AB5: $F5
     callsb func_024_5C1A                          ; $0AB6: $3E $24 $EA $00 $21 $CD $1A $5C
     ld   de, wRequest                             ; $0ABE: $11 $01 $D6
-    call ExecuteBackgroundCopyRequest             ; $0AC1: $CD $27 $29
+    call ExecuteBGCopyRequest                     ; $0AC1: $CD $27 $29
     jr   RestoreStackedBank                       ; $0AC4: $18 $EA
 
 func_036_703E_trampoline::
@@ -535,7 +539,7 @@ AdjustBankNumberForGBC::
 ;   de :        destination address
 ;   hl :        source address
 CopyObjectsAttributesToWRAM2::
-    ldh  a, [hMultiPurpose0]                           ; $0B1A: $F0 $D7
+    ldh  a, [hMultiPurpose0]                      ; $0B1A: $F0 $D7
     ld   [MBC3SelectBank], a                      ; $0B1C: $EA $00 $21
     ld   a, $02                                   ; $0B1F: $3E $02
     ld   [rSVBK], a                               ; $0B21: $E0 $70
@@ -549,7 +553,7 @@ CopyObjectsAttributesToWRAM2::
 
 ; On GBC, copy some overworld objects to ram bank 2
 func_2BF::
-    ldh  [hMultiPurpose2], a                           ; $0B2F: $E0 $D9
+    ldh  [hMultiPurpose2], a                      ; $0B2F: $E0 $D9
     ldh  a, [hIsGBC]                              ; $0B31: $F0 $FE
     and  a                                        ; $0B33: $A7
     ret  z                                        ; $0B34: $C8
@@ -559,7 +563,7 @@ func_2BF::
     ret  nz                                       ; $0B39: $C0
 
     push bc                                       ; $0B3A: $C5
-    ldh  a, [hMultiPurpose2]                           ; $0B3B: $F0 $D9
+    ldh  a, [hMultiPurpose2]                      ; $0B3B: $F0 $D9
     and  $80                                      ; $0B3D: $E6 $80
     jr   nz, .else                                ; $0B3F: $20 $0A
     callsb func_020_6E50                          ; $0B41: $3E $20 $EA $00 $21 $CD $50 $6E
@@ -573,7 +577,7 @@ func_2BF::
     ld   [rSVBK], a                               ; $0B52: $E0 $70
 .endIf
 
-    ldh  a, [hMultiPurpose2]                           ; $0B54: $F0 $D9
+    ldh  a, [hMultiPurpose2]                      ; $0B54: $F0 $D9
     and  $7F                                      ; $0B56: $E6 $7F
     ld   [MBC3SelectBank], a                      ; $0B58: $EA $00 $21
     pop  bc                                       ; $0B5B: $C1
@@ -946,11 +950,11 @@ AddTranscientVfx::
     ld   hl, wTranscientVfxTypeTable              ; $0CED: $21 $10 $C5
     add  hl, de                                   ; $0CF0: $19
     ld   [hl], a                                  ; $0CF1: $77
-    ldh  a, [hMultiPurpose1]                           ; $0CF2: $F0 $D8
+    ldh  a, [hMultiPurpose1]                      ; $0CF2: $F0 $D8
     ld   hl, wTranscientVfxPosYTable              ; $0CF4: $21 $40 $C5
     add  hl, de                                   ; $0CF7: $19
     ld   [hl], a                                  ; $0CF8: $77
-    ldh  a, [hMultiPurpose0]                           ; $0CF9: $F0 $D7
+    ldh  a, [hMultiPurpose0]                      ; $0CF9: $F0 $D7
     ld   hl, wTranscientVfxPosXTable              ; $0CFB: $21 $30 $C5
     add  hl, de                                   ; $0CFE: $19
     ld   [hl], a                                  ; $0CFF: $77
@@ -962,10 +966,10 @@ AddTranscientVfx::
 label_D07::
     ld   a, [wC140]                               ; $0D07: $FA $40 $C1
     sub  a, $08                                   ; $0D0A: $D6 $08
-    ldh  [hMultiPurpose0], a                           ; $0D0C: $E0 $D7
+    ldh  [hMultiPurpose0], a                      ; $0D0C: $E0 $D7
     ld   a, [wC142]                               ; $0D0E: $FA $42 $C1
     sub  a, $08                                   ; $0D11: $D6 $08
-    ldh  [hMultiPurpose1], a                           ; $0D13: $E0 $D8
+    ldh  [hMultiPurpose1], a                      ; $0D13: $E0 $D8
 
 label_D15::
     ld   a, JINGLE_SWORD_POKING                   ; $0D15: $3E $07
@@ -973,17 +977,17 @@ label_D15::
     ld   a, TRANSCIENT_VFX_SWORD_POKE             ; $0D19: $3E $05
     jp   AddTranscientVfx                         ; $0D1B: $C3 $C7 $0C
 
-; Schedule the loading of the tilesets for the next room,
+; Schedule the loading of object and OAM tilesets for the next room,
 ; (either during a map transition or a room transition).
 ;
 ; Actual loading will be done during the next vblank period.
-LoadRoomTiles::
+SelectRoomTilesets::
     ld   a, BANK(TilesetTables)                   ; $0D1E: $3E $20
     ld   [MBC3SelectBank], a                      ; $0D20: $EA $00 $21
 
     ; ------------------------------------------------------------
     ;
-    ; Load Background tileset
+    ; Select the new BG objects tileset
     ;
     ; ------------------------------------------------------------
 
@@ -1100,7 +1104,7 @@ LoadRoomTiles::
 
     ; ------------------------------------------------------------
     ;
-    ; Select Sprites tileset
+    ; Select the new OAM tileset
     ; Main theme is data_020_70D3. Final subset is selected by the room/scene
     ; TODO: multible iterations of commenting needed. This code is total spagetti.
     ;
@@ -1108,7 +1112,7 @@ LoadRoomTiles::
 
     ; $hMultiPurpose0 = 0
     xor  a                                        ; $0D91: $AF
-    ldh  [hMultiPurpose0], a                           ; $0D92: $E0 $D7
+    ldh  [hMultiPurpose0], a                      ; $0D92: $E0 $D7
     ; e = $hMapRoom
     ldh  a, [hMapRoom]                            ; $0D94: $F0 $F6
     ld   e, a                                     ; $0D96: $5F
@@ -1207,7 +1211,7 @@ LoadRoomTiles::
     cp   $FF                                      ; $0E09: $FE $FF
     jr   z, .label_E29                            ; $0E0B: $28 $1C
     ld   [bc], a                                  ; $0E0D: $02
-    ldh  a, [hMultiPurpose0]                           ; $0E0E: $F0 $D7
+    ldh  a, [hMultiPurpose0]                      ; $0E0E: $F0 $D7
     and  a                                        ; $0E10: $A7
     jr   z, .label_E1E                            ; $0E11: $28 $0B
     ld   a, d                                     ; $0E13: $7A
@@ -2623,7 +2627,7 @@ CheckItemsSwordCollision::
     add  hl, de                                   ; $16D9: $19
     ldh  a, [hLinkPositionY]                      ; $16DA: $F0 $99
     add  a, [hl]                                  ; $16DC: $86
-    ldh  [hMultiPurpose1], a                           ; $16DD: $E0 $D8
+    ldh  [hMultiPurpose1], a                      ; $16DD: $E0 $D8
     ld   a, $04                                   ; $16DF: $3E $04
     ld   [wC502], a                               ; $16E1: $EA $02 $C5
     call label_D15                                ; $16E4: $CD $15 $0D
@@ -2714,7 +2718,7 @@ func_1756::
     ret  nz                                       ; $1766: $C0
 
     ldh  a, [hLinkPositionX]                      ; $1767: $F0 $98
-    ldh  [hMultiPurpose0], a                           ; $1769: $E0 $D7
+    ldh  [hMultiPurpose0], a                      ; $1769: $E0 $D7
 
     ld   a, [wLinkGroundVfx]                      ; $176B: $FA $81 $C1
     cp   GROUND_VFX_SHALLOW_WATER                 ; $176E: $FE $05
@@ -2724,13 +2728,13 @@ func_1756::
     ldh  [hNoiseSfx], a                           ; $1774: $E0 $F4
     ldh  a, [hLinkPositionY]                      ; $1776: $F0 $99
     add  a, $06                                   ; $1778: $C6 $06
-    ldh  [hMultiPurpose1], a                           ; $177A: $E0 $D8
+    ldh  [hMultiPurpose1], a                      ; $177A: $E0 $D8
     ld   a, TRANSCIENT_VFX_PEGASUS_DUST           ; $177C: $3E $0B
     jp   AddTranscientVfx                         ; $177E: $C3 $C7 $0C
 
 .shallowWater
     ldh  a, [hLinkPositionY]                      ; $1781: $F0 $99
-    ldh  [hMultiPurpose1], a                           ; $1783: $E0 $D8
+    ldh  [hMultiPurpose1], a                      ; $1783: $E0 $D8
     ld   a, JINGLE_WATER_DIVE                     ; $1785: $3E $0E
     ldh  [hJingle], a                             ; $1787: $E0 $F2
     ld   a, TRANSCIENT_VFX_PEGASUS_SPLASH         ; $1789: $3E $0C
@@ -2756,9 +2760,9 @@ ApplyLinkMotionState::
     ld   a, [wC145]                               ; $17A6: $FA $45 $C1
     ld   hl, wC13B                                ; $17A9: $21 $3B $C1
     add  a, [hl]                                  ; $17AC: $86
-    ldh  [hMultiPurpose0], a                           ; $17AD: $E0 $D7
+    ldh  [hMultiPurpose0], a                      ; $17AD: $E0 $D7
     ldh  a, [hLinkPositionX]                      ; $17AF: $F0 $98
-    ldh  [hMultiPurpose1], a                           ; $17B1: $E0 $D8
+    ldh  [hMultiPurpose1], a                      ; $17B1: $E0 $D8
     ld   hl, hMultiPurpose3                            ; $17B3: $21 $DA $FF
     ld   [hl], $00                                ; $17B6: $36 $00
     ld   a, [wSwordCharge]                        ; $17B8: $FA $22 $C1
@@ -2776,7 +2780,7 @@ ApplyLinkMotionState::
     ld   a, [wC13A]                               ; $17CA: $FA $3A $C1
     ld   l, a                                     ; $17CD: $6F
     ld   a, [wSwordDirection]                     ; $17CE: $FA $36 $C1
-    ldh  [hMultiPurpose2], a                           ; $17D1: $E0 $D9
+    ldh  [hMultiPurpose2], a                      ; $17D1: $E0 $D9
     ldh  a, [hLinkPositionY]                      ; $17D3: $F0 $99
     cp   $88                                      ; $17D5: $FE $88
     ret  nc                                       ; $17D7: $D0
@@ -3073,7 +3077,7 @@ IF __PATCH_0__
 ELSE
     ld   a, $00                                   ; $19C2: $3E $00
 ENDC
-    ldh  [hMultiPurpose0], a                           ; $19C4: $E0 $D7
+    ldh  [hMultiPurpose0], a                      ; $19C4: $E0 $D7
     ld   de, wSpawnLocationData                   ; $19C6: $11 $5F $DB
 
     ; Copy warp data (5 bytes) from wWarp1 to wSpawnLocationData
@@ -3081,9 +3085,9 @@ ENDC
     ld   a, [hli]                                 ; $19C9: $2A
     ld   [de], a                                  ; $19CA: $12
     inc  de                                       ; $19CB: $13
-    ldh  a, [hMultiPurpose0]                           ; $19CC: $F0 $D7
+    ldh  a, [hMultiPurpose0]                      ; $19CC: $F0 $D7
     inc  a                                        ; $19CE: $3C
-    ldh  [hMultiPurpose0], a                           ; $19CF: $E0 $D7
+    ldh  [hMultiPurpose0], a                      ; $19CF: $E0 $D7
     cp   $05                                      ; $19D1: $FE $05
     jr   nz, .loop                                ; $19D3: $20 $F4
 
@@ -3524,7 +3528,7 @@ ENDC
     ; hl = address of the room object that would intersect with the sword
     or   c                                        ; $1F9D: $B1
     ld   e, a                                     ; $1F9E: $5F
-    ldh  [hMultiPurpose1], a                           ; $1F9F: $E0 $D8
+    ldh  [hMultiPurpose1], a                      ; $1F9F: $E0 $D8
     ld   hl, wRoomObjects                         ; $1FA1: $21 $11 $D7
     add  hl, de                                   ; $1FA4: $19
 
@@ -3535,7 +3539,7 @@ ENDC
 
     ; hMultiPurpose0 = id of room object under the sword
     ld   a, [hl]                                  ; $1FAB: $7E
-    ldh  [hMultiPurpose0], a                           ; $1FAC: $E0 $D7
+    ldh  [hMultiPurpose0], a                      ; $1FAC: $E0 $D7
 
     ; hMultiPurpose5 = unknown value read from the objects tilesets table
     ; d = map group id
@@ -3544,15 +3548,15 @@ ENDC
     ld   a, [wIsIndoor]                           ; $1FAF: $FA $A5 $DB
     ld   d, a                                     ; $1FB2: $57
     call GetObjectPhysicsFlags_trampoline         ; $1FB3: $CD $26 $2A
-    ldh  [hMultiPurpose5], a                           ; $1FB6: $E0 $DC
+    ldh  [hMultiPurpose5], a                      ; $1FB6: $E0 $DC
 
     ; If the object is $9A, skip this section
 
-    ldh  a, [hMultiPurpose0]                           ; $1FB8: $F0 $D7
+    ldh  a, [hMultiPurpose0]                      ; $1FB8: $F0 $D7
     cp   $9A                                      ; $1FBA: $FE $9A
     jr   z, .notObject9AEnd                       ; $1FBC: $28 $40
 
-    ldh  a, [hMultiPurpose5]                           ; $1FBE: $F0 $DC
+    ldh  a, [hMultiPurpose5]                      ; $1FBE: $F0 $DC
     cp   $00                                      ; $1FC0: $FE $00
     jp   z, .clearC15FAndReturn                   ; $1FC2: $CA $4E $21
     cp   $01                                      ; $1FC5: $FE $01
@@ -3571,7 +3575,7 @@ ENDC
     jp   nc, .clearC15FAndReturn                  ; $1FE3: $D2 $4E $21
 
 .jp_1FE6
-    ldh  a, [hMultiPurpose0]                           ; $1FE6: $F0 $D7
+    ldh  a, [hMultiPurpose0]                      ; $1FE6: $F0 $D7
     ld   e, a                                     ; $1FE8: $5F
     cp   $6F                                      ; $1FE9: $FE $6F
     jr   z, .jp_1FF6                              ; $1FEB: $28 $09
@@ -3789,7 +3793,7 @@ ELSE
 ENDC
     xor  a                                        ; $2134: $AF
     ldh  [hMultiPurposeE], a                               ; $2135: $E0 $E5
-    ldh  a, [hMultiPurpose0]                           ; $2137: $F0 $D7
+    ldh  a, [hMultiPurpose0]                      ; $2137: $F0 $D7
     cp   $8E                                      ; $2139: $FE $8E
     jr   z, .jr_2153                              ; $213B: $28 $16
     cp   $20                                      ; $213D: $FE $20
@@ -3801,7 +3805,7 @@ IF __PATCH_0__
 ELSE
     jr   nz, .return                              ; $2145: $20 $06
 ENDC
-    ldh  a, [hMultiPurpose0]                           ; $2147: $F0 $D7
+    ldh  a, [hMultiPurpose0]                      ; $2147: $F0 $D7
     cp   $5C                                      ; $2149: $FE $5C
     jr   z, .jr_2161                              ; $214B: $28 $14
 
@@ -3884,7 +3888,7 @@ UpdateFinalLinkPosition::
 .horizontal
    ; Compute next Link horizontal position
     ld   c, $00                                   ; $21B2: $0E $00
-    ldh  [hMultiPurpose0], a                           ; $21B4: $E0 $D7
+    ldh  [hMultiPurpose0], a                      ; $21B4: $E0 $D7
 
 ; Inputs:
 ;   c : direction (0: horizontal ; 1: vertical)
@@ -4011,7 +4015,7 @@ DoUpdateBGRegion::
     push de                                       ; $2242: $D5
 
     ; hl = wRoomObjects + hMultiPurpose2
-    ldh  a, [hMultiPurpose2]                           ; $2243: $F0 $D9
+    ldh  a, [hMultiPurpose2]                      ; $2243: $F0 $D9
     ld   c, a                                     ; $2245: $4F
     ld   b, $00                                   ; $2246: $06 $00
     ld   hl, wRoomObjects                         ; $2248: $21 $11 $D7
@@ -4110,7 +4114,7 @@ DoUpdateBGRegion::
     callsb func_020_49D9                          ; $22B0: $3E $20 $EA $00 $21 $CD $D9 $49
 
     ; Select BG attributes bank
-    ldh  a, [hMultiPurpose8]                           ; $22B8: $F0 $DF
+    ldh  a, [hMultiPurpose8]                      ; $22B8: $F0 $DF
     ld   [MBC3SelectBank], a                      ; $22BA: $EA $00 $21
     ; Increment again the source and target destination
     call IncrementBGMapSourceAndDestination_Vertical ; $22BD: $CD $14 $22
@@ -4141,7 +4145,7 @@ DoUpdateBGRegion::
     push de                                       ; $22DC: $D5
     callsb func_020_49D9                          ; $22DD: $3E $20 $EA $00 $21 $CD $D9 $49
     ; Select BG attributes bank
-    ldh  a, [hMultiPurpose8]                           ; $22E5: $F0 $DF
+    ldh  a, [hMultiPurpose8]                      ; $22E5: $F0 $DF
     ld   [MBC3SelectBank], a                      ; $22E7: $EA $00 $21
     call IncrementBGMapSourceAndDestination_Horizontal ; $22EA: $CD $24 $22
     ld   a, b                                     ; $22ED: $78
@@ -4167,9 +4171,9 @@ DoUpdateBGRegion::
     ld   b, $00                                   ; $2303: $06 $00
     ld   hl, BGRegionIncrement                    ; $2305: $21 $05 $22
     add  hl, bc                                   ; $2308: $09
-    ldh  a, [hMultiPurpose2]                           ; $2309: $F0 $D9
+    ldh  a, [hMultiPurpose2]                      ; $2309: $F0 $D9
     add  a, [hl]                                  ; $230B: $86
-    ldh  [hMultiPurpose2], a                           ; $230C: $E0 $D9
+    ldh  [hMultiPurpose2], a                      ; $230C: $E0 $D9
     pop  bc                                       ; $230E: $C1
 
     ; Decrement loop counter
@@ -4403,7 +4407,7 @@ LoadTileset0F_trampoline::
     jpsw LoadTileset0F                            ; $28E8: $3E $01 $CD $0C $08 $C3 $E3 $6C
 
 ; Fill the Background Map with all 7Es
-LoadTileset8::
+FillBGMapWith7E::
     ld   a, $7E    ; value                        ; $28F0: $3E $7E
     ld   bc, $400 ; count                         ; $28F2: $01 $00 $04
     jr   FillBGMap                                ; $28F5: $18 $05
@@ -4412,6 +4416,7 @@ LoadTileset8::
 ClearBGMap::
     ld   a, $7F    ; value                        ; $28F7: $3E $7F
     ld   bc, $800 ; count                         ; $28F9: $01 $00 $08
+    ; fallthrough to FillBGMap
 
 ; Fill the Background map with a value
 ; Inputs:
@@ -4479,7 +4484,7 @@ GetObjectPhysicsFlagsAndRestoreBank3::
     pop  af                                       ; $2A35: $F1
     ret                                           ; $2A36: $C9
 
-LoadTileset1E::
+LoadCreditsKoholintDisappearingTiles::
     ld   a, BANK(EndingTiles)                     ; $2A37: $3E $13
     call AdjustBankNumberForGBC                   ; $2A39: $CD $0B $0B
     ld   [MBC3SelectBank], a                      ; $2A3C: $EA $00 $21
@@ -4494,8 +4499,10 @@ LoadTileset1E::
     ld   bc, TILE_SIZE * $80                      ; $2A51: $01 $00 $08
     jp   CopyData                                 ; $2A54: $C3 $14 $29
 
-LoadTileset1F::
+; Copy tiles for the stairs sequence of credits to tiles memory
+LoadCreditsStairsTiles::
     call LoadTileset15                            ; $2A57: $CD $66 $2A
+
     ld   de, vTiles0 + $400                       ; $2A5A: $11 $00 $84
     ld   hl, EndingTiles + $3600                  ; $2A5D: $21 $00 $76
     ld   bc, TILE_SIZE * $10                      ; $2A60: $01 $00 $01
@@ -4532,7 +4539,9 @@ LoadTileset15::
     ld   bc, TILE_SIZE * $20                      ; $2AA8: $01 $00 $02
     jp   CopyData                                 ; $2AAB: $C3 $14 $29
 
-LoadTileset1D::
+; Copy tiles for the various Koholint views while the instruments are
+; playing to tiles memory
+LoadCreditsKoholintViewsTiles::
     ld   a, BANK(Overworld1Tiles)                 ; $2AAE: $3E $0C
     call AdjustBankNumberForGBC                   ; $2AB0: $CD $0B $0B
     ld   [MBC3SelectBank], a                      ; $2AB3: $EA $00 $21
@@ -4545,7 +4554,7 @@ LoadTileset1D::
     call AdjustBankNumberForGBC                   ; $2AC4: $CD $0B $0B
     ld   [MBC3SelectBank], a                      ; $2AC7: $EA $00 $21
     ld   hl, Npc3Tiles + $2000                    ; $2ACA: $21 $00 $60
-    ld   de, $8000                                ; $2ACD: $11 $00 $80
+    ld   de, vTiles0                              ; $2ACD: $11 $00 $80
     ld   bc, TILE_SIZE * $80                      ; $2AD0: $01 $00 $08
     call CopyData                                 ; $2AD3: $CD $14 $29
 
@@ -4553,11 +4562,11 @@ LoadTileset1D::
     call AdjustBankNumberForGBC                   ; $2AD8: $CD $0B $0B
     ld   [MBC3SelectBank], a                      ; $2ADB: $EA $00 $21
     ld   hl, Overworld2Tiles + $600               ; $2ADE: $21 $00 $60
-    ld   de, $8800                                ; $2AE1: $11 $00 $88
+    ld   de, vTiles1                              ; $2AE1: $11 $00 $88
     ld   bc, TILE_SIZE * $80                      ; $2AE4: $01 $00 $08
     jp   CopyData                                 ; $2AE7: $C3 $14 $29
 
-LoadTileset18::
+LoadCreditsLinkOnSeaCloseTiles::
     ld   hl, EndingTiles                          ; $2AEA: $21 $00 $40
     ldh  a, [hIsGBC]                              ; $2AED: $F0 $FE
     and  a                                        ; $2AEF: $A7
@@ -4566,11 +4575,11 @@ LoadTileset18::
     ld   a, BANK(PhotoAlbumTiles)                 ; $2AF5: $3E $35
     jr   label_2B06                               ; $2AF7: $18 $0D
 
-LoadTileset17::
+LoadCreditsSunAboveTiles::
     ld   hl, EndingTiles + $800                   ; $2AF9: $21 $00 $48
     jr   label_2B01                               ; $2AFC: $18 $03
 
-LoadTileset16::
+LoadCreditsLinkOnSeaLargeTiles::
     ld   hl, EndingTiles + $2000                  ; $2AFE: $21 $00 $60
 
 label_2B01::
@@ -4591,7 +4600,7 @@ label_2B06::
     ld   bc, TILE_SIZE * $100                     ; $2B20: $01 $00 $10
     jp   CopyData                                 ; $2B23: $C3 $14 $29
 
-LoadTileset1B::
+LoadCreditsRollTiles::
     call PlayAudioStep                            ; $2B26: $CD $A4 $08
 
     ld   hl, FontLargeTiles + $100                ; $2B29: $21 $00 $68
@@ -4663,7 +4672,7 @@ ELSE
     jp   CopyData                                 ; $2B6F: $C3 $14 $29
 ENDC
 
-LoadTileset1A::
+LoadCreditsLinkFaceCloseUpTiles::
     ld   hl, EndingTiles + $3800                  ; $2B72: $21 $00 $78
     ldh  a, [hIsGBC]                              ; $2B75: $F0 $FE
     and  a                                        ; $2B77: $A7
@@ -4672,7 +4681,7 @@ LoadTileset1A::
     ld   a, BANK(EndingCGBAltTiles)               ; $2B7D: $3E $35
     jr   label_2B95                               ; $2B7F: $18 $14
 
-LoadTileset19::
+LoadCreditsLinkSeatedOnLogTiles::
     ld   hl, EndingTiles + $800                   ; $2B81: $21 $00 $48
     ldh  a, [hIsGBC]                              ; $2B84: $F0 $FE
     and  a                                        ; $2B86: $A7
@@ -4733,7 +4742,7 @@ LoadBaseTiles::
     ld   bc, TILE_SIZE * $100                     ; $2BEB: $01 $00 $10
     call CopyData                                 ; $2BEE: $CD $14 $29
 
-    ; Copy two tiles from the times tile sheet to a portion of Tiles Map 1
+    ; Copy two tiles from the items tile sheet to a portion of Tiles Map 1
     ld   hl, Items1Tiles + $3A0                   ; $2BF1: $21 $A0 $47
     ld   de, vTiles1 + $600                       ; $2BF4: $11 $00 $8E
     ld   bc, TILE_SIZE * $2                       ; $2BF7: $01 $20 $00
@@ -4744,7 +4753,8 @@ LoadBaseTiles::
     call SwitchBank                               ; $2BFF: $CD $0C $08
     ret                                           ; $2C02: $C9
 
-LoadInventoryTiles::
+; Copy base tiles and tiles used for menus to tiles memory
+LoadMenuTiles::
     call LoadBaseTiles                            ; $2C03: $CD $CF $2B
 
     ; Select the tiles sheet bank ($0F on DMG, $2F on GBC)
@@ -4765,7 +4775,9 @@ LoadInventoryTiles::
     ld   bc, $800                                 ; $2C22: $01 $00 $08
     jp   CopyData ; tail-call                     ; $2C25: $C3 $14 $29
 
-LoadDungeonTiles::
+; Copy tiles for an indoor room (floor, objects, walls, items, inventory)
+; to tile memory.
+LoadIndoorTiles::
     ;
     ; Load floor tiles
     ;
@@ -4780,6 +4792,7 @@ LoadDungeonTiles::
     ld   d, $00                                   ; $2C33: $16 $00
     cp   MAP_COLOR_DUNGEON                        ; $2C35: $FE $FF
     jr   nz, .notColorDungeon                     ; $2C37: $20 $1A
+
     ld   a, BANK(ColorDungeonTiles)               ; $2C39: $3E $35
     ld   [MBC3SelectBank], a                      ; $2C3B: $EA $00 $21
     ld   hl, ColorDungeonTiles + $200             ; $2C3E: $21 $00 $62
@@ -4808,7 +4821,7 @@ LoadDungeonTiles::
     call CopyData                                 ; $2C63: $CD $14 $29
 
     ;
-    ; Load dungeon doors, stairs and torches
+    ; Load dungeon shared objects (doors, stairs, torches, etc)
     ;
 
     ld   a, BANK(DungeonsTiles)                   ; $2C66: $3E $0D
@@ -4819,7 +4832,7 @@ LoadDungeonTiles::
     call CopyData                                 ; $2C74: $CD $14 $29
 
     ;
-    ; Load dungeon walls
+    ; Load indoor walls
     ;
 
     ld   a, BANK(DungeonWallsTilesPointers)       ; $2C77: $3E $20
@@ -4852,9 +4865,10 @@ LoadDungeonTiles::
     call func_2D50                                ; $2CAE: $CD $50 $2D
 
     ;
-    ; Load dungeon items tiles
+    ; Load indoor objects
     ;
 
+    ; Read the pointer to the objects tiles for this hMapId
     ld   a, BANK(DungeonItemsTilesPointers)       ; $2CB1: $3E $20
     ld   [MBC3SelectBank], a                      ; $2CB3: $EA $00 $21
     pop  de                                       ; $2CB6: $D1
@@ -4879,22 +4893,24 @@ LoadDungeonTiles::
     call CopyData                                 ; $2CD7: $CD $14 $29
 
     ;
-    ; Load inventory items tiles for dungeon
+    ; Load indoor items (map, compass, keys, etc)
     ;
 
     ld   a, [wCurrentBank]                        ; $2CDA: $FA $AF $DB
     ld   [MBC3SelectBank], a                      ; $2CDD: $EA $00 $21
-    ld   hl, InventoryDungeonItemsTiles           ; $2CE0: $21 $00 $7D
+    ld   hl, InventoryIndoorItemsTiles            ; $2CE0: $21 $00 $7D
 
+    ; If indoor, but not in a dungeon…
     ldh  a, [hMapId]                              ; $2CE3: $F0 $F7
     cp   MAP_COLOR_DUNGEON                        ; $2CE5: $FE $FF
-    jr   z, .caveBOrColorDungeon                  ; $2CE7: $28 $0C
+    jr   z, .inventoryItemsEnd                    ; $2CE7: $28 $0C
     cp   MAP_CAVE_B                               ; $2CE9: $FE $0A
-    jr   c, .caveBOrColorDungeon                  ; $2CEB: $38 $08
-    ld   a, BANK(DungeonKeysTiles)                ; $2CED: $3E $0C
+    jr   c, .inventoryItemsEnd                    ; $2CEB: $38 $08
+    ; …use the overworld inventory items (instead of the dungeon ones)
+    ld   a, BANK(InventoryOverworldItemsTiles)    ; $2CED: $3E $0C
     call SwitchAdjustedBank                       ; $2CEF: $CD $13 $08
-    ld   hl, DungeonKeysTiles                     ; $2CF2: $21 $00 $4C
-.caveBOrColorDungeon
+    ld   hl, InventoryOverworldItemsTiles         ; $2CF2: $21 $00 $4C
+.inventoryItemsEnd
 
     ld   de, vTiles1 + $400                       ; $2CF5: $11 $00 $8C
     ld   bc, TILE_SIZE * $30                      ; $2CF8: $01 $00 $03
@@ -4933,7 +4949,11 @@ LoadDungeonTiles::
 .return
     ret                                           ; $2D2C: $C9
 
-LoadTileset5::
+; Copy default tiles for the Overworld rooms to tiles memory.
+; This includes tiles available to all Overworld room.
+;
+; TODO: does it also includes default tiles for the room-specific section?
+LoadBaseOverworldTiles::
     ;
     ; Load Overworld landscape
     ;
@@ -4949,15 +4969,16 @@ LoadTileset5::
     ; Load dungeon keys
     ;
 
-    ld   hl, DungeonKeysTiles                     ; $2D3E: $21 $00 $4C
+    ld   hl, InventoryOverworldItemsTiles                     ; $2D3E: $21 $00 $4C
     ld   de, vTiles1 + $400                       ; $2D41: $11 $00 $8C
     ld   bc, TILE_SIZE * $40                      ; $2D44: $01 $00 $04
     call CopyData                                 ; $2D47: $CD $14 $29
 
     call func_2D50                                ; $2D4A: $CD $50 $2D
 
-    jp   LoadDungeonTiles.patchInventoryTiles     ; $2D4D: $C3 $FE $2C
+    jp   LoadIndoorTiles.patchInventoryTiles     ; $2D4D: $C3 $FE $2C
 
+; Copy animated tiles, inventory items and character tiles to tile memory
 func_2D50::
     xor  a                                        ; $2D50: $AF
     ldh  [hAnimatedTilesFrameCount], a            ; $2D51: $E0 $A6
@@ -4979,7 +5000,7 @@ func_2D50::
     call CopyData                                 ; $2D75: $CD $14 $29
     ret                                           ; $2D78: $C9
 
-; Load Map n°10 (introduction sequence)
+; Copy opening sequence tiles to tiles memory
 LoadIntroSequenceTiles::
     ; Load rain tiles
     ld   a, BANK(IntroRainTiles)                  ; $2D79: $3E $01
@@ -5003,6 +5024,7 @@ LoadIntroSequenceTiles::
     ld   bc, TILE_SIZE * $100                     ; $2DA1: $01 $00 $10
     jp   CopyData                                 ; $2DA4: $C3 $14 $29
 
+; Copy title screen tiles to tiles memory
 LoadTitleScreenTiles::
     ; Load title logo
     ld   a, BANK(TitleLogoTitles)                 ; $2DA7: $3E $0F
@@ -5029,21 +5051,23 @@ LoadTitleScreenTiles::
     ld   bc, TILE_SIZE * $40                      ; $2DCD: $01 $00 $04
     call CopyData                                 ; $2DD0: $CD $14 $29
 
-    ; Load some title sprites
+    ; Load OAM tiles for the large "DX" text
+    ; (used to fade-in the "DX" progressively, by updating the OAM palette)
     ldh  a, [hIsGBC]                              ; $2DD3: $F0 $FE
     and  a                                        ; $2DD5: $A7
     jr   nz, .else                                ; $2DD6: $20 $05
-    ld   hl, PhotoElementsTiles + $600            ; $2DD8: $21 $00 $66
+    ld   hl, TitleDXOAMTiles + $100               ; $2DD8: $21 $00 $66
     jr   .endIf                                   ; $2DDB: $18 $03
 .else
-    ld   hl, PhotoElementsTiles + $500            ; $2DDD: $21 $00 $65
+    ld   hl, TitleDXOAMTiles                      ; $2DDD: $21 $00 $65
 .endIf
 
     ld   de, vTiles0 + $200                       ; $2DE0: $11 $00 $82
     ld   bc, TILE_SIZE * $10                      ; $2DE3: $01 $00 $01
     jp   CopyData                                 ; $2DE6: $C3 $14 $29
 
-LoadTileset0B::
+; Copy tiles for the World Map to tiles memory
+LoadWorldMapTiles::
     ; Load world map tiles
     ld   a, BANK(WorldMapTiles)                   ; $2DE9: $3E $0C
     call SwitchAdjustedBank                       ; $2DEB: $CD $13 $08
@@ -5052,25 +5076,29 @@ LoadTileset0B::
     ld   bc, TILE_SIZE * $80                      ; $2DF4: $01 $00 $08
     call CopyData                                 ; $2DF7: $CD $14 $29
 
-    ; Load some overworld tiles
+    ; Load some overworld objects tiles (house, owl, etc),
+    ; to display them when the cursor hovers a specific room.
     ld   hl, Overworld1Tiles + $100               ; $2DFA: $21 $00 $50
     ld   de, vTiles0 + $200                       ; $2DFD: $11 $00 $82
     ld   bc, TILE_SIZE * $10                      ; $2E00: $01 $00 $01
     jp   CopyData                                 ; $2E03: $C3 $14 $29
 
+; Copy tiles for Face Shrine mural to tiles memory
 LoadFaceShrineReliefTiles::
     ld   hl, ReliefTiles                          ; $2E06: $21 $00 $70
     jr   LoadStaticPictureTiles                   ; $2E09: $18 $08
 
+; Copy tiles for the Schule painting to tiles memory
 LoadSchulePaintingTiles::
     ld   hl, PaintingTiles                        ; $2E0B: $21 $00 $78
     jr   LoadStaticPictureTiles                   ; $2E0E: $18 $03
 
+; Copy tiles for Christine portrait to tiles memory
 LoadChristinePortraitTiles::
     ld   hl, ChristineTiles                       ; $2E10: $21 $00 $58
     ; fallthrough
 
-; Load tiles for a static full-screen picture to vTiles2
+; Copy tiles for a static full-screen picture to vTiles2
 ; Inputs:
 ;   hl   tiles source address
 LoadStaticPictureTiles::
@@ -5094,7 +5122,8 @@ LoadEaglesTowerTopTiles::
     ld   bc, TILE_SIZE * $40                      ; $2E3B: $01 $00 $04
     jp   CopyData                                 ; $2E3E: $C3 $14 $29
 
-LoadTileset13::
+; Copy tiles for Marin's beach sequence to tiles memory
+LoadMarinBeachTiles::
     ld   a, BANK(FontLargeTiles)                  ; $2E41: $3E $10
     call SwitchAdjustedBank                       ; $2E43: $CD $13 $08
 
@@ -5108,7 +5137,7 @@ LoadTileset13::
     ld   bc, TILE_SIZE * $60                      ; $2E58: $01 $00 $06
     jp   CopyData                                 ; $2E5B: $C3 $14 $29
 
-; Tiles for Saving and Game Over screens
+; Copy tiles for Saving and Game Over screens to tiles memory
 LoadSaveMenuTiles::
     ld   a, BANK(SaveMenuTiles)                   ; $2E5E: $3E $0F
     call SwitchBank                               ; $2E60: $CD $0C $08
@@ -5121,13 +5150,16 @@ LoadSaveMenuTiles::
 NpcTilesBankTable::
     db   $00, BANK(Npc2Tiles), BANK(Npc1Tiles), BANK(Npc3Tiles) ; $2E6F
 
-; Load lower section of OAM tiles (NPCs),
-; and upper section of BG tiles
-LoadTileset9::
+; For overworld or indoor rooms, load room-specific tiles.
+;
+; That means:
+; - the lower section of OAM tiles (NPCs),
+; - the upper section of BG tiles.
+LoadRoomSpecificTiles::
     ldh  a, [hMapId]                              ; $2E73: $F0 $F7
     cp   MAP_COLOR_DUNGEON                        ; $2E75: $FE $FF
     jr   nz, .colorDungeonEnd                     ; $2E77: $20 $0B
-    callsb func_020_475A                          ; $2E79: $3E $20 $EA $00 $21 $CD $5A $47
+    callsb LoadColorDungeonTiles                  ; $2E79: $3E $20 $EA $00 $21 $CD $5A $47
     jp   .oamTilesEnd                             ; $2E81: $C3 $12 $2F
 .colorDungeonEnd
 
@@ -5138,7 +5170,7 @@ LoadTileset9::
     xor  a                                        ; $2E84: $AF
     ; Copy a row of 16 tiles
 .copyOAMTilesRow
-    ldh  [hMultiPurpose0], a                           ; $2E85: $E0 $D7
+    ldh  [hMultiPurpose0], a                      ; $2E85: $E0 $D7
     ld   hl, wC193                                ; $2E87: $21 $93 $C1
     ld   e, a                                     ; $2E8A: $5F
     ld   d, $00                                   ; $2E8B: $16 $00
@@ -5210,7 +5242,7 @@ LoadTileset9::
 
     ; Do the actual copy to OAM tiles
     ld   [MBC3SelectBank], a                      ; $2EF2: $EA $00 $21
-    ldh  a, [hMultiPurpose0]                           ; $2EF5: $F0 $D7
+    ldh  a, [hMultiPurpose0]                      ; $2EF5: $F0 $D7
     ld   d, a                                     ; $2EF7: $57
     ld   e, $00                                   ; $2EF8: $1E $00
     ; destination = Lower-half of the OAM tiles section (NPCs tiles)
@@ -5226,7 +5258,7 @@ LoadTileset9::
 .copyskipEntityLoad
 
     ; while hMultiPurpose0 < 4, copy the next row
-    ldh  a, [hMultiPurpose0]                           ; $2F0A: $F0 $D7
+    ldh  a, [hMultiPurpose0]                      ; $2F0A: $F0 $D7
     inc  a                                        ; $2F0C: $3C
     cp   $04                                      ; $2F0D: $FE $04
     jp   nz, .copyOAMTilesRow                     ; $2F0F: $C2 $85 $2E
@@ -5527,9 +5559,9 @@ doCopyObjectToBG:
 
     ; Copy tile attributes to BG map for tiles on the upper row
     push hl                                       ; $3055: $E5
-    ldh  a, [hMultiPurpose8]                           ; $3056: $F0 $DF
+    ldh  a, [hMultiPurpose8]                      ; $3056: $F0 $DF
     ld   [MBC3SelectBank], a                      ; $3058: $EA $00 $21
-    ldh  a, [hMultiPurpose9]                           ; $305B: $F0 $E0
+    ldh  a, [hMultiPurpose9]                      ; $305B: $F0 $E0
     ld   h, a                                     ; $305D: $67
     ldh  a, [hMultiPurposeA]                           ; $305E: $F0 $E1
     ld   l, a                                     ; $3060: $6F
@@ -5544,7 +5576,7 @@ doCopyObjectToBG:
 
     ; Update palette offset
     ld   a, h                                     ; $306E: $7C
-    ldh  [hMultiPurpose9], a                           ; $306F: $E0 $E0
+    ldh  [hMultiPurpose9], a                      ; $306F: $E0 $E0
     ld   a, l                                     ; $3071: $7D
     ldh  [hMultiPurposeA], a                           ; $3072: $E0 $E1
     pop  hl                                       ; $3074: $E1
@@ -5563,9 +5595,9 @@ doCopyObjectToBG:
     pop  de                                       ; $3081: $D1
 
     ; Copy palettes from WRAM1 for tiles on the lower row
-    ldh  a, [hMultiPurpose8]                           ; $3082: $F0 $DF
+    ldh  a, [hMultiPurpose8]                      ; $3082: $F0 $DF
     ld   [MBC3SelectBank], a                      ; $3084: $EA $00 $21
-    ldh  a, [hMultiPurpose9]                           ; $3087: $F0 $E0
+    ldh  a, [hMultiPurpose9]                      ; $3087: $F0 $E0
     ld   h, a                                     ; $3089: $67
     ldh  a, [hMultiPurposeA]                           ; $308A: $F0 $E1
     ld   l, a                                     ; $308C: $6F
@@ -5580,12 +5612,12 @@ doCopyObjectToBG:
 
     ret                                           ; $309A: $C9
 
-; Copy the tile map of a room to BG video memory.
+; Copy the tilemap of a room to BG video memory.
 ;
 ; This is used when loading a map in one go (instead
 ; of having a sliding screen transition.)
-; (called by LoadMapData)
-LoadTileset1::
+; (called by LoadRequestedGfx)
+LoadRoomTilemap:
     call SwitchToMapDataBank                      ; $309B: $CD $05 $39
     call SwitchBank                               ; $309E: $CD $0C $08
     ld   de, vBGMap0                              ; $30A1: $11 $00 $98
@@ -5600,13 +5632,14 @@ LoadTileset1::
     ; If not running on GBC…
     ldh  a, [hIsGBC]                              ; $30AC: $F0 $FE
     and  a                                        ; $30AE: $A7
-    jr   nz, .copyObjectToBG                      ; $30AF: $20 $05
+    jr   nz, .dmgEnd                              ; $30AF: $20 $05
     ; … copy the object tiles (2x2 tiles) to the BG map
     call WriteObjectToBG_DMG                      ; $30B1: $CD $CD $2F
     jr   .objectCopyEnd                           ; $30B4: $18 $0E
+.dmgEnd
 
     ; Copy the object tiles and palettes (2x2 tiles) to the BG map
-.copyObjectToBG
+
     ; If IsIndoor…
     ld   a, [wIsIndoor]                           ; $30B6: $FA $A5 $DB
     and  a                                        ; $30B9: $A7
@@ -6024,7 +6057,7 @@ LoadRoom::
 LoadRoomObject::
     ; Clear hMultiPurpose0
     xor  a                                        ; $32A9: $AF
-    ldh  [hMultiPurpose0], a                           ; $32AA: $E0 $D7
+    ldh  [hMultiPurpose0], a                      ; $32AA: $E0 $D7
 
     ; If object type first bit is 1…
     ld   a, [bc]                                  ; $32AC: $0A
@@ -6036,7 +6069,7 @@ LoadRoomObject::
     ; … this is a three-bytes object, that spans more than one block.
     ; The first byte encodes the direction and length of the block:
     ; save it to hMultiPurpose0.
-    ldh  [hMultiPurpose0], a                           ; $32B5: $E0 $D7
+    ldh  [hMultiPurpose0], a                      ; $32B5: $E0 $D7
     ; Skip the parsed direction-and-length byte
     inc  bc                                       ; $32B7: $03
 .threeBytesObjectEnd
@@ -6216,7 +6249,7 @@ LoadRoomObject::
 
     ; hMultiPurpose9 = object type
     ld   a, d                                     ; $3381: $7A
-    ldh  [hMultiPurpose9], a                           ; $3382: $E0 $E0
+    ldh  [hMultiPurpose9], a                      ; $3382: $E0 $E0
 
     ; If object is an entrance to somewhere else…
     cp   OBJECT_CLOSED_GATE                       ; $3384: $FE $C2
@@ -6254,7 +6287,7 @@ LoadRoomObject::
 .overworldDoorEnd
 
     ; a = object type
-    ldh  a, [hMultiPurpose9]                           ; $33BC: $F0 $E0
+    ldh  a, [hMultiPurpose9]                      ; $33BC: $F0 $E0
 
     cp   $C5                                      ; $33BE: $FE $C5
     jp   z, .configureStairs                      ; $33C0: $CA $7D $34
@@ -6265,7 +6298,7 @@ LoadRoomObject::
 .loadNonDoorIndoorObject
     ; Re-increment a to be the object type
     add  a, OBJECT_KEY_DOOR_TOP                   ; $33CB: $C6 $EC
-    ldh  [hMultiPurpose9], a                           ; $33CD: $E0 $E0
+    ldh  [hMultiPurpose9], a                      ; $33CD: $E0 $E0
 
     ; If object type is a conveyor belt…
     push af                                       ; $33CF: $F5
@@ -6293,7 +6326,7 @@ LoadRoomObject::
     ldh  a, [hMapRoom]                            ; $33E4: $F0 $F6
     cp   $C4                                      ; $33E6: $FE $C4
     ; … and the object type is not zero…
-    ldh  a, [hMultiPurpose9]                           ; $33E8: $F0 $E0
+    ldh  a, [hMultiPurpose9]                      ; $33E8: $F0 $E0
     jr   z, .torchEnd                             ; $33EA: $28 $1B
     ; …then increment the number of torches in the room
     ld   hl, wTorchesCount                        ; $33EC: $21 $C9 $DB
@@ -6507,7 +6540,7 @@ LoadRoomObject::
 
     ldh  a, [hMapId]                              ; $34B6: $F0 $F7
     cp   MAP_CAVE_B                               ; $34B8: $FE $0A
-    ldh  a, [hMultiPurpose9]                           ; $34BA: $F0 $E0
+    ldh  a, [hMultiPurpose9]                      ; $34BA: $F0 $E0
     jr   c, .bombableBlockEnd                     ; $34BC: $38 $04
     cp   OBJECT_BOMBABLE_BLOCK                    ; $34BE: $FE $A9
     jr   z, .configureBreakableObject             ; $34C0: $28 $04
@@ -6544,7 +6577,7 @@ LoadRoomObject::
 
     ; a = multiple-blocks object direction and length
     ld   d, $00                                   ; $34DA: $16 $00
-    ldh  a, [hMultiPurpose0]                           ; $34DC: $F0 $D7
+    ldh  a, [hMultiPurpose0]                      ; $34DC: $F0 $D7
     ; If there are no coordinates for a multiple-blocks object…
     and  a                                        ; $34DE: $A7
     ; … this is a single-block object:
@@ -6560,7 +6593,7 @@ LoadRoomObject::
     ld   hl, wRoomObjects                         ; $34E4: $21 $11 $D7
     add  hl, de                                   ; $34E7: $19
     ; e = count
-    ldh  a, [hMultiPurpose0]                           ; $34E8: $F0 $D7
+    ldh  a, [hMultiPurpose0]                      ; $34E8: $F0 $D7
     and  $0F                                      ; $34EA: $E6 $0F
     ld   e, a                                     ; $34EC: $5F
     ; d = object type
@@ -6580,7 +6613,7 @@ FillRoomWithConsecutiveObjects::
     ldi  [hl], a                                  ; $34F0: $22
 
     ; If the object direction is vertical…
-    ldh  a, [hMultiPurpose0]                           ; $34F1: $F0 $D7
+    ldh  a, [hMultiPurpose0]                      ; $34F1: $F0 $D7
     and  $40                                      ; $34F3: $E6 $40
     jr   z, .verticalEnd                          ; $34F5: $28 $04
     ; … increment the target address to move to the next column
@@ -7365,8 +7398,8 @@ LoadRoomTemplate_trampoline::
     ld   [MBC3SelectBank], a                      ; $38F8: $EA $00 $21
     ret                                           ; $38FB: $C9
 
-LoadTileset0E_trampoline::
-    callsb LoadTileset0E                          ; $38FC: $3E $20 $EA $00 $21 $CD $8B $58
+LoadWorldMapBGMap_trampoline::
+    callsb LoadWorldMapBGMap                      ; $38FC: $3E $20 $EA $00 $21 $CD $8B $58
     ret                                           ; $3904: $C9
 
 SwitchToMapDataBank::
@@ -7383,11 +7416,11 @@ SwitchToMapDataBank::
     ld   [MBC3SelectBank], a                      ; $3911: $EA $00 $21
     ret                                           ; $3914: $C9
 
-LoadTileset22_trampoline::
-    jpsb LoadTileset22                            ; $3915: $3E $27 $EA $00 $21 $C3 $C5 $7F
+LoadCreditsMarinPortraitTiles_trampoline::
+    jpsb LoadCreditsMarinPortraitTiles            ; $3915: $3E $27 $EA $00 $21 $C3 $C5 $7F
 
-LoadTileset23_trampoline::
-    jpsb LoadTileset23                            ; $391D: $3E $20 $EA $00 $21 $C3 $E6 $7D
+LoadThanksForPlayingTiles_trampoline::
+    jpsb LoadThanksForPlayingTiles                            ; $391D: $3E $20 $EA $00 $21 $C3 $E6 $7D
 
 include "code/home/entities.asm"
 
@@ -7421,7 +7454,7 @@ label_3FBD::
     jp   DrawLinkSpriteAndReturn                  ; $3FCE: $C3 $2E $1D
 
 ; Copy data to second half of tiles memory
-LoadColorDungeonTiles::
+ReloadColorDungeonNpcTiles::
     ; bank = hIsGBC ? $35 : $34
     ld   b, $34                                   ; $3FD1: $06 $34
     ldh  a, [hIsGBC]                              ; $3FD3: $F0 $FE
@@ -7433,6 +7466,7 @@ LoadColorDungeonTiles::
     ; Switch to bank $34 or $35
     ld   a, b                                     ; $3FD9: $78
     ld   [MBC3SelectBank], a                      ; $3FDA: $EA $00 $21
+
     ld   hl, ColorDungeonNpcTiles                 ; $3FDD: $21 $00 $40
     ld   de, vTiles0 + $400                       ; $3FE0: $11 $00 $84
     ld   bc, TILE_SIZE * $40                      ; $3FE3: $01 $00 $04

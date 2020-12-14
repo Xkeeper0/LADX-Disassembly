@@ -151,10 +151,13 @@ ENDC
     call label_27F2                               ; $6EFB: $CD $F2 $27
     ld   a, $01                                   ; $6EFE: $3E $01
     call ClearFileMenuBG_trampoline               ; $6F00: $CD $FA $08
+
     ld   a, $1A                                   ; $6F03: $3E $1A
     call SetWorldMusicTrack                       ; $6F05: $CD $C3 $27
-    ld   a, $02                                   ; $6F08: $3E $02
-    ld   [wTileMapToLoad], a                      ; $6F0A: $EA $FE $D6
+
+    ld   a, TILESET_CLEAR_TILEMAP                 ; $6F08: $3E $02
+    ld   [wTilesetToLoad], a                      ; $6F0A: $EA $FE $D6
+
     xor  a                                        ; $6F0D: $AF
     ldh  [hFrameCounter], a                       ; $6F0E: $E0 $E7
     ld   a, $A2                                   ; $6F10: $3E $A2
@@ -170,8 +173,8 @@ ENDC
     jp   IncrementGameplaySubtypeAndReturn        ; $6F27: $C3 $D6 $44
 
 IntroSceneStage1Handler::
-    ld   a, $10                                   ; $6F2A: $3E $10
-    ld   [wTileMapToLoad], a                      ; $6F2C: $EA $FE $D6
+    ld   a, TILESET_INTRO                         ; $6F2A: $3E $10
+    ld   [wTilesetToLoad], a                      ; $6F2C: $EA $FE $D6
     xor  a                                        ; $6F2F: $AF
     ld   [$DDD5], a                               ; $6F30: $EA $D5 $DD
     jp   IncrementGameplaySubtypeAndReturn        ; $6F33: $C3 $D6 $44
@@ -274,8 +277,8 @@ IntroShipOnSeaHandler::
     ld   [wD00F], a                               ; $6FEE: $EA $0F $D0
     call func_001_7D4E                            ; $6FF1: $CD $4E $7D
 
-    ld   a, $11                                   ; $6FF4: $3E $11
-    ld   [wTileMapToLoad], a                      ; $6FF6: $EA $FE $D6
+    ld   a, TILESET_TITLE                         ; $6FF4: $3E $11
+    ld   [wTilesetToLoad], a                      ; $6FF6: $EA $FE $D6
 
     ld   a, $FF                                   ; $6FF9: $3E $FF
     ld   [wIntroTimer], a                         ; $6FFB: $EA $01 $D0
@@ -468,11 +471,11 @@ IntroLinkFaceHandler::
 
 LoadTileMapZero_trampoline::
     ld   hl, wFarcallParams                       ; $7108: $21 $01 $DE
-    ld   a, BANK(LoadMapData.LoadTileMapZero)     ; $710B: $3E $00
+    ld   a, BANK(LoadRequestedGfx.loadBGMap)           ; $710B: $3E $00
     ldi  [hl], a                                  ; $710D: $22
-    ld   a, HIGH(LoadMapData.LoadTileMapZero)     ; $710E: $3E $04
+    ld   a, HIGH(LoadRequestedGfx.loadBGMap)           ; $710E: $3E $04
     ldi  [hl], a                                  ; $7110: $22
-    ld   a, LOW(LoadMapData.LoadTileMapZero)      ; $7111: $3E $3A
+    ld   a, LOW(LoadRequestedGfx.loadBGMap)            ; $7111: $3E $3A
     ldi  [hl], a                                  ; $7113: $22
     ld   a, BANK(@)                               ; $7114: $3E $01
     ld   [hl], a                                  ; $7116: $77
@@ -496,8 +499,8 @@ Data_001_7148::
     db 0, 0, 0, 0, $40, $40, $40, $40, $90, $90, $90, $90 ; $7148
 
 label_7154::
-    ldh  [hMultiPurpose9], a                           ; $7154: $E0 $E0
-    ldh  [hMultiPurpose9], a                           ; $7156: $E0 $E0
+    ldh  [hMultiPurpose9], a                      ; $7154: $E0 $E0
+    ldh  [hMultiPurpose9], a                      ; $7156: $E0 $E0
 
 IntroStage6Handler::
     call func_001_71C7                            ; $7158: $CD $C7 $71
@@ -903,7 +906,7 @@ IntroStageCHandler::
 
 IntroStageDHandler::
     ld   a, $11                                   ; $7448: $3E $11
-    ld   [wTileMapToLoad], a                      ; $744A: $EA $FE $D6
+    ld   [wTilesetToLoad], a                      ; $744A: $EA $FE $D6
     ld   a, $0B                                   ; $744D: $3E $0B
     ld   [wGameplaySubtype], a                    ; $744F: $EA $96 $DB
     ld   a, $C9                                   ; $7452: $3E $C9
@@ -921,11 +924,11 @@ RenderRain::
     call GetRandomByte                            ; $7466: $CD $0D $28
     and  $18                                      ; $7469: $E6 $18
     add  a, $10                                   ; $746B: $C6 $10
-    ldh  [hMultiPurpose1], a                           ; $746D: $E0 $D8
+    ldh  [hMultiPurpose1], a                      ; $746D: $E0 $D8
     call GetRandomByte                            ; $746F: $CD $0D $28
     and  $18                                      ; $7472: $E6 $18
     add  a, $10                                   ; $7474: $C6 $10
-    ldh  [hMultiPurpose0], a                           ; $7476: $E0 $D7
+    ldh  [hMultiPurpose0], a                      ; $7476: $E0 $D7
     ld   hl, wDynamicOAMBuffer+$1C                                ; $7478: $21 $4C $C0
     ; On the sea, limit the rain to the top section of the screen ($10)
     ld   c, $10                                   ; $747B: $0E $10
@@ -936,9 +939,9 @@ RenderRain::
     ld   c, $15                                   ; $7484: $0E $15
 
 .loop
-    ldh  a, [hMultiPurpose1]                           ; $7486: $F0 $D8
+    ldh  a, [hMultiPurpose1]                      ; $7486: $F0 $D8
     ldi  [hl], a                                  ; $7488: $22
-    ldh  a, [hMultiPurpose0]                           ; $7489: $F0 $D7
+    ldh  a, [hMultiPurpose0]                      ; $7489: $F0 $D7
     ldi  [hl], a                                  ; $748B: $22
     call GetRandomByte                            ; $748C: $CD $0D $28
     and  $01       ; if random(0,1) == 0          ; $748F: $E6 $01
@@ -952,16 +955,16 @@ RenderRain::
     ldi  [hl], a                                  ; $749C: $22
     ld   a, $00                                   ; $749D: $3E $00
     ldi  [hl], a                                  ; $749F: $22
-    ldh  a, [hMultiPurpose0]                           ; $74A0: $F0 $D7
+    ldh  a, [hMultiPurpose0]                      ; $74A0: $F0 $D7
     add  a, $1C                                   ; $74A2: $C6 $1C
-    ldh  [hMultiPurpose0], a                           ; $74A4: $E0 $D7
+    ldh  [hMultiPurpose0], a                      ; $74A4: $E0 $D7
     cp   $A0                                      ; $74A6: $FE $A0
     jr   c, .continue                             ; $74A8: $38 $0A
     sub  a, $98                                   ; $74AA: $D6 $98
-    ldh  [hMultiPurpose0], a                           ; $74AC: $E0 $D7
-    ldh  a, [hMultiPurpose1]                           ; $74AE: $F0 $D8
+    ldh  [hMultiPurpose0], a                      ; $74AC: $E0 $D7
+    ldh  a, [hMultiPurpose1]                      ; $74AE: $F0 $D8
     add  a, $25                                   ; $74B0: $C6 $25
-    ldh  [hMultiPurpose1], a                           ; $74B2: $E0 $D8
+    ldh  [hMultiPurpose1], a                      ; $74B2: $E0 $D8
 
 .continue
     dec  c                                        ; $74B4: $0D
